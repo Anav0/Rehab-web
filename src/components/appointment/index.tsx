@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./index.css";
 import { Appointment } from "../../models/appointment";
-import { dateToTime } from "../../helpers";
+import {dateToTime, Uuid} from "../../helpers";
 import { Popover } from "antd";
 
 interface AppointmentProps {
@@ -11,7 +11,7 @@ interface AppointmentProps {
 export const AppointmentUI = (props: AppointmentProps) => {
   const [visible, setVisible] = useState(false);
 
-  const patientsUI = props.appointment.patients.map((x) => <li>{x.name}</li>);
+  const patientsUI = props.appointment.patients.map((x) => <li key={Uuid.uuidv4()}>{x.name}</li>);
 
   return (
     <Popover

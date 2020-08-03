@@ -2,6 +2,7 @@ import { Patient } from "./patient";
 import { Treatment } from "./treatment";
 
 export class Appointment {
+  id: string;
   patients: Patient[];
   treatment: Treatment;
   startDate: Date;
@@ -12,7 +13,8 @@ export class Appointment {
     return tmp;
   }
 
-  constructor(startDate: Date, treatment: Treatment, patients: Patient[]) {
+  constructor(id: string,startDate: Date, treatment: Treatment, patients: Patient[]) {
+    this.id = id;
     this.startDate = startDate;
     this.treatment = treatment;
     this.patients = patients;

@@ -147,6 +147,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
       {calendarCells.map((data: any) => {
         return (
           <CalendarCell
+            isNew={data.appointments.length}
             key={Uuid.uuidv4()}
             appointments={data.appointments as Appointment[]}
             style={data.style as CSSProperties}

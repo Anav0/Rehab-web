@@ -3,11 +3,13 @@ import { Appointment } from "../../models/appointment";
 import { Modal } from "antd";
 import { AppointmentUI } from "../appointment";
 import "./index.css";
+import {Uuid} from "../../helpers";
 
 interface CalendarCellProps {
   appointments: Appointment[];
   maxNumberOfPatients: number;
   style: CSSProperties;
+  isNew: boolean
 }
 
 export const CalendarCell = (props: CalendarCellProps) => {
@@ -38,7 +40,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
       <div
         style={props.style}
         onClick={() => setVisible(true)}
-        className="cell-container"
+        className={`cell-container ${props.isNew ? 'new-cell' : ''}`}
       >
         {getTotalNumberOfPatients()}
         {" / "}
@@ -51,7 +53,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
         onCancel={() => setVisible(false)}
       >
         {props.appointments.map((x) => {
-          return <AppointmentUI appointment={x} />;
+          return <AppointmentUI key={Uuid.uuidv4()} appointment={x} />;
         })}
       </Modal>
     </>
