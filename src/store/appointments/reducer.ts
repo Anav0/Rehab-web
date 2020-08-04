@@ -14,9 +14,6 @@ export const appointmentsReducer = (state = initialState, action: AppointmentAct
         case "FILL_APPOINTMENTS":
             state.appointments = [...action.payload];
             return {...state};
-        case "REMOVE_APPOINTMENT":
-            state.appointments = [...state.appointments.filter((appointment: Appointment)=>appointment.id!==action.payload.id)];
-            return {...state};
         default:
             return state
     }

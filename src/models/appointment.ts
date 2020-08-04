@@ -1,11 +1,12 @@
 import { Patient } from "./patient";
 import { Treatment } from "./treatment";
+import {BaseConstraint} from "./constraints/baseConstraint";
 
 export class Appointment {
-  id: string;
   patients: Patient[];
   treatment: Treatment;
   startDate: Date;
+  constraints: BaseConstraint[]
 
   get endDate(): Date {
     let tmp = new Date(this.startDate);
@@ -13,11 +14,11 @@ export class Appointment {
     return tmp;
   }
 
-  constructor(id: string,startDate: Date, treatment: Treatment, patients: Patient[]) {
-    this.id = id;
-    this.startDate = startDate;
-    this.treatment = treatment;
+  constructor(startDate: Date, treatment: Treatment, patients: Patient[],  constraints: BaseConstraint[] = []) {
     this.patients = patients;
+    this.treatment = treatment;
+    this.startDate = startDate;
+    this.constraints = constraints;
   }
 
   addPatient(patient: Patient) {
