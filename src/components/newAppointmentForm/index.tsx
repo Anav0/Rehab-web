@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Patient} from "../../models/patient";
 import {Appointment} from "../../models/appointment";
 import {RootState} from "../../store";
-import {AutoComplete, Button, Form, Select, Typography} from "antd";
+import {AutoComplete, Button, Form, Select, notification  , Typography} from "antd";
 import {Treatment} from "../../models/treatment";
 import mockedTreatments from "../../mock/treatments";
 import {DayAndHour, DayAndHourValue} from "../dayAndHour";
@@ -103,7 +103,7 @@ class AppointmentForm extends Component<StateProps, ComponentState> {
          }))
          try{
 
-        let today = new Date()
+        let today = new Date("July 28, 2020 06:00") //TODO: REMOVE WHEN DEBUG ENDS
         let searchStart = today.toISOString();
         today.setDate(today.getDate()+365);
         let searchEnd = today.toISOString()
@@ -158,14 +158,25 @@ class AppointmentForm extends Component<StateProps, ComponentState> {
         }
 
         let payload = new ApiPayload(searchStart,searchEnd,existingAppointments,appointmentConstraints,allPreferences,patientWish)
-        console.log(payload)
-
         const response = await api.find.treatment(payload)
-         console.log(process.env.REACT_APP_API_URL);
+
+         let names = response.data.patients.reduce((prev:any,curr:any,arr:any)=>prev+' '+curr.name,'');
+         let description = `${new Date(response.data.startDate).toLocaleDateString('pl',{
+             weekday: 'long',
+             month: 'long',
+             day: '2-digit',
+             hour: '2-digit',
+             minute: '2-digit'
+         })}`
+         notification.success({
+             message: `Termin wizyty - ${names}`,
+             description,
+             duration: 10
+         })
 
          this.setState((state: ComponentState, props: StateProps) => ({
          isProcessing: false
-     }))
+         }))
         console.log(response)
          }catch(error){
              console.error(error.message)
@@ -179,6 +190,8 @@ class AppointmentForm extends Component<StateProps, ComponentState> {
         if(!values.day) return;
         let tmp = this.state.availableDays
         delete tmp[values.day]
+        if(values.prevSelectedDay)
+            tmp[values.prevSelectedDay] = this.state.allDays[values.prevSelectedDay]
         this.setState((state,props)=>({
             availableDays: tmp
         }))
@@ -186,10 +199,8 @@ class AppointmentForm extends Component<StateProps, ComponentState> {
 
     addDay = (values: DayAndHourValue) => {
         if(!values.day)return;
-        console.log(this.state.availableDays)
         let tmp = this.state.availableDays
         tmp[values.day] = this.state.allDays[values.day];
-        console.log(tmp)
         this.setState((state,props)=>({
             availableDays: tmp
         }))
@@ -232,7 +243,7 @@ class AppointmentForm extends Component<StateProps, ComponentState> {
                             <>
                                 {fields.map((field: any) => {
                                     return (
-                                        <div key={Uuid.uuidv4()} className={'day-preference'}>
+                                        <div key={field.key} className={'day-preference'}>
                                             <Form.Item
                                                 {...field}
                                                 name={field.name}

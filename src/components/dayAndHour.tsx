@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import { Select,  TimePicker} from 'antd';
 import {Uuid} from "../helpers";
 
@@ -7,66 +7,80 @@ const { RangePicker } = TimePicker;
 
 export interface DayAndHourValue {
     day: string;
+    prevSelectedDay: string;
     hourRange?: any;
 }
+
 interface DayAndHourProps {
     days: {[key: number]: string},
     onChange?: (value: DayAndHourValue) => void;
     onUnmount?: (value: DayAndHourValue) => void;
 }
 
-export const DayAndHour = (props: DayAndHourProps) => {
-    const [day, setDay] = useState<string | undefined>();
-    const [hourRange, setHourRange] = useState<string | undefined>();
+interface DayAndHourState{
+    day: string,
+    prevSelectedDay: string,
+    hourRange?: any
+}
 
-    const children = [];
-    for(let key in props.days){
-        // @ts-ignore
-        children.push(<Option value={key} key={Uuid.uuidv4()}>{props.days[key]}</Option>);
-    }
+export class DayAndHour extends React.Component<DayAndHourProps,DayAndHourState> {
 
-
-    const onDayChange =(value: string) =>{
-        setDay(value)
-    }
-
-    const onHourChange =(value:any) =>{
-        setHourRange(value)
-    }
-
-    useEffect(()=>{
-        const triggerOnChange = ()=>{
-            if(!day) return;
-            if(props.onChange) props.onChange({
-                hourRange,
-                day,
-            })
+    constructor(props: DayAndHourProps) {
+        super(props);
+        this.state = {
+            day: '',
+            prevSelectedDay: '',
+            hourRange: {}
         }
-        
-        triggerOnChange()
+    }
 
-        return function cleanup() {
-            console.log('CLEANUP')
-            if(!day) return;
-            if(props.onUnmount) props.onUnmount({
-                hourRange,
-                day,
-            })
+    onDayChange =(value: string) => {
+
+        this.setState((state,props)=>({
+            prevSelectedDay: state.day,
+            day: value
+        }),()=>this.triggerOnChange())
+    }
+
+    onHourChange =(value:any) => {
+        this.setState((state,props)=>({
+            hourRange: value
+        }),()=>this.triggerOnChange())
+    }
+
+    triggerOnChange = () => {
+        if(!this.state.day) return;
+        if(this.props.onChange) this.props.onChange({
+           ...this.state
+        })
+    }
+
+    componentWillUnmount() {
+        if(!this.state.day) return;
+        if(this.props.onUnmount) this.props.onUnmount({
+            ...this.state
+        })
+    }
+
+    render(){
+        const children = [];
+        for(let key in this.props.days){
+            children.push(<Option value={key} key={Uuid.uuidv4()}>{this.props.days[key]}</Option>);
         }
+        return (
+            <>
+                <Select
+                    style={{ width: '25%', margin: '0 10px 0 0' }}
+                    onChange={this.onDayChange}
+                    placeholder="Dzień"
 
-    },[day, hourRange, props, triggerOnChange])
+                >
+                    {children}
+                </Select>
+                <RangePicker picker={"time"} format={'HH:mm'} onChange={(value)=>value ? this.onHourChange(value) : ()=>{}}/>
+            </>
+        );
+    }
 
-    return (
-        <>
-          <Select
-              style={{ width: '25%', margin: '0 10px 0 0' }}
-              onChange={onDayChange}
-              placeholder="Dzień"
 
-          >
-              {children}
-          </Select>
-          <RangePicker picker={"time"} format={'HH:mm'} onChange={(value)=>value ? onHourChange(value) : ()=>{}}/>
-          </>
-    );
 };

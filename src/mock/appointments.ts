@@ -3,6 +3,7 @@ import patients from "./patients";
 import treatments from "./treatments";
 
 export default [
+
   new Appointment(new Date("July 28, 2020 07:00"), treatments[0], [
     patients[0],
     patients[1],
