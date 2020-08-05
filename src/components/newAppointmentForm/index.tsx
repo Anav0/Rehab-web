@@ -161,7 +161,7 @@ class AppointmentForm extends Component<StateProps, ComponentState> {
         const response = await api.find.treatment(payload)
 
          let names = response.data.patients.reduce((prev:any,curr:any,arr:any)=>prev+' '+curr.name,'');
-         let description = `${new Date(response.data.startDate).toLocaleDateString('pl',{
+         let description = `${new Date(response.data.startDateISO).toLocaleDateString('pl',{
              weekday: 'long',
              month: 'long',
              day: '2-digit',
@@ -189,9 +189,9 @@ class AppointmentForm extends Component<StateProps, ComponentState> {
     filterDays = (values: DayAndHourValue) =>{
         if(!values.day) return;
         let tmp = this.state.availableDays
-        delete tmp[values.day]
         if(values.prevSelectedDay)
             tmp[values.prevSelectedDay] = this.state.allDays[values.prevSelectedDay]
+        delete tmp[values.day]
         this.setState((state,props)=>({
             availableDays: tmp
         }))
