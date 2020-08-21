@@ -1,10 +1,10 @@
-import { patientReducer } from './patients/reducer'
-import { appointmentsReducer } from './appointments/reducer'
+import { patientReducer } from "./patients/reducer";
+import { timeblockReducer } from "./timeblocks/reducer";
 import { combineReducers } from "redux";
 
 export const rootReducer = combineReducers({
-    patients: patientReducer,
-    appointments: appointmentsReducer
-})
+  patients: patientReducer,
+  timeBlocks: timeblockReducer,
+});
 
-export type RootState = ReturnType<typeof rootReducer>
+export type RootState = ReturnType<typeof rootReducer>;

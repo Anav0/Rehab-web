@@ -1,26 +1,38 @@
 import React, { CSSProperties, useState, useEffect } from "react";
 import "./index.css";
 import { CalendarCell } from "../calendarCell";
-import { Appointment } from "../../models/appointment";
 import { Uuid } from "../../helpers";
+import { TimeBlock } from "../../models/timeBlock";
+import { emptySites } from "../../mock/sites";
+import { format } from "path";
+import { TreatmentSite } from "../../models/treatmentSite";
+import {
+  getTimeBlockRange,
+  existingBlocks,
+  formatKey,
+} from "../../mock/timeBlocks";
+import { CalendarCellData } from "../../models/calendarCellData";
+import { defaultBlocksConfig } from "../../models/timeBlockConfig";
+import { CalendarProps } from "antd/lib/calendar/generateCalendar";
 
 interface WeekPlannerProps {
   interval: number;
   selectedDate: Date;
   endHour: string;
   startHour: string;
-  appointments: Appointment[];
+  timeBlocks: TimeBlock[];
 }
 
 const formatDate = (date: Date) => {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 };
 
-const initGrid = (props: WeekPlannerProps, lang: string) => {
+const initHours = (props: WeekPlannerProps) => {
   const timeConfig = { hour: "2-digit", minute: "2-digit" };
   const selectedDateString = formatDate(props.selectedDate);
+  const lang = "pl";
   let helperDate = new Date(`${selectedDateString} ${props.startHour}`);
-  let timeStamps: string[] = [];
+  let hours: string[] = [];
   let splitedEndHour = props.endHour.split(":");
   while (
     helperDate.getHours() !== Number(splitedEndHour[0]) ||
@@ -30,85 +42,95 @@ const initGrid = (props: WeekPlannerProps, lang: string) => {
     newItem += helperDate.toLocaleTimeString(lang, timeConfig) + " - ";
     helperDate.setTime(helperDate.getTime() + props.interval * 60000);
     newItem += helperDate.toLocaleTimeString(lang, timeConfig);
-    timeStamps.push(newItem);
+    hours.push(newItem);
+  }
+  return hours;
+};
+
+const initDays = (selectedDate: Date) => {
+  let baseDay = selectedDate.getDay();
+  let days: Date[] = [];
+  for (let i = 1; i <= 7; i++) {
+    let newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + (i - baseDay));
+    days.push(newDate);
+  }
+  return days;
+};
+const initCalendarCells = (
+  hours: string[],
+  days: Date[],
+  props: WeekPlannerProps
+) => {
+  let tmpCalendarCellData: CalendarCellData[] = [];
+  let i = 0;
+
+  let blocksByDay: {
+    [key: string]: TimeBlock;
+  } = {};
+
+  for (let block of props.timeBlocks) {
+    let key = formatKey(block.start);
+    blocksByDay[key] = block;
   }
 
-  let baseDay = props.selectedDate.getDay();
-  let newDates: Date[] = [];
-  for (let i = 1; i <= 7; i++) {
-    let newDate = new Date(props.selectedDate);
-    newDate.setDate(newDate.getDate() + (i - baseDay));
-    newDates.push(newDate);
+  for (let timeStamp of hours) {
+    let k = 0;
+    for (let day of days) {
+      let firstSplit = timeStamp.split("-");
+      let hours = firstSplit[0].split(":")[0];
+      let minutes = firstSplit[0].split(":")[1];
+      let tmpDate = new Date(day);
+      tmpDate.setHours(+hours, +minutes);
+      tmpDate.setSeconds(0, 0);
+      let key = formatKey(tmpDate);
+
+      tmpCalendarCellData.push({
+        style: {
+          gridColumn: `${k + 2}/${k + 3}`,
+          gridRow: `${i + 2}/${i + 3}`,
+        },
+        timeBlock:
+          blocksByDay[key] != null
+            ? blocksByDay[key]
+            : new TimeBlock(tmpDate, defaultBlocksConfig.duration, emptySites),
+        day,
+        timeStamp,
+      });
+
+      k++;
+    }
+    i++;
   }
+  return tmpCalendarCellData;
+};
+const initGrid = (props: WeekPlannerProps) => {
+  const hours = initHours(props);
+  const days = initDays(props.selectedDate);
+  const calendarCells = initCalendarCells(hours, days, props);
 
   return {
-    timeStamps,
-    weekDays: newDates,
+    hours,
+    days,
+    calendarCells,
   };
 };
 
 const WeekPlanner = (props: WeekPlannerProps) => {
-  const [calendarCells, setCalendarCells] = useState<any>([]);
-  const [weekDays, setWeekdays] = useState<any>([]);
-  const [timeStamps, setTimeStamps] = useState<any>([]);
+  const [calendarCells, setCalendarCells] = useState<CalendarCellData[]>([]);
+  const [days, setDays] = useState<any>([]);
+  const [hours, setHours] = useState<any>([]);
 
   useEffect(() => {
-    const lang = "pl";
-
-    const { timeStamps, weekDays } = initGrid(props, lang);
-
-    setTimeStamps(timeStamps);
-    setWeekdays(weekDays);
-
-    let tmpCalendarCellData: any[] = [];
-    let i = 0;
-    for (let timeStamp of timeStamps) {
-      let k = 0;
-      for (let day of weekDays) {
-        tmpCalendarCellData.push({
-          style: {
-            gridColumn: `${k + 2}/${k + 3}`,
-            gridRow: `${i + 2}/${i + 3}`,
-          },
-          appointments: [],
-          day,
-          timeStamp,
-        });
-
-        k++;
-      }
-      i++;
-    }
-
-    props.appointments.forEach((appointment) => {
-      let uniformDate = "July 28, 2020 ";
-      let capacityStartDate = new Date(
-        `${uniformDate} ${appointment.startDate.getHours()}:${appointment.startDate.getMinutes()}`
-      );
-
-      for (let data of tmpCalendarCellData) {
-        let splited = data.timeStamp.split("-");
-        let startDate = new Date(`${uniformDate} ${splited[0]}`);
-        let endDate = new Date(`${uniformDate} ${splited[1]}`);
-
-        if (formatDate(appointment.startDate) !== formatDate(data.day))
-          continue;
-        //TODO: We assume that treatment always fit in one cell
-        if (
-          capacityStartDate.getTime() >= startDate.getTime() &&
-          capacityStartDate.getTime() < endDate.getTime()
-        ) {
-          data.appointments.push(appointment);
-          break;
-        }
-      }
-    });
-    setCalendarCells(tmpCalendarCellData);
+    const { hours, days, calendarCells: calendarCalls } = initGrid(props);
+    setHours(hours);
+    setDays(days);
+    setCalendarCells(calendarCalls);
   }, [props]);
 
   return (
     <div className="planner-container">
-      {weekDays.map((x: any, i: number) => {
+      {days.map((x: any, i: number) => {
         let isToday = false;
         if (formatDate(new Date()) === formatDate(x)) isToday = true;
 
@@ -133,7 +155,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
           </span>
         );
       })}
-      {timeStamps.map((time: any, i: number) => {
+      {hours.map((time: any, i: number) => {
         let style = {
           gridRow: `${i + 2}/${i + 3}`,
           gridColumn: `1/2`,
@@ -144,15 +166,9 @@ const WeekPlanner = (props: WeekPlannerProps) => {
           </span>
         );
       })}
-      {calendarCells.map((data: any) => {
+      {calendarCells.map((data: CalendarCellData) => {
         return (
-          <CalendarCell
-            isNew={false}
-            key={Uuid.uuidv4()}
-            appointments={data.appointments as Appointment[]}
-            style={data.style as CSSProperties}
-            maxNumberOfPatients={10}
-          />
+          <CalendarCell isNew={false} key={Uuid.uuidv4()} cellData={data} />
         );
       })}
     </div>

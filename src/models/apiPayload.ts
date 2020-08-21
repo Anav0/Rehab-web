@@ -1,20 +1,22 @@
-import {Appointment} from "./appointment";
-import {PatientWish} from "./patientWish";
+import { Appointment } from "./appointment";
+import { PatientWish } from "./patientWish";
+import { TimeBlock } from "./timeBlock";
 
-export class ApiPayload{
-    startSearch: string
-    endSearch: string
-    existingAppointments: Appointment[]
-    appointmentConstraints: any[]
-    preferences: any[]
+export class ApiPayload {
+  blocks: TimeBlock[];
+  constraints: any[];
+  preferences: any[];
+  patientWish: PatientWish;
+
+  constructor(
+    blocks: TimeBlock[],
+    constraints: any[],
+    preferences: any[],
     patientWish: PatientWish
-
-    constructor(startSearch: string, endSearch: string, existingAppointments: Appointment[], appointmentConstraints: any[], preferences: any[], patientWish: PatientWish) {
-        this.startSearch = startSearch;
-        this.endSearch = endSearch;
-        this.existingAppointments = existingAppointments;
-        this.appointmentConstraints = appointmentConstraints;
-        this.preferences = preferences;
-        this.patientWish = patientWish;
-    }
+  ) {
+    this.blocks = blocks;
+    this.constraints = constraints;
+    this.preferences = preferences;
+    this.patientWish = patientWish;
+  }
 }
