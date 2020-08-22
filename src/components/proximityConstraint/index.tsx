@@ -56,8 +56,6 @@ export class ProximityConstraint extends React.Component<
                 offset: event,
               }),
               () => {
-                console.log(this.state);
-                console.log("VALUE CHANGED FINISHED");
                 this.props.onValueChanged(this.state);
               }
             );

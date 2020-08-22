@@ -85,7 +85,6 @@ const days = {
 class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
   constructor(props: AppointmentFormProps) {
     super(props);
-    console.log(props);
 
     this.state = {
       selectedPatient: undefined,
@@ -180,13 +179,8 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         treatment: this.state.selectedTreatment,
       };
 
-      let now = new Date();
-      console.log(now);
-      let then = new Date();
-      then.setDate(now.getDate() + defaultBlocksConfig.endSearchAfterDays);
-
       let payload = new ApiPayload(
-        getTimeBlockRange(now, then, this.props.timeBlocks),
+        this.props.timeBlocks,
         this.compileConstraints(values),
         this.compilePreferences(values),
         patientWish
@@ -228,7 +222,6 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
       this.setState((state: ComponentState, props: AppointmentFormProps) => ({
         isProcessing: false,
       }));
-      console.log(response);
     } catch (error) {
       console.error(error.message);
       notification.open({
@@ -361,7 +354,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
           }}
         </Form.List>
         <Title level={4}>Ograniczenia</Title>
-        <Form.Item name="constraints" label="Dostępne ograniczenia">
+        <Form.Item label="Dostępne ograniczenia">
           {Object.keys(constraintsUI).map((x) => {
             return (
               <CheckableTag
