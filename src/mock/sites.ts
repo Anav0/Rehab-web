@@ -1,7 +1,4 @@
 import { TreatmentSite } from "../models/treatmentSite";
-import { Appointment } from "../models/appointment";
-import treatments from "./treatments";
-import patients from "./patients";
 
 function newSites() {
   return [

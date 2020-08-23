@@ -1,18 +1,15 @@
 import { emptySites } from "./sites";
 import { TimeBlock } from "../models/timeBlock";
 import { defaultBlocksConfig } from "../models/timeBlockConfig";
+import { TreatmentSite } from "../models/treatmentSite";
+import { Appointment } from "../models/appointment";
+import treatments from "./treatments";
+import patients from "./patients";
+import { simpleCase1 } from "./test/simple1";
+import { simpleCase2 } from "./test/simple2";
+import { emptyCase } from "./test/empty";
 
-export const existingBlocks = [
-  new TimeBlock(new Date(2020, 7, 23, 6, 0, 0, 0), 3600, emptySites),
-  new TimeBlock(new Date(2020, 7, 23, 7, 0, 0, 0), 3600, emptySites),
-  new TimeBlock(new Date(2020, 7, 23, 8, 0, 0, 0), 3600, emptySites),
-  new TimeBlock(new Date(2020, 7, 23, 9, 0, 0, 0), 3600, emptySites),
-  new TimeBlock(new Date(2020, 7, 23, 10, 0, 0, 0), 3600, emptySites),
-  new TimeBlock(new Date(2020, 7, 23, 11, 0, 0, 0), 3600, emptySites),
-  new TimeBlock(new Date(2020, 7, 23, 12, 0, 0, 0), 3600, emptySites),
-  new TimeBlock(new Date(2020, 7, 23, 13, 0, 0, 0), 3600, emptySites),
-  new TimeBlock(new Date(2020, 7, 23, 14, 0, 0, 0), 3600, emptySites),
-];
+export const existingBlocks = emptyCase;
 
 export const formatKey = (date: Date) => {
   return `${date.toDateString()} ${date.toLocaleString("pl", {
