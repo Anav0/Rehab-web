@@ -31,9 +31,6 @@ import { getTimeBlockRange } from "../../mock/timeBlocks";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
 const { CheckableTag } = Tag;
 
-interface HashTable<T> {
-  [key: string]: T;
-}
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -42,8 +39,8 @@ interface ComponentState {
   selectedTreatment: Treatment | undefined;
   filteredPatients: Patient[];
   filteredTreatments: Treatment[];
-  availableDays: HashTable<string>;
-  allDays: HashTable<string>;
+  availableDays: any;
+  allDays: any;
   isProcessing: boolean;
   selectedConstraints: string[];
   proximityState?: ProximityConstraintState;
@@ -91,8 +88,8 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
       selectedTreatment: undefined,
       filteredPatients: props.patients,
       filteredTreatments: mockedTreatments,
-      allDays: days,
-      availableDays: days,
+      allDays: JSON.parse(JSON.stringify(days)),
+      availableDays: JSON.parse(JSON.stringify(days)),
       isProcessing: false,
       selectedConstraints: [],
       proximityState: undefined,
@@ -244,6 +241,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
     let tmp = this.state.availableDays;
     if (values.prevSelectedDay)
       tmp[values.prevSelectedDay] = this.state.allDays[values.prevSelectedDay];
+
     delete tmp[values.day];
     this.setState((state, props) => ({
       availableDays: tmp,
@@ -252,6 +250,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
 
   addDay = (values: DayAndHourValue) => {
     if (!values.day) return;
+
     let tmp = this.state.availableDays;
     tmp[values.day] = this.state.allDays[values.day];
     this.setState((state, props) => ({
