@@ -1,7 +1,6 @@
 import React from "react";
 import { Select, TimePicker } from "antd";
 import { Uuid } from "../helpers";
-
 const { Option } = Select;
 const { RangePicker } = TimePicker;
 
