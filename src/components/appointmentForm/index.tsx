@@ -146,6 +146,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
       ? [
           {
             type: "proximity",
+            treatment: this.state.proximityState.treatment,
             offset:
               this.state.proximityState.offset * this.state.proximityState.sign,
           },
@@ -223,10 +224,14 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         isProcessing: false,
       }));
     } catch (error) {
-      console.error(error.message);
+      let errMsg =
+        error.response && error.response.data.error
+          ? error.response.data.error
+          : error.message;
+
       notification.open({
         message: "Error",
-        description: error.message,
+        description: errMsg,
       });
       this.setState((state: ComponentState, props: AppointmentFormProps) => ({
         isProcessing: false,
