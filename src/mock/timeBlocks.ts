@@ -9,7 +9,7 @@ import { simpleCase1 } from "./test/simple1";
 import { simpleCase2 } from "./test/simple2";
 import { emptyCase } from "./test/empty";
 
-export const existingBlocks = emptyCase;
+export const existingBlocks = simpleCase1;
 
 export const formatKey = (date: Date) => {
   return `${date.toDateString()} ${date.toLocaleString("pl", {

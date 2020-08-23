@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import "./App.css";
 import { Modal, DatePicker, Button } from "antd";
+import "moment/locale/pl";
 import localePL from "antd/es/date-picker/locale/pl_PL";
+
 import { Patient } from "./models/patient";
 import WeekPlanner from "./components/weekPlanner";
 import { RootState } from "./store";
@@ -9,6 +11,7 @@ import { connect } from "react-redux";
 import AppointmentForm from "./components/appointmentForm";
 import { TimeBlock } from "./models/timeBlock";
 import { defaultBlocksConfig } from "./models/timeBlockConfig";
+
 interface StateProps {
   patients: Patient[];
   timeBlocks: TimeBlock[];
