@@ -2,7 +2,6 @@ import "./index.css";
 import React, { Component, ReactElement } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Patient } from "../../models/patient";
-import { Appointment } from "../../models/appointment";
 import { RootState } from "../../store";
 import {
   AutoComplete,
@@ -27,8 +26,6 @@ import {
 } from "../proximityConstraint";
 import { TimeBlock } from "../../models/timeBlock";
 import { updateTimeblock } from "../../store/timeblocks/actions";
-import { getTimeBlockRange } from "../../mock/timeBlocks";
-import { defaultBlocksConfig } from "../../models/timeBlockConfig";
 const { CheckableTag } = Tag;
 
 const { Title } = Typography;

@@ -1,19 +1,12 @@
-import React, { CSSProperties, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.css";
 import { CalendarCell } from "../calendarCell";
 import { Uuid } from "../../helpers";
 import { TimeBlock } from "../../models/timeBlock";
 import { emptySites } from "../../mock/sites";
-import { format } from "path";
-import { TreatmentSite } from "../../models/treatmentSite";
-import {
-  getTimeBlockRange,
-  existingBlocks,
-  formatKey,
-} from "../../mock/timeBlocks";
+import { formatKey } from "../../mock/timeBlocks";
 import { CalendarCellData } from "../../models/calendarCellData";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
-import { CalendarProps } from "antd/lib/calendar/generateCalendar";
 
 interface WeekPlannerProps {
   interval: number;
@@ -57,6 +50,7 @@ const initDays = (selectedDate: Date) => {
   }
   return days;
 };
+
 const initCalendarCells = (
   hours: string[],
   days: Date[],
@@ -104,6 +98,7 @@ const initCalendarCells = (
   }
   return tmpCalendarCellData;
 };
+
 const initGrid = (props: WeekPlannerProps) => {
   const hours = initHours(props);
   const days = initDays(props.selectedDate);
@@ -122,6 +117,8 @@ const WeekPlanner = (props: WeekPlannerProps) => {
   const [hours, setHours] = useState<any>([]);
 
   useEffect(() => {
+    console.log(`RENDER WeekPlanner`);
+
     const { hours, days, calendarCells: calendarCalls } = initGrid(props);
     setHours(hours);
     setDays(days);

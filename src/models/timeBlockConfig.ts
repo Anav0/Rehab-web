@@ -6,7 +6,7 @@ export class TimeBlocksConfig {
   defaultSites: TreatmentSite[] = emptySites;
   startHour: string = "6:00";
   endHour: string = "20:00";
-  endSearchAfterDays: number = 30 * 4;
+  endSearchAfterDays: number = 30 * 3;
 }
 
 export const defaultBlocksConfig = new TimeBlocksConfig();
