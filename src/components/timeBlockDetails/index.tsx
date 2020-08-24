@@ -38,12 +38,13 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     let capacity = props.site.capacity[property];
     let current = capacityFullness[property];
     let content = `${current}/${capacity}`;
+    let treatment = treatments.find((x) => x.id === property);
     descriptors.push(
       <Descriptions.Item
         key={Uuid.uuidv4()}
         label={
           <span style={{ color: colorOptions[i] }}>
-            {treatments[+property].name}
+            {treatment ? treatment.name : "Nie znaleziono zabiegu"}
           </span>
         }
       >

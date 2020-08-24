@@ -8,6 +8,7 @@ import patients from "./patients";
 import { simpleCase1 } from "./test/simple1";
 import { simpleCase2 } from "./test/simple2";
 import { emptyCase } from "./test/empty";
+import { fullCalendar } from "./test/full";
 
 export const existingBlocks = simpleCase1;
 
@@ -61,4 +62,15 @@ export function getTimeBlockRange(
     }
   }
   return generatedBlocks;
+}
+export function getCurrentDateWithTime(
+  h: number,
+  m: number,
+  s: number,
+  ms: number
+) {
+  let date = new Date();
+  date.setDate(date.getDate() + 1);
+  date.setHours(h, m, s, ms);
+  return date;
 }

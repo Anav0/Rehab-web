@@ -25,7 +25,7 @@ const stateProps = (state: RootState): StateProps => ({
 type AppProps = StateProps & {};
 
 const App = (props: AppProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date(2020, 7, 22));
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isModalVisible, setModalVisibility] = useState<boolean>(false);
 
   const onWeekChanged = (date: any, dateString: string) => {
