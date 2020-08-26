@@ -9,8 +9,9 @@ import { simpleCase1 } from "./test/simple1";
 import { simpleCase2 } from "./test/simple2";
 import { emptyCase } from "./test/empty";
 import { fullCalendar } from "./test/full";
+import { complexCase } from "./test/camplex";
 
-export const existingBlocks = simpleCase1;
+export const existingBlocks = complexCase;
 
 export const formatKey = (date: Date) => {
   return `${date.toDateString()} ${date.toLocaleString("pl", {

@@ -16,3 +16,7 @@ export const dateToTime = (date: Date, lang: string = "pl") => {
     minute: "2-digit",
   });
 };
+
+export const copy = (object: object) => {
+  return JSON.parse(JSON.stringify(object));
+};
