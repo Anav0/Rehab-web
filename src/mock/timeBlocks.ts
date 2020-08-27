@@ -2,8 +2,10 @@ import { emptySites } from "./sites";
 import { TimeBlock } from "../models/timeBlock";
 import { defaultBlocksConfig } from "../models/timeBlockConfig";
 import { complexCase } from "./test/camplex";
+import { simpleCase1 } from "./test/simple1";
+import { fullCalendar } from "./test/full";
 
-export const existingBlocks = complexCase;
+export const existingBlocks = simpleCase1;
 
 export const formatKey = (date: Date) => {
   return `${date.toDateString()} ${date.toLocaleString("pl", {

@@ -27,10 +27,32 @@ const sites = [
   new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 }, []),
 ];
 
+let date = new Date(2020, 7, 31);
+
 export const simpleCase1 = [
-  new TimeBlock(setDatesTime(6, 0, 0, 0), defaultBlocksConfig.duration, sites),
-  new TimeBlock(setDatesTime(7, 0, 0, 0), defaultBlocksConfig.duration, sites),
-  new TimeBlock(setDatesTime(8, 0, 0, 0), defaultBlocksConfig.duration, sites),
-  new TimeBlock(setDatesTime(9, 0, 0, 0), defaultBlocksConfig.duration, sites),
-  new TimeBlock(setDatesTime(10, 0, 0, 0), defaultBlocksConfig.duration, sites),
+  new TimeBlock(
+    setDatesTime(6, 0, 0, 0, date),
+    defaultBlocksConfig.duration,
+    sites
+  ),
+  new TimeBlock(
+    setDatesTime(7, 0, 0, 0, date),
+    defaultBlocksConfig.duration,
+    sites
+  ),
+  new TimeBlock(
+    setDatesTime(8, 0, 0, 0, date),
+    defaultBlocksConfig.duration,
+    sites
+  ),
+  new TimeBlock(
+    setDatesTime(9, 0, 0, 0, date),
+    defaultBlocksConfig.duration,
+    sites
+  ),
+  new TimeBlock(
+    setDatesTime(10, 0, 0, 0, date),
+    defaultBlocksConfig.duration,
+    sites
+  ),
 ];
