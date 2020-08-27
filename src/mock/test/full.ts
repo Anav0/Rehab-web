@@ -4,7 +4,6 @@ import treatments from "../treatments";
 import patients from "../patients";
 import { TimeBlock } from "../../models/timeBlock";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
-import { getCurrentDateWithTime as getDateWithTime } from "../timeBlocks";
 import { emptySites } from "../sites";
 
 const sites = [

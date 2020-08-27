@@ -90,8 +90,8 @@ const initCalendarCells = (
             : new TimeBlock(tmpDate, defaultBlocksConfig.duration, emptySites),
         day,
         timeStamp,
+        isNew: false,
       });
-
       k++;
     }
     i++;
@@ -117,8 +117,6 @@ const WeekPlanner = (props: WeekPlannerProps) => {
   const [hours, setHours] = useState<any>([]);
 
   useEffect(() => {
-    console.log(`RENDER WeekPlanner`);
-
     const { hours, days, calendarCells: calendarCalls } = initGrid(props);
     setHours(hours);
     setDays(days);
@@ -165,7 +163,11 @@ const WeekPlanner = (props: WeekPlannerProps) => {
       })}
       {calendarCells.map((data: CalendarCellData) => {
         return (
-          <CalendarCell isNew={false} key={Uuid.uuidv4()} cellData={data} />
+          <CalendarCell
+            isNew={data.isNew}
+            key={Uuid.uuidv4()}
+            cellData={data}
+          />
         );
       })}
     </div>

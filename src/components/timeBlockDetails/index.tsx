@@ -1,7 +1,7 @@
 import React from "react";
 import "./index.css";
 import { Uuid } from "../../helpers";
-import { Space } from "antd";
+import { List, Space } from "antd";
 import { TreatmentSite } from "../../models/treatmentSite";
 import { Descriptions } from "antd";
 import treatments from "../../mock/treatments";
@@ -20,6 +20,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     }
     return sum;
   };
+
   let capacityFullness: { [key: string]: number } = {};
   const descriptors = [];
   let i = 0;
@@ -37,7 +38,8 @@ export const SiteDetails = (props: SiteDetailsProps) => {
   for (let property in props.site.capacity) {
     let capacity = props.site.capacity[property];
     let current = capacityFullness[property];
-    let content = `${current}/${capacity}`;
+    let enlisted = `Zapisani: ${current}`;
+    let free = `Pozostało: ${capacity}`;
     let treatment = treatments.find((x) => x.id === property);
     descriptors.push(
       <Descriptions.Item
@@ -48,7 +50,11 @@ export const SiteDetails = (props: SiteDetailsProps) => {
           </span>
         }
       >
-        {content}
+        <List
+          split={false}
+          dataSource={[enlisted, free]}
+          renderItem={(text) => <List.Item>{text}</List.Item>}
+        ></List>
       </Descriptions.Item>
     );
     i++;
@@ -70,7 +76,12 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     >
       {descriptors}
       <Descriptions.Item label="Zapisani pacjenci">
-        <Space>{patientNames ? patientNames : "brak"}</Space>
+        <List
+          split={false}
+          dataSource={patientNames}
+          renderItem={(item) => <List.Item>{item}</List.Item>}
+        ></List>
+        <Space></Space>
       </Descriptions.Item>
     </Descriptions>
   );

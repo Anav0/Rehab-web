@@ -1,14 +1,6 @@
 import { emptySites } from "./sites";
 import { TimeBlock } from "../models/timeBlock";
 import { defaultBlocksConfig } from "../models/timeBlockConfig";
-import { TreatmentSite } from "../models/treatmentSite";
-import { Appointment } from "../models/appointment";
-import treatments from "./treatments";
-import patients from "./patients";
-import { simpleCase1 } from "./test/simple1";
-import { simpleCase2 } from "./test/simple2";
-import { emptyCase } from "./test/empty";
-import { fullCalendar } from "./test/full";
 import { complexCase } from "./test/camplex";
 
 export const existingBlocks = complexCase;
@@ -64,14 +56,14 @@ export function getTimeBlockRange(
   }
   return generatedBlocks;
 }
-export function getCurrentDateWithTime(
+
+export function setDatesTime(
   h: number,
   m: number,
   s: number,
-  ms: number
+  ms: number,
+  date: Date = new Date()
 ) {
-  let date = new Date();
-  date.setDate(date.getDate() + 1);
   date.setHours(h, m, s, ms);
   return date;
 }

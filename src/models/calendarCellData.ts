@@ -6,4 +6,5 @@ export interface CalendarCellData {
   timeBlock: TimeBlock;
   day: Date;
   timeStamp: string;
+  isNew: boolean;
 }

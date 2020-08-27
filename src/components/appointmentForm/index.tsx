@@ -25,7 +25,6 @@ import {
   ProximityConstraintState,
 } from "../proximityConstraint";
 import { TimeBlock } from "../../models/timeBlock";
-import { updateTimeblock } from "../../store/timeblocks/actions";
 const { CheckableTag } = Tag;
 
 const { Title } = Typography;
@@ -57,6 +56,10 @@ const mapDispatch = {
   updateTimeBlock: (timeblock: TimeBlock) => ({
     type: "UPDATE_TIMEBLOCK",
     payload: timeblock,
+  }),
+  updateSelectedDate: (date: Date) => ({
+    type: "UPDATE_DATE",
+    payload: date,
   }),
 };
 
@@ -193,11 +196,13 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         )
       );
 
-      await updateTimeblock(block);
       this.props.OnSendSuccess();
 
-      notification.open({
+      notification.success({
         message: "Sukces",
+        onClick: () => {
+          this.props.updateSelectedDate(new Date(block.start));
+        },
         description: (
           <Space direction="vertical">
             <span>

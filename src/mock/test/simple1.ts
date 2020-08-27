@@ -4,7 +4,7 @@ import treatments from "../treatments";
 import patients from "../patients";
 import { TimeBlock } from "../../models/timeBlock";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
-import { getCurrentDateWithTime as getDateWithTime } from "../timeBlocks";
+import { setDatesTime } from "../timeBlocks";
 
 const sites = [
   new TreatmentSite(
@@ -28,29 +28,9 @@ const sites = [
 ];
 
 export const simpleCase1 = [
-  new TimeBlock(
-    getDateWithTime(6, 0, 0, 0),
-    defaultBlocksConfig.duration,
-    sites
-  ),
-  new TimeBlock(
-    getDateWithTime(7, 0, 0, 0),
-    defaultBlocksConfig.duration,
-    sites
-  ),
-  new TimeBlock(
-    getDateWithTime(8, 0, 0, 0),
-    defaultBlocksConfig.duration,
-    sites
-  ),
-  new TimeBlock(
-    getDateWithTime(9, 0, 0, 0),
-    defaultBlocksConfig.duration,
-    sites
-  ),
-  new TimeBlock(
-    getDateWithTime(10, 0, 0, 0),
-    defaultBlocksConfig.duration,
-    sites
-  ),
+  new TimeBlock(setDatesTime(6, 0, 0, 0), defaultBlocksConfig.duration, sites),
+  new TimeBlock(setDatesTime(7, 0, 0, 0), defaultBlocksConfig.duration, sites),
+  new TimeBlock(setDatesTime(8, 0, 0, 0), defaultBlocksConfig.duration, sites),
+  new TimeBlock(setDatesTime(9, 0, 0, 0), defaultBlocksConfig.duration, sites),
+  new TimeBlock(setDatesTime(10, 0, 0, 0), defaultBlocksConfig.duration, sites),
 ];

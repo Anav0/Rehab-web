@@ -2,17 +2,40 @@ import { TreatmentSite } from "../../models/treatmentSite";
 import { Appointment } from "../../models/appointment";
 import treatments from "../treatments";
 import patients from "../patients";
-import { TimeBlock } from "../../models/timeBlock";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
-import { getCurrentDateWithTime as getDateWithTime } from "../timeBlocks";
-import { copy } from "../../helpers";
+import { TimeBlock } from "../../models/timeBlock";
+import { setDatesTime } from "../timeBlocks";
 
-const sites = [
+const full = [
   new TreatmentSite(
     "0",
     "Sala gimnastyczna A",
     { "0": { "1": 2 } },
-    { "0": 8, "1": 3 },
+    { "0": 2, "1": 5 },
+    [
+      new Appointment(treatments[1], patients[1]),
+      new Appointment(treatments[1], patients[2]),
+      new Appointment(treatments[0], patients[6]),
+      new Appointment(treatments[0], patients[7]),
+      new Appointment(treatments[0], patients[8]),
+      new Appointment(treatments[0], patients[9]),
+      new Appointment(treatments[0], patients[10]),
+    ]
+  ),
+  new TreatmentSite("1", "Sala gimnastyczna B", {}, { "0": 4 }, [
+    new Appointment(treatments[1], patients[3]),
+    new Appointment(treatments[1], patients[4]),
+    new Appointment(treatments[1], patients[5]),
+    new Appointment(treatments[1], patients[6]),
+  ]),
+];
+
+const low = [
+  new TreatmentSite(
+    "0",
+    "Sala gimnastyczna A",
+    { "0": { "1": 2 } },
+    { "0": 6, "1": 4 },
     [
       new Appointment(treatments[1], patients[1]),
       new Appointment(treatments[1], patients[2]),
@@ -22,33 +45,99 @@ const sites = [
     "1",
     "Sala gimnastyczna B",
     { "0": { "1": 2 } },
-    { "0": 16, "1": 4 },
-    []
+    { "0": 7, "1": 2 },
+    [
+      new Appointment(treatments[1], patients[3]),
+      new Appointment(treatments[1], patients[4]),
+    ]
   ),
-  new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 }, []),
 ];
 
-let variant1 = copy(sites);
-variant1[0].capacity = { "0": 14, "1": 7 };
+const medium = [
+  new TreatmentSite(
+    "0",
+    "Sala gimnastyczna A",
+    { "0": { "1": 2 } },
+    { "0": 6, "1": 4 },
+    [
+      new Appointment(treatments[1], patients[1]),
+      new Appointment(treatments[1], patients[2]),
+      new Appointment(treatments[1], patients[3]),
+      new Appointment(treatments[1], patients[4]),
+      new Appointment(treatments[0], patients[5]),
+      new Appointment(treatments[0], patients[6]),
+    ]
+  ),
+];
 
-let variant2 = copy(variant1);
-variant2[0].capacity = { "0": 4, "1": 2 };
-variant2[1].capacity = { "0": 2, "1": 1 };
+const generateDates = (start: Date, end: Date) => {
+  let dates: Date[] = [];
+  while (start.getTime() < end.getTime()) {
+    dates.push(new Date(start));
+    start.setDate(start.getDate() + 1);
+  }
+  return dates;
+};
 
-export const complexCase = [
-  new TimeBlock(getDateWithTime(6, 0, 0, 0), defaultBlocksConfig.duration, [
-    ...variant1,
-  ]),
-  new TimeBlock(getDateWithTime(7, 0, 0, 0), defaultBlocksConfig.duration, [
-    ...sites,
-  ]),
-  new TimeBlock(getDateWithTime(8, 0, 0, 0), defaultBlocksConfig.duration, [
-    ...sites,
-  ]),
-  new TimeBlock(getDateWithTime(9, 0, 0, 0), defaultBlocksConfig.duration, [
-    ...variant2,
-  ]),
-  new TimeBlock(getDateWithTime(10, 0, 0, 0), defaultBlocksConfig.duration, [
-    ...sites,
-  ]),
+const dates1 = generateDates(new Date(2020, 7, 31), new Date(2020, 8, 30));
+const dates2 = generateDates(new Date(2020, 9, 1), new Date(2020, 11, 30));
+
+const generateBlocks = (start: Date, end: Date, sites: TreatmentSite[]) => {
+  let blocks: TimeBlock[] = [];
+  let firstLoop = true;
+  while (start.getTime() < end.getTime()) {
+    if (!firstLoop) start.setHours(start.getHours() + 1, 0, 0, 0);
+    firstLoop = false;
+    if (start.getHours() >= 20) {
+      start.setDate(start.getDate() + 1);
+      start.setHours(6, 0, 0, 0);
+    }
+    blocks.push(
+      new TimeBlock(new Date(start), defaultBlocksConfig.duration, [...sites])
+    );
+  }
+  return blocks;
+};
+
+const generateSet = (
+  date: Date,
+  startH: number,
+  endH: number,
+  sites: TreatmentSite[]
+) => {
+  return generateBlocks(
+    setDatesTime(startH, 0, 0, 0, new Date(date)),
+    setDatesTime(endH, 0, 0, 0, new Date(date)),
+    sites
+  );
+};
+
+const generate = (dates: Date[]) => {
+  let combined: TimeBlock[] = [];
+  dates.forEach((date) => {
+    combined.push(
+      ...generateSet(date, 6, 10, low),
+      ...generateSet(date, 14, 16, full),
+      ...generateSet(date, 16, 19, medium)
+    );
+  });
+  return combined;
+};
+
+const generate2 = (dates: Date[]) => {
+  let combined: TimeBlock[] = [];
+  dates.forEach((date) => {
+    combined.push(
+      ...generateSet(date, 7, 9, low),
+      ...generateSet(date, 10, 11, full),
+      ...generateSet(date, 12, 16, medium),
+      ...generateSet(date, 16, 20, low)
+    );
+  });
+  return combined;
+};
+
+export const complexCase: TimeBlock[] = [
+  ...generate(dates1),
+  ...generate2(dates2),
 ];
