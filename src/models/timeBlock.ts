@@ -1,23 +1,23 @@
 import { TreatmentSite } from "./treatmentSite";
 
 export class TimeBlock {
-  start: Date;
-  durationInSeconds: number;
+  startDate: Date;
+  durationInMinutes: number;
   sites: TreatmentSite[];
 
   constructor(
     start: Date,
-    durationInSeconds: number = 3600,
+    durationInMinutes: number = 60,
     sites: TreatmentSite[]
   ) {
-    this.start = start;
-    this.durationInSeconds = durationInSeconds;
+    this.startDate = start;
+    this.durationInMinutes = durationInMinutes;
     this.sites = sites;
   }
 
   get end(): Date {
-    let tmp = new Date(this.start);
-    tmp.setSeconds(tmp.getSeconds() + this.durationInSeconds);
+    let tmp = new Date(this.startDate);
+    tmp.setMinutes(tmp.getMinutes() + this.durationInMinutes);
     return tmp;
   }
 }

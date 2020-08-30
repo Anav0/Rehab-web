@@ -1,4 +1,3 @@
-import { Appointment } from "./appointment";
 import { PatientWish } from "./patientWish";
 import { TimeBlock } from "./timeBlock";
 

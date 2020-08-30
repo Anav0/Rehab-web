@@ -1,4 +1,4 @@
-import { existingBlocks, getTimeBlockRange } from "../../mock/timeBlocks";
+import { existingBlocks, generateTimeBlockRange } from "../../mock/timeBlocks";
 import { TimeBlockActionType, TimeBlockState } from "./types";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
 
@@ -6,7 +6,7 @@ let now = new Date();
 let then = new Date();
 then.setDate(now.getDate() + defaultBlocksConfig.endSearchAfterDays);
 const initialState: TimeBlockState = {
-  timeBlocks: getTimeBlockRange(now, then, existingBlocks),
+  timeBlocks: generateTimeBlockRange(now, then, existingBlocks),
 };
 
 export const timeblockReducer = (
@@ -22,7 +22,8 @@ export const timeblockReducer = (
       return { ...state };
     case "UPDATE_TIMEBLOCK":
       let index = state.timeBlocks.findIndex(
-        (block) => block.start.getTime() === action.payload.start.getTime()
+        (block) =>
+          block.startDate.getTime() === action.payload.startDate.getTime()
       );
       if (index === undefined || index == -1)
         state.timeBlocks.push(action.payload);

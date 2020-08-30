@@ -186,27 +186,29 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
 
       const response = await api.find.treatment(payload);
 
-      let block = response.data.block;
+      let blocks = response.data.blocks;
 
-      this.props.updateTimeBlock(
-        new TimeBlock(
-          new Date(block.start),
-          block.durationInSeconds,
-          block.sites
-        )
-      );
+      for (let block of blocks) {
+        this.props.updateTimeBlock(
+          new TimeBlock(
+            new Date(block.startDate),
+            block.durationInMinutes,
+            block.sites
+          )
+        );
+      }
 
       this.props.OnSendSuccess();
 
       notification.success({
         message: "Sukces",
         onClick: () => {
-          this.props.updateSelectedDate(new Date(block.start));
+          this.props.updateSelectedDate(new Date(blocks[0].startDate));
         },
         description: (
           <Space direction="vertical">
             <span>
-              {new Date(block.start).toLocaleString("pl", {
+              {new Date(blocks[0].startDate).toLocaleString("pl", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",
