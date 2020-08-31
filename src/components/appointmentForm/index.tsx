@@ -7,6 +7,7 @@ import {
   AutoComplete,
   Button,
   Form,
+  InputNumber,
   Select,
   notification,
   Typography,
@@ -172,6 +173,8 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
       isProcessing: true,
     }));
     try {
+      console.log(values);
+
       let patientWish: any = {
         patient: this.state.selectedPatient,
         treatment: this.state.selectedTreatment,
@@ -181,12 +184,13 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         this.props.timeBlocks,
         this.compileConstraints(values),
         this.compilePreferences(values),
-        patientWish
+        patientWish,
+        values.numberOfSolutions ?? 1
       );
 
       const response = await api.find.treatment(payload);
 
-      let blocks = response.data.blocks;
+      let blocks = response.data.solutions[0].blocks; //TODO: Create way of displaying multiple results
 
       for (let block of blocks) {
         this.props.updateTimeBlock(
@@ -380,6 +384,10 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         {this.state.selectedConstraints.map((x) => {
           return constraintsUI[x];
         })}
+        <Title level={4}>Ilość proponowanych rozwiązań</Title>
+        <Form.Item name="numberOfSolutions" initialValue={4} required>
+          <InputNumber min={1} max={4} />
+        </Form.Item>
         <Form.Item>
           <Button
             loading={this.state.isProcessing}

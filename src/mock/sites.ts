@@ -9,13 +9,6 @@ function newSites() {
       "0",
       "Sala gimnastyczna A",
       { "0": { "1": 2 } },
-      { "0": 4, "1": 8 },
-      []
-    ),
-    new TreatmentSite(
-      "1",
-      "Sala gimnastyczna B",
-      { "0": { "1": 2 } },
       { "0": 2, "1": 4 },
       []
     ),
@@ -27,9 +20,9 @@ function newSites2() {
   return [
     new TreatmentSite(
       "0",
-      "Sala gimnastyczna A",
+      "Sala gimnastyczna B",
       { "0": { "1": 2 } },
-      { "0": 3, "1": 5 },
+      { "0": 2, "1": 1 },
       []
     ),
     new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 }, []),
