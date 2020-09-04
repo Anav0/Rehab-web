@@ -86,3 +86,9 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Webstorm config files
+/.idea
+
+# vscode config files
+/.vscode

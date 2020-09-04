@@ -15,7 +15,7 @@ export const appointmentsReducer = (
       return { ...state };
     case "UPDATE_APPOINTMENT":
       let index = state.appointments.findIndex(
-        (appointment) => appointment.id === action.payload.id
+        (appointment) => appointment.Id === action.payload.Id
       );
       if (index === undefined || index == -1)
         state.appointments.push(action.payload);

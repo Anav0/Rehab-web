@@ -1,24 +1,18 @@
-import { PatientWish } from "./patientWish";
 import { TimeBlock } from "./timeBlock";
+import {Referral} from "./referral";
 
 export class ApiPayload {
-  blocks: TimeBlock[];
-  constraints: any[];
-  preferences: any[];
-  patientWish: PatientWish;
-  numberOfSolutions: number = 1;
+  Blocks: TimeBlock[]
+  Preferences: any[]
+  Constraints: any[]
+  NumberOfSolutions: number
+  Referral: Referral
 
-  constructor(
-    blocks: TimeBlock[],
-    constraints: any[],
-    preferences: any[],
-    patientWish: PatientWish,
-    numberOfSolutions: number
-  ) {
-    this.blocks = blocks;
-    this.constraints = constraints;
-    this.preferences = preferences;
-    this.patientWish = patientWish;
-    this.numberOfSolutions = numberOfSolutions;
+  constructor(Blocks: TimeBlock[], Preferences: any[], Constraints: any[], NumberOfSolutions: number, Referral: Referral) {
+    this.Blocks = Blocks;
+    this.Preferences = Preferences;
+    this.Constraints = Constraints;
+    this.NumberOfSolutions = NumberOfSolutions;
+    this.Referral = Referral;
   }
 }

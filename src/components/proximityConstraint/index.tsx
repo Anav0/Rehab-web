@@ -98,7 +98,7 @@ export class ProximityConstraint extends React.Component<
           {mockTreatments.map((treatment: Treatment, i) => {
             return (
               <Option value={i} key={Uuid.uuidv4()}>
-                {treatment.name}
+                {treatment.Name}
               </Option>
             );
           })}

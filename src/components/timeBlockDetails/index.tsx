@@ -15,8 +15,8 @@ export const SiteDetails = (props: SiteDetailsProps) => {
 
   const getTreatmentFullness = (site: TreatmentSite, treatmentId: string) => {
     let sum = 0;
-    for (let appointment of site.appointments) {
-      if (appointment.treatment.id === treatmentId) sum++;
+    for (let appointment of site.Appointments) {
+      if (appointment.Treatment.Id === treatmentId) sum++;
     }
     return sum;
   };
@@ -24,7 +24,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
   let capacityFullness: { [key: string]: number } = {};
   const descriptors = [];
   let i = 0;
-  for (let property in props.site.capacity) {
+  for (let property in props.site.Capacity) {
     capacityFullness[property] = getTreatmentFullness(props.site, property);
     let colorHSL = 200 + i * 40;
     if (colorHSL > 300) {
@@ -35,18 +35,18 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     i++;
   }
   i = 0;
-  for (let property in props.site.capacity) {
-    let capacity = props.site.capacity[property];
+  for (let property in props.site.Capacity) {
+    let capacity = props.site.Capacity[property];
     let current = capacityFullness[property];
     let enlisted = `Zapisani: ${current}`;
     let free = `Pozostało: ${capacity}`;
-    let treatment = treatments.find((x) => x.id === property);
+    let treatment = treatments.find((x) => x.Id === property);
     descriptors.push(
       <Descriptions.Item
         key={Uuid.uuidv4()}
         label={
           <span style={{ color: colorOptions[i] }}>
-            {treatment ? treatment.name : "Nie znaleziono zabiegu"}
+            {treatment ? treatment.Name : "Nie znaleziono zabiegu"}
           </span>
         }
       >
@@ -60,12 +60,12 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     i++;
   }
 
-  let patientNames = props.site.appointments.map((x, i) => {
-    let treatmentId = x.treatment.id;
+  let patientNames = props.site.Appointments.map((x, i) => {
+    let treatmentId = x.Treatment.Id;
     let color = colorOptions[+treatmentId];
     return (
       <span key={Uuid.uuidv4()} style={{ color }}>
-        {x.patient.name}
+        {x.Patient.Name}
       </span>
     );
   });

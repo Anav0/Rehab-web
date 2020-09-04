@@ -3,13 +3,13 @@ import { Treatment } from "./treatment";
 import { Uuid } from "../helpers";
 
 export class Appointment {
-  id: string;
-  patient: Patient;
-  treatment: Treatment;
+  Id: string;
+  Patient: Patient;
+  Treatment: Treatment;
 
   constructor(treatment: Treatment, patient: Patient) {
-    this.id = Uuid.uuidv4();
-    this.patient = patient;
-    this.treatment = treatment;
+    this.Id = Uuid.uuidv4();
+    this.Patient = patient;
+    this.Treatment = treatment;
   }
 }

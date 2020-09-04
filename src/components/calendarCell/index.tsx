@@ -25,8 +25,8 @@ export const CalendarCell = (props: CalendarCellProps) => {
   const getMaxNumberOfPatients = () => {
     return props.cellData.timeBlock.sites.reduce((prev, curr, i, arr) => {
       let value = 0;
-      for (let property in curr.capacity) {
-        value += +curr.capacity[property];
+      for (let property in curr.Capacity) {
+        value += +curr.Capacity[property];
       }
       return prev + value;
     }, 0);
@@ -34,7 +34,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
 
   const getTotalNumberOfPatients = () => {
     return props.cellData.timeBlock.sites.reduce((prev, curr, i, arr) => {
-      return prev + curr.appointments.length;
+      return prev + curr.Appointments.length;
     }, 0);
   };
 
@@ -68,7 +68,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
         <Collapse ghost defaultActiveKey={["1"]}>
           {props.cellData.timeBlock.sites.map((x) => {
             return (
-              <Panel key={Uuid.uuidv4()} header={x.name}>
+              <Panel key={Uuid.uuidv4()} header={x.Name}>
                 <SiteDetails site={x} />
               </Panel>
             );

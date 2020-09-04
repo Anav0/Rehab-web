@@ -18,7 +18,10 @@ export const timeblockReducer = (
       state.timeBlocks = [...state.timeBlocks, action.payload];
       return { ...state };
     case "FILL_TIMEBLOCK":
-      state.timeBlocks = [...action.payload];
+      for(let timeBlock of action.payload){
+        let blockToChangeIndex = state.timeBlocks.findIndex(x=>x.startDate.getTime()===timeBlock.startDate.getTime());
+        state.timeBlocks[blockToChangeIndex] = timeBlock;
+      }
       return { ...state };
     case "UPDATE_TIMEBLOCK":
       let index = state.timeBlocks.findIndex(
