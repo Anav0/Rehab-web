@@ -1,14 +1,14 @@
 import { Uuid } from "../helpers";
 
 export class Patient {
-  id: string;
-  name: string;
-  sex: Sex;
+  Id: string;
+  Name: string;
+  Sex: Sex;
 
   constructor(name: string, sex: Sex) {
-    this.id = Uuid.uuidv4();
-    this.name = name;
-    this.sex = sex;
+    this.Id = Uuid.uuidv4();
+    this.Name = name;
+    this.Sex = sex;
   }
 }
 

@@ -1,11 +1,9 @@
-import { emptySites } from "./sites";
 import { TimeBlock } from "../models/timeBlock";
 import { defaultBlocksConfig } from "../models/timeBlockConfig";
-import { complexCase } from "./test/camplex";
-import { simpleCase1 } from "./test/simple1";
-import { fullCalendar } from "./test/full";
+import { sitesByDay } from "./sites";
+import { copy } from "../helpers";
 
-export const existingBlocks = simpleCase1;
+export const existingBlocks = [];
 
 export const formatKey = (date: Date) => {
   return `${date.toDateString()} ${date.toLocaleString("pl", {
@@ -24,13 +22,13 @@ function getBlocksByDay(
   } = {};
 
   for (let block of blocks) {
-    let key = formatKey(block.start);
+    let key = formatKey(block.startDate);
     blocksByDay[key] = block;
   }
   return blocksByDay;
 }
 
-export function getTimeBlockRange(
+export function generateTimeBlockRange(
   start: Date,
   end: Date,
   existingBlocks: TimeBlock[]
@@ -38,21 +36,30 @@ export function getTimeBlockRange(
   let generatedBlocks: TimeBlock[] = [];
   let current = new Date(start);
 
+  let startHour = defaultBlocksConfig.startHour.split(":");
+  let endHour = defaultBlocksConfig.endHour.split(":");
+  let duration = defaultBlocksConfig.durationInMinutes;
+
+  let endDate = new Date(start);
+  endDate.setHours(+endHour[0], +endHour[1], 0);
+
   let blocksByDay = getBlocksByDay(existingBlocks);
+
   while (current < end) {
-    current.setHours(current.getHours() + 1, 0, 0, 0);
-    if (current.getHours() >= 20) {
+    current.setMinutes(current.getMinutes() + duration, 0, 0);
+
+    if (current.getTime() >= endDate.getTime()) {
       current.setDate(current.getDate() + 1);
-      current.setHours(6, 0, 0, 0);
+      endDate.setDate(endDate.getDate() + 1);
+      current.setHours(+startHour[0], +startHour[1], 0, 0);
     }
     let key = formatKey(current);
     if (key in blocksByDay) {
       generatedBlocks.push(blocksByDay[key]);
     } else {
+      let sitesFoGivenDay = copy(sitesByDay[current.getDay()]);
       generatedBlocks.push(
-        new TimeBlock(new Date(current), defaultBlocksConfig.duration, [
-          ...emptySites,
-        ])
+        new TimeBlock(new Date(current), duration, [...sitesFoGivenDay])
       );
     }
   }

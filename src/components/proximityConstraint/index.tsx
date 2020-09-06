@@ -24,7 +24,7 @@ export class ProximityConstraint extends React.Component<
   constructor(props: ProximityConstraintProps) {
     super(props);
     this.state = {
-      offset: 3600,
+      offset: 60,
       sign: -1,
       treatment: mockTreatments[0],
       treatmentIndex: 0,
@@ -37,10 +37,10 @@ export class ProximityConstraint extends React.Component<
 
   render() {
     const timeOptions = [
-      { text: "1h", value: 3600 },
-      { text: "2h", value: 3600 * 2 },
-      { text: "3h", value: 3600 * 3 },
-      { text: "4h", value: 3600 * 4 },
+      { text: "1h", value: 60 },
+      { text: "2h", value: 60 * 2 },
+      { text: "3h", value: 60 * 3 },
+      { text: "4h", value: 60 * 4 },
     ];
     const commonSelectStyle = { minWidth: "100px" };
 
@@ -98,7 +98,7 @@ export class ProximityConstraint extends React.Component<
           {mockTreatments.map((treatment: Treatment, i) => {
             return (
               <Option value={i} key={Uuid.uuidv4()}>
-                {treatment.name}
+                {treatment.Name}
               </Option>
             );
           })}

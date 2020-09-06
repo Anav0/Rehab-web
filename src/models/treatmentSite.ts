@@ -1,11 +1,11 @@
 import { Appointment } from "./appointment";
 
 export class TreatmentSite {
-  public id: string;
-  public name: string;
-  public blocageLookup: any;
-  public capacity: any;
-  public appointments: Appointment[];
+  public Id: string;
+  public Name: string;
+  public BlocageLookup: any;
+  public Capacity: any;
+  public Appointments: Appointment[];
 
   constructor(
     id: string,
@@ -14,24 +14,24 @@ export class TreatmentSite {
     capacity: object,
     appointments: Appointment[]
   ) {
-    this.id = id;
-    this.name = name;
-    this.blocageLookup = blocageLookup;
-    this.capacity = capacity;
-    this.appointments = appointments;
+    this.Id = id;
+    this.Name = name;
+    this.BlocageLookup = blocageLookup;
+    this.Capacity = capacity;
+    this.Appointments = appointments;
   }
 
   tryAddingAppointment(appointment: Appointment): boolean {
-    if (!(appointment.treatment.id in this.capacity)) return false;
-    if (this.capacity[appointment.treatment.id] <= 0) return false;
+    if (!(appointment.Treatment.Id in this.Capacity)) return false;
+    if (this.Capacity[appointment.Treatment.Id] <= 0) return false;
 
-    this.capacity[appointment.treatment.id]--;
-    this.appointments.push(appointment);
+    this.Capacity[appointment.Treatment.Id]--;
+    this.Appointments.push(appointment);
 
-    if (appointment.treatment.id in this.blocageLookup) {
-      var treatmentBlocage = this.blocageLookup[appointment.treatment.id];
+    if (appointment.Treatment.Id in this.BlocageLookup) {
+      let treatmentBlocage = this.BlocageLookup[appointment.Treatment.Id];
       for (let pair of treatmentBlocage) {
-        this.capacity[pair.Key] -= pair.Value;
+        this.Capacity[pair.Key] -= pair.Value;
       }
     }
 

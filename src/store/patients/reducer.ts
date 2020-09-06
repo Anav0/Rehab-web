@@ -15,7 +15,7 @@ export const patientReducer = (state = initialState, action: PatientActionType):
             state.patients = [...action.payload];
             return {...state};
         case "REMOVE_PATIENT":
-            state.patients = state.patients.filter((patient: Patient)=>patient.id!==action.payload.id);
+            state.patients = state.patients.filter((patient: Patient)=>patient.Id!==action.payload.Id);
             return {...state};
         default:
             return state

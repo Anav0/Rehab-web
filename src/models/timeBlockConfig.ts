@@ -1,11 +1,7 @@
-import { TreatmentSite } from "./treatmentSite";
-import { emptySites } from "../mock/sites";
-
 export class TimeBlocksConfig {
-  duration: number = 3600;
-  defaultSites: TreatmentSite[] = emptySites;
+  durationInMinutes: number = 20;
   startHour: string = "6:00";
-  endHour: string = "20:00";
+  endHour: string = "14:00";
   endSearchAfterDays: number = 30 * 3;
 }
 
