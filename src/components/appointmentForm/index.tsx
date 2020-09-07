@@ -16,6 +16,7 @@ import {TimeBlock} from "../../models/timeBlock";
 import RecommendationInput from "../recommendationInput";
 import {Referral} from "../../models/referral";
 import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
+import {TimeSection} from "./timeSection";
 
 const {CheckableTag} = Tag;
 
@@ -27,8 +28,6 @@ interface ComponentState {
     selectedTreatment: Treatment | undefined;
     filteredPatients: Patient[];
     filteredTreatments: Treatment[];
-    availableDays: any;
-    allDays: any;
     isProcessing: boolean;
     selectedConstraints: string[];
     proximityState?: ProximityConstraintState;
@@ -66,16 +65,6 @@ type AppointmentFormProps = PropsFromRedux & {
     OnSendSuccess: () => void;
 };
 
-const days = {
-    "0": "Niedziela",
-    "1": "Poniedziałek",
-    "2": "Wtorek",
-    "3": "Środa",
-    "4": "Czwartek",
-    "5": "Piątek",
-    "6": "Sobota",
-};
-
 class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
     constructor(props: AppointmentFormProps) {
         super(props);
@@ -85,8 +74,6 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
             selectedTreatment: undefined,
             filteredPatients: props.patients,
             filteredTreatments: mockedTreatments,
-            allDays: JSON.parse(JSON.stringify(days)),
-            availableDays: JSON.parse(JSON.stringify(days)),
             isProcessing: false,
             selectedConstraints: [],
             proximityState: undefined,
@@ -222,39 +209,6 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         }
     };
 
-    filterDaysByDays = (days: string[]) => {
-        let usedDays = this.state.availableDays;
-        for (let day of days) {
-            if (usedDays[day])
-                delete usedDays[day];
-        }
-        this.setState(() => ({
-            availableDays: usedDays,
-        }));
-    }
-
-    filterDays = (value: DayAndHourValue) => {
-        if (!value.day) return;
-        let tmp = this.state.availableDays;
-        if (value.prevSelectedDay)
-            tmp[value.prevSelectedDay] = this.state.allDays[value.prevSelectedDay];
-
-        delete tmp[value.day];
-        this.setState(() => ({
-            availableDays: tmp,
-        }));
-    };
-
-    addDay = (values: DayAndHourValue) => {
-        if (!values.day) return;
-
-        let tmp = this.state.availableDays;
-        tmp[values.day] = this.state.allDays[values.day];
-        this.setState((state, props) => ({
-            availableDays: tmp,
-        }));
-    };
-
     onProximityConstraintChange = (info?: ProximityConstraintState) => {
         this.setState((state, props) => ({
             proximityState: info,
@@ -294,87 +248,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                         })}
                     </AutoComplete>
                 </Form.Item>
-                <div ref={this.state.timeSelectorContainerRef}>
-                    <Title level={4}>Preferowany termin wizyty</Title>
-                </div>
-                <Form.List name="times">
-                    {(fields: any, options: any) => {
-                        let canAddMore = canAddMoreDays(fields);
-                        return (
-                            <>
-                                {fields.map((field: any) => {
-                                    return (
-                                        <div key={field.key} className={"day-preference"}>
-                                            <Form.Item {...field} fieldKey={field.fieldKey}>
-                                                <DayAndHour
-                                                    onUnmount={(values: DayAndHourValue) =>
-                                                        this.addDay(values)
-                                                    }
-                                                    onChange={(values: DayAndHourValue) =>
-                                                        this.filterDays(values)
-                                                    }
-                                                    days={this.state.availableDays}
-                                                    allDays={this.state.allDays}
-                                                />
-                                            </Form.Item>
-                                            <MinusCircleOutlined
-                                                style={{marginLeft: "10px"}}
-                                                onClick={() => {
-                                                    options.remove(field.name);
-                                                }}
-                                            />
-                                        </div>
-                                    );
-                                })}
-                                <Affix target={() => this.state.timeSelectorContainerRef}>
-                                    <Space>
-                                        <Form.Item>
-                                            <Button
-                                                disabled={fields.length <= 0}
-                                                danger
-                                                type="default"
-                                                onClick={() => {
-                                                }}
-                                                block
-                                            >
-                                                <CloseOutlined/> Wyczyść
-                                            </Button>
-                                        </Form.Item>
-                                        <Form.Item>
-                                            <Button
-                                                disabled={!canAddMore}
-                                                type="dashed"
-                                                onClick={() => {
-                                                    options.add();
-                                                }}
-                                                block
-                                            >
-                                                <PlusOutlined/> Dodaj wolny dzień
-                                            </Button>
-                                        </Form.Item>
-
-                                        {presets.map(presetData => {
-                                            const disable = presetData.shouldBeDisabled(options, fields);
-                                            return (<Form.Item key={Uuid.uuidv4()}>
-                                                <Button
-                                                    disabled={disable}
-                                                    type="dashed"
-                                                    onClick={() => {
-                                                        let usedDays = presetData.addDays(options)
-                                                        this.filterDaysByDays(usedDays)
-                                                    }}
-                                                    block
-                                                >
-                                                    <PlusOutlined/> {presetData.btnTitle}
-                                                </Button>
-                                            </Form.Item>)
-                                        })}
-                                    </Space>
-                                </Affix>
-                            </>
-                        );
-                    }}
-                </Form.List>
+                <TimeSection/>
                 <Title level={4}>Procedury</Title>
                 <Form.List name="recommendations">
                     {(fields: any, options: any) => {
