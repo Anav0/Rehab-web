@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {Affix, Button, Form,  Space,  Typography} from "antd";
 import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
-import {DayAndHour, DayAndHourValue} from "../dayAndHour";
+import {DayAndHour} from "../dayAndHour";
 import {CloseOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {copy, Uuid} from "../../helpers";
+import {TimePreference} from "../../models/timePreference";
 
 const {Title} = Typography;
 
@@ -33,7 +34,7 @@ export const TimeSection = () => {
         setAvailableDays(usedDays)
     }
 
-    const filterDays = (value: DayAndHourValue) => {
+    const filterDays = (value: TimePreference) => {
         if (!value.day) return;
         let tmp = availableDays;
         if (value.prevSelectedDay)
@@ -43,7 +44,7 @@ export const TimeSection = () => {
         setAvailableDays(tmp)
     };
 
-    const addDay = (values: DayAndHourValue) => {
+    const addDay = (values: TimePreference) => {
         if (!values.day) return;
         let tmp = availableDays;
         tmp[values.day] = allDays[values.day];
@@ -65,10 +66,10 @@ export const TimeSection = () => {
                                     <div key={field.key} className={"day-preference"}>
                                         <Form.Item {...field} fieldKey={field.fieldKey}>
                                             <DayAndHour
-                                                onUnmount={(values: DayAndHourValue) =>
+                                                onUnmount={(values: TimePreference) =>
                                                     addDay(values)
                                                 }
-                                                onChange={(values: DayAndHourValue) =>
+                                                onChange={(values: TimePreference) =>
                                                     filterDays(values)
                                                 }
                                                 days={availableDays}

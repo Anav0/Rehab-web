@@ -35,6 +35,5 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
             }
         }
     }
-    console.log(timeBlocksToUpdate)
     return timeBlocksToUpdate;
 }

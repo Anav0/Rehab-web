@@ -1,38 +1,30 @@
 import "./index.css";
-import React, {Component, ReactElement} from "react";
-import {batch, connect, ConnectedProps} from "react-redux";
+import React, {Component} from "react";
+import {connect, ConnectedProps} from "react-redux";
 import {Patient} from "../../models/patient";
 import {RootState} from "../../store";
-import {Affix, AutoComplete, Button, Form, InputNumber, notification, Select, Space, Tag, Typography,} from "antd";
+import {Button, Form, notification, Space, Typography,} from "antd";
 import {Treatment} from "../../models/treatment";
 import mockedTreatments from "../../mock/treatments";
-import {DayAndHour, DayAndHourValue} from "../dayAndHour";
-import {MinusCircleOutlined, PlusOutlined, CloseOutlined} from "@ant-design/icons";
 import {ApiPayload} from "../../models/apiPayload";
 import api from "../../api";
-import {copy, parseTimeBlocksFromPayload, Uuid} from "../../helpers";
-import {ProximityConstraint, ProximityConstraintState,} from "../proximityConstraint";
+import {parseTimeBlocksFromPayload,} from "../../helpers";
 import {TimeBlock} from "../../models/timeBlock";
-import RecommendationInput from "../recommendationInput";
 import {Referral} from "../../models/referral";
-import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
 import {TimeSection} from "./timeSection";
 import {ConstraintsSection} from "./constraintsSection";
 import {ProcedureSection} from "./procedureSection";
 import {SuggestedSolutionsSection} from "./suggestedSolutionsSection";
+import {PatientSection} from "./patientSection";
+import {AppointmentFormData} from "../../models/appointmentFormData";
+import {Proximity} from "../proximityConstraint/proximity";
 
 const {Title} = Typography;
-const {Option} = Select;
 
 interface ComponentState {
     selectedPatient: Patient | undefined;
-    selectedTreatment: Treatment | undefined;
-    filteredPatients: Patient[];
-    filteredTreatments: Treatment[];
     isProcessing: boolean;
-    selectedConstraints: string[];
-    proximityState?: ProximityConstraintState;
-    timeSelectorContainerRef: any
+    proximityState?: Proximity;
 }
 
 type ComponentProps = {
@@ -69,45 +61,12 @@ type AppointmentFormProps = PropsFromRedux & {
 class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
     constructor(props: AppointmentFormProps) {
         super(props);
-
         this.state = {
             selectedPatient: undefined,
-            selectedTreatment: undefined,
-            filteredPatients: props.patients,
-            filteredTreatments: mockedTreatments,
             isProcessing: false,
-            selectedConstraints: [],
             proximityState: undefined,
-            timeSelectorContainerRef: undefined
         };
     }
-
-    searchPatients = (searchPhrase: string) => {
-        searchPhrase = searchPhrase.toLowerCase().trim();
-        this.setState((state: ComponentState, props: AppointmentFormProps) => ({
-            filteredPatients: props.patients.filter((x: Patient) =>
-                x.Name.toLowerCase().includes(searchPhrase)
-            ),
-        }));
-    };
-
-    onPatientSelect = (patientName: string, options: any) => {
-        this.setState((state: ComponentState, props: AppointmentFormProps) => ({
-            selectedPatient: this.props.patients.find(
-                (x: Patient) => x.Name.toLowerCase() === patientName.toLowerCase()
-            ),
-        }));
-    };
-
-    onTreatmentSelected = (treatmentName: string, options: any) => {
-        this.setState((state: ComponentState, props: AppointmentFormProps) => ({
-            selectedTreatment: mockedTreatments.find(
-                (x) => x.Name.toLowerCase() === treatmentName.toLowerCase()
-            ),
-        }));
-    };
-
-
 
     compileConstraints = () => {
         return this.state.proximityState
@@ -127,7 +86,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         let preference: any = {type: "time", days: []};
         for (let value of values.times) {
             let day: any = {
-                dayOfWeek: +value.day,
+                dayOfWeek: +value.initDay,
             };
             day["start"] = value.hourRange[0]._d.toISOString();
             day["end"] = value.hourRange[1]._d.toISOString();
@@ -138,19 +97,19 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         return allPreferences;
     };
 
-    send = async (values: any) => {
-        this.setState((state: ComponentState, props: AppointmentFormProps) => ({
+    send = async (formData: AppointmentFormData) => {
+        this.setState(() => ({
             isProcessing: true,
         }));
         try {
-            if (!this.state.selectedPatient) return;
+            if (!formData.patient) throw new Error("Nie wybrano pacjenta");
 
             let payload = new ApiPayload(
                 this.props.timeBlocks,
-                this.compilePreferences(values),
+                this.compilePreferences(formData),
                 this.compileConstraints(),
-                values.numberOfSolutions ?? 1,
-                new Referral(this.state.selectedPatient, values.recommendations)
+                formData.numberOfSolutions ?? 1,
+                new Referral(formData.patient, formData.recommendations)
             );
             const response = await api.find.treatment(payload);
             const schedulingResult = response.data;
@@ -208,24 +167,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         return (
             <Form onFinish={(values: any) => this.send(values)}>
                 <Title level={3}>Formularz zabiegowy</Title>
-                <Form.Item
-                    name="patient"
-                    rules={[{required: true, message: "Proszę wybrać pacjenta"}]}
-                >
-                    <AutoComplete
-                        placeholder="Wyszukaj pacjenta"
-                        onSelect={this.onPatientSelect}
-                        onSearch={this.searchPatients}
-                    >
-                        {this.state.filteredPatients.map((x) => {
-                            return (
-                                <Option key={Uuid.uuidv4()} value={x.Name}>
-                                    {x.Name}
-                                </Option>
-                            );
-                        })}
-                    </AutoComplete>
-                </Form.Item>
+                <PatientSection/>
                 <TimeSection/>
                 <ConstraintsSection/>
                 <ProcedureSection/>

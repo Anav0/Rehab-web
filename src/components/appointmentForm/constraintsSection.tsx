@@ -2,25 +2,19 @@ import * as React from 'react';
 import {Form, Tag, Typography} from "antd";
 import {Uuid} from "../../helpers";
 import {ReactElement, useState} from "react";
-import {ProximityConstraint, ProximityConstraintState} from "../proximityConstraint";
+import {ProximityConstraint} from "../proximityConstraint";
 
 const {CheckableTag} = Tag;
 const {Title} = Typography;
 
 export const ConstraintsSection = () => {
-
     const [selectedConstraints, setSelectedConstraints] = useState<any>([]);
-    const [proximityState, setProximityState] = useState<any>(null);
-
-    const onProximityConstraintChange = (info?: ProximityConstraintState) => {
-        setProximityState(info)
-    };
 
     const constraintsUI: { [key: string]: ReactElement } = {
         odległość: (
             <Form.Item name="proximity" key="form-proximity-part">
                 <ProximityConstraint
-                    onValueChanged={onProximityConstraintChange}
+                    onChange={()=>{}}
                 />
             </Form.Item>
         ),

@@ -1,25 +1,19 @@
 import React from "react";
-import { Space, Select } from "antd";
-import { Uuid } from "../../helpers";
+import {Select, Space} from "antd";
+import {Uuid} from "../../helpers";
 import mockTreatments from "../../mock/treatments";
-import { Treatment } from "../../models/treatment";
+import {Treatment} from "../../models/treatment";
+import {Proximity} from "./proximity";
 
 const { Option } = Select;
 
-export interface ProximityConstraintState {
-  sign: number;
-  offset: number;
-  treatment: Treatment;
-  treatmentIndex: number;
-}
-
 interface ProximityConstraintProps {
-  onValueChanged: (info?: ProximityConstraintState) => void;
+  onChange: (info?: Proximity) => void;
 }
 
 export class ProximityConstraint extends React.Component<
   ProximityConstraintProps,
-  ProximityConstraintState
+  Proximity
 > {
   constructor(props: ProximityConstraintProps) {
     super(props);
@@ -32,7 +26,7 @@ export class ProximityConstraint extends React.Component<
   }
 
   componentWillUnmount() {
-    this.props.onValueChanged(undefined);
+    this.props.onChange(undefined);
   }
 
   render() {
@@ -55,7 +49,7 @@ export class ProximityConstraint extends React.Component<
                 offset: event,
               }),
               () => {
-                this.props.onValueChanged(this.state);
+                this.props.onChange(this.state);
               }
             );
           }}
@@ -74,7 +68,7 @@ export class ProximityConstraint extends React.Component<
               (state, props) => ({
                 sign: event,
               }),
-              () => this.props.onValueChanged(this.state)
+              () => this.props.onChange(this.state)
             )
           }
           style={commonSelectStyle}
@@ -90,7 +84,7 @@ export class ProximityConstraint extends React.Component<
                 treatment: mockTreatments[event],
                 treatmentIndex: event,
               }),
-              () => this.props.onValueChanged(this.state)
+              () => this.props.onChange(this.state)
             );
           }}
           style={commonSelectStyle}

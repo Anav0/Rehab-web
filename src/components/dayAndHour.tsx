@@ -3,44 +3,33 @@ import {Select, TimePicker} from "antd";
 import {Uuid} from "../helpers";
 import moment from 'moment';
 import {defaultBlocksConfig} from "../models/timeBlockConfig";
+import {TimePreference} from "../models/timePreference";
 
 const {Option} = Select;
 const {RangePicker} = TimePicker;
-
-export interface DayAndHourValue {
-    day: string;
-    prevSelectedDay: string;
-    hourRange?: any;
-}
 
 interface DayAndHourProps {
     value?: any;
     days: { [key: number]: string };
     allDays: { [key: number]: string };
-    onChange?: (value: DayAndHourValue) => void;
-    onUnmount?: (value: DayAndHourValue) => void;
+    onChange?: (value: TimePreference) => void;
+    onUnmount?: (value: TimePreference) => void;
 }
 
-interface DayAndHourState {
-    day: string;
-    prevSelectedDay: string;
-    hourRange?: any;
-}
-
-export class DayAndHour extends React.Component<DayAndHourProps,
-    DayAndHourState> {
+export class DayAndHour extends React.Component<DayAndHourProps, TimePreference> {
     constructor(props: DayAndHourProps) {
         super(props);
         this.state = {
             day: this.props.value ? this.props.value.initDay : undefined,
             prevSelectedDay: "",
-            hourRange: {},
+            hourRange: props.value ? [moment(props.value.startHour, 'HH:mm:ss'), moment(props.value.endHour, 'HH:mm:ss')] : [moment(defaultBlocksConfig.startHour, 'HH:mm:ss'), moment(defaultBlocksConfig.endHour, 'HH:mm:ss')],
         };
+        this.triggerOnChange();
     }
 
     onDayChange = (value: string) => {
         this.setState(
-            (state, props) => ({
+            (state) => ({
                 prevSelectedDay: state.day,
                 day: value,
             }),
@@ -50,7 +39,7 @@ export class DayAndHour extends React.Component<DayAndHourProps,
 
     onHourChange = (value: any) => {
         this.setState(
-            (state, props) => ({
+            () => ({
                 hourRange: value,
             }),
             () => this.triggerOnChange()
@@ -82,18 +71,15 @@ export class DayAndHour extends React.Component<DayAndHourProps,
                 </Option>
             );
         }
-        const processedInitData = {
-            initDay: this.props.value ? this.props.value.initDay : undefined,
-            startHour: this.props.value ? this.props.value.startHour : defaultBlocksConfig.startHour,
-            endHour: this.props.value ? this.props.value.endHour : defaultBlocksConfig.endHour,
-        }
+
+        const initDay = this.props.value ? this.props.allDays[+this.props.value.initDay] : undefined;
 
         return (
             <>
                 <Select
                     style={{width: "25%", margin: "0 10px 0 0"}}
                     onChange={this.onDayChange}
-                    defaultValue={this.props.allDays[processedInitData.initDay]}
+                    defaultValue={initDay}
                     placeholder="Dzień"
                 >
                     {children}
@@ -101,9 +87,8 @@ export class DayAndHour extends React.Component<DayAndHourProps,
                 <RangePicker
                     picker={"time"}
                     format={"HH:mm"}
-                    defaultValue={[moment(processedInitData.startHour, 'HH:mm:ss'), moment(processedInitData.endHour, 'HH:mm:ss')]}
-                    onChange={(value) => (value ? this.onHourChange(value) : () => {
-                    })}
+                    defaultValue={this.state.hourRange}
+                    onChange={this.onHourChange}
                 />
             </>
         );
