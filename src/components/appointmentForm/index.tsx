@@ -19,7 +19,7 @@ import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
 import {TimeSection} from "./timeSection";
 import {ConstraintsSection} from "./constraintsSection";
 import {ProcedureSection} from "./procedureSection";
-
+import {SuggestedSolutionsSection} from "./suggestedSolutionsSection";
 
 const {Title} = Typography;
 const {Option} = Select;
@@ -229,10 +229,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                 <TimeSection/>
                 <ConstraintsSection/>
                 <ProcedureSection/>
-                <Title level={4}>Ilość proponowanych rozwiązań</Title>
-                <Form.Item name="numberOfSolutions" initialValue={4} required>
-                    <InputNumber min={1} max={4}/>
-                </Form.Item>
+                <SuggestedSolutionsSection/>
                 <Form.Item>
                     <Button
                         loading={this.state.isProcessing}
