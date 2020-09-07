@@ -3,18 +3,19 @@ import React, {Component, ReactElement} from "react";
 import {batch, connect, ConnectedProps} from "react-redux";
 import {Patient} from "../../models/patient";
 import {RootState} from "../../store";
-import {AutoComplete, Button, Form, InputNumber, notification, Select, Space, Tag, Typography,} from "antd";
+import {Affix, AutoComplete, Button, Form, InputNumber, notification, Select, Space, Tag, Typography,} from "antd";
 import {Treatment} from "../../models/treatment";
 import mockedTreatments from "../../mock/treatments";
 import {DayAndHour, DayAndHourValue} from "../dayAndHour";
-import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
+import {MinusCircleOutlined, PlusOutlined, CloseOutlined} from "@ant-design/icons";
 import {ApiPayload} from "../../models/apiPayload";
 import api from "../../api";
-import {parseTimeBlocksFromPayload, Uuid} from "../../helpers";
+import {copy, parseTimeBlocksFromPayload, Uuid} from "../../helpers";
 import {ProximityConstraint, ProximityConstraintState,} from "../proximityConstraint";
 import {TimeBlock} from "../../models/timeBlock";
 import RecommendationInput from "../recommendationInput";
 import {Referral} from "../../models/referral";
+import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
 
 const {CheckableTag} = Tag;
 
@@ -31,6 +32,7 @@ interface ComponentState {
     isProcessing: boolean;
     selectedConstraints: string[];
     proximityState?: ProximityConstraintState;
+    timeSelectorContainerRef: any
 }
 
 type ComponentProps = {
@@ -88,6 +90,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
             isProcessing: false,
             selectedConstraints: [],
             proximityState: undefined,
+            timeSelectorContainerRef: undefined
         };
     }
 
@@ -219,14 +222,25 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         }
     };
 
-    filterDays = (values: DayAndHourValue) => {
-        if (!values.day) return;
-        let tmp = this.state.availableDays;
-        if (values.prevSelectedDay)
-            tmp[values.prevSelectedDay] = this.state.allDays[values.prevSelectedDay];
+    filterDaysByDays = (days: string[]) => {
+        let usedDays = this.state.availableDays;
+        for (let day of days) {
+            if (usedDays[day])
+                delete usedDays[day];
+        }
+        this.setState(() => ({
+            availableDays: usedDays,
+        }));
+    }
 
-        delete tmp[values.day];
-        this.setState((state, props) => ({
+    filterDays = (value: DayAndHourValue) => {
+        if (!value.day) return;
+        let tmp = this.state.availableDays;
+        if (value.prevSelectedDay)
+            tmp[value.prevSelectedDay] = this.state.allDays[value.prevSelectedDay];
+
+        delete tmp[value.day];
+        this.setState(() => ({
             availableDays: tmp,
         }));
     };
@@ -248,6 +262,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
     };
 
     render() {
+        const presets = getPresetBtnsData();
         let constraintsUI: { [key: string]: ReactElement } = {
             odległość: (
                 <Form.Item name="proximity" key="form-proximity-part">
@@ -279,9 +294,12 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                         })}
                     </AutoComplete>
                 </Form.Item>
-                <Title level={4}>Preferowany termin wizyty</Title>
+                <div ref={this.state.timeSelectorContainerRef}>
+                    <Title level={4}>Preferowany termin wizyty</Title>
+                </div>
                 <Form.List name="times">
                     {(fields: any, options: any) => {
+                        let canAddMore = canAddMoreDays(fields);
                         return (
                             <>
                                 {fields.map((field: any) => {
@@ -296,6 +314,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                                                         this.filterDays(values)
                                                     }
                                                     days={this.state.availableDays}
+                                                    allDays={this.state.allDays}
                                                 />
                                             </Form.Item>
                                             <MinusCircleOutlined
@@ -307,17 +326,51 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                                         </div>
                                     );
                                 })}
-                                <Form.Item>
-                                    <Button
-                                        type="dashed"
-                                        onClick={() => {
-                                            options.add();
-                                        }}
-                                        block
-                                    >
-                                        <PlusOutlined/> Dodaj wolny dzień
-                                    </Button>
-                                </Form.Item>
+                                <Affix target={() => this.state.timeSelectorContainerRef}>
+                                    <Space>
+                                        <Form.Item>
+                                            <Button
+                                                disabled={fields.length <= 0}
+                                                danger
+                                                type="default"
+                                                onClick={() => {
+                                                }}
+                                                block
+                                            >
+                                                <CloseOutlined/> Wyczyść
+                                            </Button>
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <Button
+                                                disabled={!canAddMore}
+                                                type="dashed"
+                                                onClick={() => {
+                                                    options.add();
+                                                }}
+                                                block
+                                            >
+                                                <PlusOutlined/> Dodaj wolny dzień
+                                            </Button>
+                                        </Form.Item>
+
+                                        {presets.map(presetData => {
+                                            const disable = presetData.shouldBeDisabled(options, fields);
+                                            return (<Form.Item key={Uuid.uuidv4()}>
+                                                <Button
+                                                    disabled={disable}
+                                                    type="dashed"
+                                                    onClick={() => {
+                                                        let usedDays = presetData.addDays(options)
+                                                        this.filterDaysByDays(usedDays)
+                                                    }}
+                                                    block
+                                                >
+                                                    <PlusOutlined/> {presetData.btnTitle}
+                                                </Button>
+                                            </Form.Item>)
+                                        })}
+                                    </Space>
+                                </Affix>
                             </>
                         );
                     }}
