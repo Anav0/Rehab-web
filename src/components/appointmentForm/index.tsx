@@ -17,8 +17,8 @@ import RecommendationInput from "../recommendationInput";
 import {Referral} from "../../models/referral";
 import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
 import {TimeSection} from "./timeSection";
+import {ConstraintsSection} from "./constraintsSection";
 
-const {CheckableTag} = Tag;
 
 const {Title} = Typography;
 const {Option} = Select;
@@ -106,13 +106,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         }));
     };
 
-    onSelectedConstraintsChange = (tag: string, checked: boolean) => {
-        const {selectedConstraints} = this.state;
-        const nextSelectedConstraints = checked
-            ? [...selectedConstraints, tag]
-            : selectedConstraints.filter((t) => t !== tag);
-        this.setState({selectedConstraints: nextSelectedConstraints});
-    };
+
 
     compileConstraints = () => {
         return this.state.proximityState
@@ -209,24 +203,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         }
     };
 
-    onProximityConstraintChange = (info?: ProximityConstraintState) => {
-        this.setState((state, props) => ({
-            proximityState: info,
-        }));
-    };
-
     render() {
-        const presets = getPresetBtnsData();
-        let constraintsUI: { [key: string]: ReactElement } = {
-            odległość: (
-                <Form.Item name="proximity" key="form-proximity-part">
-                    <ProximityConstraint
-                        onValueChanged={this.onProximityConstraintChange}
-                    />
-                </Form.Item>
-            ),
-        };
-
         return (
             <Form onFinish={(values: any) => this.send(values)}>
                 <Title level={3}>Formularz zabiegowy</Title>
@@ -249,6 +226,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                     </AutoComplete>
                 </Form.Item>
                 <TimeSection/>
+                <ConstraintsSection/>
                 <Title level={4}>Procedury</Title>
                 <Form.List name="recommendations">
                     {(fields: any, options: any) => {
@@ -285,25 +263,6 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                         );
                     }}
                 </Form.List>
-                <Title level={4}>Ograniczenia</Title>
-                <Form.Item label="Dostępne ograniczenia">
-                    {Object.keys(constraintsUI).map((x) => {
-                        return (
-                            <CheckableTag
-                                key={Uuid.uuidv4()}
-                                checked={this.state.selectedConstraints.indexOf(x) > -1}
-                                onChange={(checked) =>
-                                    this.onSelectedConstraintsChange(x, checked)
-                                }
-                            >
-                                {x}
-                            </CheckableTag>
-                        );
-                    })}
-                </Form.Item>
-                {this.state.selectedConstraints.map((x) => {
-                    return constraintsUI[x];
-                })}
                 <Title level={4}>Ilość proponowanych rozwiązań</Title>
                 <Form.Item name="numberOfSolutions" initialValue={4} required>
                     <InputNumber min={1} max={4}/>
