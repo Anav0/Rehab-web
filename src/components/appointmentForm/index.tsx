@@ -18,6 +18,7 @@ import {Referral} from "../../models/referral";
 import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
 import {TimeSection} from "./timeSection";
 import {ConstraintsSection} from "./constraintsSection";
+import {ProcedureSection} from "./procedureSection";
 
 
 const {Title} = Typography;
@@ -227,42 +228,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                 </Form.Item>
                 <TimeSection/>
                 <ConstraintsSection/>
-                <Title level={4}>Procedury</Title>
-                <Form.List name="recommendations">
-                    {(fields: any, options: any) => {
-                        return (
-                            <Space style={{width: '100%'}} direction={"vertical"}>
-                                {fields.map((field: any) => {
-                                    return (
-                                        <Space key={field.key} direction={"horizontal"} align={"baseline"}>
-                                            <Form.Item  {...field} fieldKey={field.fieldKey}>
-                                                <RecommendationInput treatments={mockedTreatments} onChange={() => {
-                                                }}/>
-                                            </Form.Item>
-                                            <MinusCircleOutlined
-                                                style={{marginLeft: "10px"}}
-                                                onClick={() => {
-                                                    options.remove(field.name);
-                                                }}
-                                            />
-                                        </Space>
-                                    );
-                                })}
-                                <Form.Item>
-                                    <Button
-                                        type="dashed"
-                                        onClick={() => {
-                                            options.add();
-                                        }}
-                                        block
-                                    >
-                                        <PlusOutlined/> Dodaj procedurę
-                                    </Button>
-                                </Form.Item>
-                            </Space>
-                        );
-                    }}
-                </Form.List>
+                <ProcedureSection/>
                 <Title level={4}>Ilość proponowanych rozwiązań</Title>
                 <Form.Item name="numberOfSolutions" initialValue={4} required>
                     <InputNumber min={1} max={4}/>
