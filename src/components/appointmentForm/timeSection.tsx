@@ -89,18 +89,6 @@ export const TimeSection = () => {
                                 <Space>
                                     <Form.Item>
                                         <Button
-                                            disabled={fields.length <= 0}
-                                            danger
-                                            type="default"
-                                            onClick={() => {
-                                            }}
-                                            block
-                                        >
-                                            <CloseOutlined/> Wyczyść
-                                        </Button>
-                                    </Form.Item>
-                                    <Form.Item>
-                                        <Button
                                             disabled={!canAddMore}
                                             type="dashed"
                                             onClick={() => {

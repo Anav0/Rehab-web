@@ -87,12 +87,8 @@ const App = (props: AppProps) => {
         let constraints: any = []
         let recommendations: Recommendation[] = [
             {
-                repeat: 10,
-                treatment: treatments[1] //Rowerek
-            },
-            {
-                repeat: 10,
-                treatment: treatments[0] //Podciąganie
+                repeat: 2,
+                treatment: treatments[2] //Podciąganie
             },
         ]
         try {

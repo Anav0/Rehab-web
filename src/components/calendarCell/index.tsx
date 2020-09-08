@@ -74,7 +74,6 @@ export const CalendarCell = (props: CalendarCellProps) => {
             );
           })}
         </Collapse>
-        ,
       </Modal>
     </>
   );
