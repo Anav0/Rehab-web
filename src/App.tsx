@@ -17,7 +17,7 @@ import patients from "./mock/patients";
 import {Recommendation} from "./models/recommendation";
 import treatments from "./mock/treatments";
 import api from "./api";
-import {parseTimeBlocksFromPayload} from "./helpers";
+import {getRandomElement, parseTimeBlocksFromPayload} from "./helpers";
 
 
 interface StateProps {
@@ -88,12 +88,16 @@ const App = (props: AppProps) => {
         let recommendations: Recommendation[] = [
             {
                 repeat: 2,
-                treatment: treatments[2] //Podciąganie
+                treatment: treatments[0]
+            },
+            {
+                repeat: 2,
+                treatment: treatments[2]
             },
         ]
         try {
             setIsTesting(true);
-            let payload = new ApiPayload(props.timeBlocks, preferences, constraints, 4, new Referral(patients[0], recommendations))
+            let payload = new ApiPayload(props.timeBlocks, preferences, constraints, 4, new Referral(getRandomElement(patients), recommendations))
             let response = await api.find.treatment(payload);
             let schedulingResult = response.data;
             let timeBlocks = parseTimeBlocksFromPayload(schedulingResult);

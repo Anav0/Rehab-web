@@ -81,15 +81,15 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
             : [];
     };
 
-    compilePreferences = (values: any) => {
+    compilePreferences = (values: AppointmentFormData) => {
         let allPreferences: any = [];
         let preference: any = {type: "time", days: []};
         for (let value of values.times) {
             let day: any = {
-                dayOfWeek: +value.initDay,
+                dayOfWeek: +value.day,
+                start: value.hourRange[0]._d.toISOString(),
+                end: value.hourRange[1]._d.toISOString()
             };
-            day["start"] = value.hourRange[0]._d.toISOString();
-            day["end"] = value.hourRange[1]._d.toISOString();
             preference.days.push(day);
         }
         allPreferences.push(preference);
@@ -126,12 +126,12 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
             notification.success({
                 message: "Sukces",
                 onClick: () => {
-                    this.props.updateSelectedDate(new Date(blocks[0].startDate));
+                    this.props.updateSelectedDate(new Date(blocks[0].StartDate));
                 },
                 description: (
                     <Space direction="vertical">
             <span>
-              {new Date(blocks[0].startDate).toLocaleString("pl", {
+              {new Date(blocks[0].StartDate).toLocaleString("pl", {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",

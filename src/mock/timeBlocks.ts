@@ -22,7 +22,7 @@ function getBlocksByDay(
   } = {};
 
   for (let block of blocks) {
-    let key = formatKey(block.startDate);
+    let key = formatKey(block.StartDate);
     blocksByDay[key] = block;
   }
   return blocksByDay;

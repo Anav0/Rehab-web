@@ -61,7 +61,7 @@ const convertToDictionaryByDate = (list: any[]) => {
     [key: string]: any;
   } = {};
   for (let element of list) {
-    let key = formatKey(element.startDate);
+    let key = formatKey(element.StartDate);
     output[key] = element;
   }
   return output;
@@ -76,7 +76,6 @@ const getCalendarCellsData = (
   let i = 0;
 
   let blocksByDay = convertToDictionaryByDate(props.timeBlocks);
-  //let appointmentsByDay = convertToDictionaryByDate(props.appointments);
 
   for (let timeStamp of hours) {
     let k = 0;

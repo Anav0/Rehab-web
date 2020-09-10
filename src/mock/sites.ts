@@ -1,18 +1,16 @@
 import { TreatmentSite } from "../models/treatmentSite";
-import { Appointment } from "../models/appointment";
-import treatments from "./treatments";
-import patients from "./patients";
+import {defaultBlocksConfig} from "../models/timeBlockConfig";
 
 function newSites() {
   return [
     new TreatmentSite(
       "0",
       "Sala gimnastyczna A",
-      { "0": { "1": 2 } },
-      { "0": 2, "1": 4 },
+      { },
+      { "0": 2 * defaultBlocksConfig.durationInMinutes, "1": 4 * defaultBlocksConfig.durationInMinutes },
       []
     ),
-    new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 }, []),
+    new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 * defaultBlocksConfig.durationInMinutes }, []),
   ];
 }
 
@@ -21,11 +19,11 @@ function newSites2() {
     new TreatmentSite(
       "0",
       "Sala gimnastyczna B",
-      { "0": { "1": 2 } },
-      { "0": 2, "1": 1 },
+      { },
+      { "0": 2 * defaultBlocksConfig.durationInMinutes, "1": defaultBlocksConfig.durationInMinutes },
       []
     ),
-    new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 }, []),
+    new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 * defaultBlocksConfig.durationInMinutes }, []),
   ];
 }
 

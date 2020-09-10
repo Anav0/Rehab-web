@@ -6,6 +6,8 @@ import { Uuid } from "../../helpers";
 import { TreatmentSite } from "../../models/treatmentSite";
 import { CalendarCellData } from "../../models/calendarCellData";
 import { Collapse } from "antd";
+import {defaultBlocksConfig} from "../../models/timeBlockConfig";
+import {Patient} from "../../models/patient";
 
 const { Panel } = Collapse;
 
@@ -22,23 +24,27 @@ export const CalendarCell = (props: CalendarCellProps) => {
   const mediumColor = "hsl(45,95%,80%)";
   const fullColor = "hsl(360,95%,80%)";
 
-  const getMaxNumberOfPatients = () => {
-    return props.cellData.timeBlock.sites.reduce((prev, curr, i, arr) => {
+  const getOriginalCapacity = () => {
+    return props.cellData.timeBlock.Sites.reduce((prev, curr, i, arr) => {
+      return prev + curr.OriginalCapacitySum;
+    }, 0);
+  };
+
+  const getLeftCapacity = () => {
+    return props.cellData.timeBlock.Sites.reduce((prev, curr, i, arr) => {
       let value = 0;
       for (let property in curr.Capacity) {
-        value += +curr.Capacity[property];
+        value += +curr.Capacity[property]
       }
       return prev + value;
     }, 0);
+
   };
 
-  const getTotalNumberOfPatients = () => {
-    return props.cellData.timeBlock.sites.reduce((prev, curr, i, arr) => {
-      return prev + curr.Appointments.length;
-    }, 0);
-  };
-
-  let percent = (getTotalNumberOfPatients() / getMaxNumberOfPatients()) * 100;
+  let orig = getOriginalCapacity()
+  let left = getLeftCapacity()
+  let used = orig - left;
+  let percent = (used / orig)*100
   if (!props.cellData.style.backgroundColor) {
     if (percent === 0) props.cellData.style.backgroundColor = emptyColor;
     if (percent > 0 && percent <= 25)
@@ -55,9 +61,9 @@ export const CalendarCell = (props: CalendarCellProps) => {
         onClick={() => setVisible(true)}
         className={`cell-container ${props.isNew ? "new-cell" : ""}`}
       >
-        {getTotalNumberOfPatients()}
-        {" / "}
-        {getMaxNumberOfPatients()}
+        {used}
+        { "/" }
+        {orig}
       </div>
       <Modal
         title="Sale"
@@ -66,7 +72,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
         onCancel={() => setVisible(false)}
       >
         <Collapse ghost defaultActiveKey={["1"]}>
-          {props.cellData.timeBlock.sites.map((x) => {
+          {props.cellData.timeBlock.Sites.map((x) => {
             return (
               <Panel key={Uuid.uuidv4()} header={x.Name}>
                 <SiteDetails site={x} />

@@ -19,14 +19,14 @@ export const timeblockReducer = (
       return { ...state };
     case "FILL_TIMEBLOCK":
       for(let timeBlock of action.payload){
-        let blockToChangeIndex = state.timeBlocks.findIndex(x=>x.startDate.getTime()===timeBlock.startDate.getTime());
+        let blockToChangeIndex = state.timeBlocks.findIndex(x=>x.StartDate.getTime()===timeBlock.StartDate.getTime());
         state.timeBlocks[blockToChangeIndex] = timeBlock;
       }
       return { ...state };
     case "UPDATE_TIMEBLOCK":
       let index = state.timeBlocks.findIndex(
         (block) =>
-          block.startDate.getTime() === action.payload.startDate.getTime()
+          block.StartDate.getTime() === action.payload.StartDate.getTime()
       );
       if (index === undefined || index == -1)
         state.timeBlocks.push(action.payload);
