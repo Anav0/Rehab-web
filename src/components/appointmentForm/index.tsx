@@ -18,6 +18,7 @@ import {SuggestedSolutionsSection} from "./suggestedSolutionsSection";
 import {PatientSection} from "./patientSection";
 import {AppointmentFormData} from "../../models/appointmentFormData";
 import {Proximity} from "../proximityConstraint/proximity";
+import {UnableSection} from "./unableSection";
 
 const {Title} = Typography;
 
@@ -168,6 +169,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
             <Form onFinish={(values: any) => this.send(values)}>
                 <Title level={3}>Formularz zabiegowy</Title>
                 <PatientSection/>
+                <UnableSection/>
                 <TimeSection/>
                 <ConstraintsSection/>
                 <ProcedureSection/>
