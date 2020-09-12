@@ -4,8 +4,6 @@ import {connect, ConnectedProps} from "react-redux";
 import {Patient} from "../../models/patient";
 import {RootState} from "../../store";
 import {Button, Form, notification, Space, Typography,} from "antd";
-import {Treatment} from "../../models/treatment";
-import mockedTreatments from "../../mock/treatments";
 import {ApiPayload} from "../../models/apiPayload";
 import api from "../../api";
 import {parseTimeBlocksFromPayload,} from "../../helpers";
@@ -14,7 +12,6 @@ import {Referral} from "../../models/referral";
 import {TimeSection} from "./timeSection";
 import {ConstraintsSection} from "./constraintsSection";
 import {ProcedureSection} from "./procedureSection";
-import {SuggestedSolutionsSection} from "./suggestedSolutionsSection";
 import {PatientSection} from "./patientSection";
 import {AppointmentFormData} from "../../models/appointmentFormData";
 import {Proximity} from "../proximityConstraint/proximity";
@@ -97,6 +94,12 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         return allPreferences;
     };
 
+    markTimeBlocksAs = (IsNew: boolean) => {
+        for (let timeBlock of this.props.timeBlocks)
+            timeBlock.IsNew = IsNew;
+        this.props.bulkTimeBlocksUpdate(this.props.timeBlocks)
+    }
+
     send = async (formData: AppointmentFormData) => {
         this.setState(() => ({
             isProcessing: true,
@@ -104,11 +107,13 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         try {
             if (!formData.patient) throw new Error("Nie wybrano pacjenta");
 
+            this.markTimeBlocksAs(false);
+
             let payload = new ApiPayload(
                 this.props.timeBlocks,
                 this.compilePreferences(formData),
                 this.compileConstraints(),
-                formData.numberOfSolutions ?? 1,
+                1,
                 new Referral(formData.patient, formData.recommendations)
             );
             const response = await api.find.treatment(payload);
@@ -171,7 +176,6 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                 <TimeSection/>
                 <ConstraintsSection/>
                 <ProcedureSection/>
-                <SuggestedSolutionsSection/>
                 <Form.Item>
                     <Button
                         loading={this.state.isProcessing}

@@ -105,7 +105,7 @@ const getCalendarCellsData = (
               ),
         day,
         timeStamp,
-        isNew: false,
+        isNew: blocksByDay[key] != null ? blocksByDay[key].IsNew : false,
       });
       k++;
     }

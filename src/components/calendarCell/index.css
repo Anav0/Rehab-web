@@ -8,5 +8,5 @@
 }
 
 .new-cell{
-  outline: hsl(185, 90%, 85%) dashed 5px;
+  border: #91d5ff dotted 5px;
 }

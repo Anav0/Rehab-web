@@ -30,7 +30,9 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
         for (let key of Object.keys(variant.Solutions)) {
             for (let solution of variant.Solutions[key]) {
                 for (let block of solution.Blocks) {
-                    timeBlocksToUpdate.push(new TimeBlock(new Date(block.StartDate), block.DurationInMinutes, block.Sites))
+                    let timeBlock = new TimeBlock(new Date(block.StartDate), block.DurationInMinutes, block.Sites);
+                    timeBlock.IsNew = true;
+                    timeBlocksToUpdate.push(timeBlock)
                 }
             }
         }

@@ -10,7 +10,7 @@ function newSites() {
       { "0": 2 * defaultBlocksConfig.durationInMinutes, "1": 4 * defaultBlocksConfig.durationInMinutes },
       []
     ),
-    new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 * defaultBlocksConfig.durationInMinutes }, []),
+    new TreatmentSite("2", "Pokój masażu", {}, { "2": defaultBlocksConfig.durationInMinutes }, []),
   ];
 }
 
@@ -23,7 +23,7 @@ function newSites2() {
       { "0": 2 * defaultBlocksConfig.durationInMinutes, "1": defaultBlocksConfig.durationInMinutes },
       []
     ),
-    new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 * defaultBlocksConfig.durationInMinutes }, []),
+    new TreatmentSite("2", "Pokój masażu", {}, { "2": defaultBlocksConfig.durationInMinutes }, []),
   ];
 }
 
