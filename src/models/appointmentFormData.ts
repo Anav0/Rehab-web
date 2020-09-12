@@ -9,4 +9,5 @@ export interface AppointmentFormData {
     proximity: Proximity | undefined,
     times: TimePreference[],
     recommendations: Recommendation[]
+    unavailableDates: any[][]
 }

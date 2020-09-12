@@ -107,7 +107,8 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         }));
         try {
             if (!formData.patient) throw new Error("Nie wybrano pacjenta");
-
+            console.log(formData)
+            return;
             this.markTimeBlocksAs(false);
 
             let payload = new ApiPayload(

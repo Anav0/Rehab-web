@@ -1,37 +1,83 @@
 import * as React from 'react';
-import {Calendar, Form, Typography,} from "antd";
+import {Button, Form, Typography,} from "antd";
 import "moment/locale/pl";
 import localePL from "antd/es/date-picker/locale/pl_PL";
-import {useState} from "react";
+import {DatePicker, Space} from 'antd';
+import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
+import {useEffect, useState} from "react";
 
 const {Title} = Typography;
 
-const UnableSectionContent = () => {
-    const [selectedDates, setSelectedDates] = useState<number[]>([]);
+const {RangePicker} = DatePicker;
 
-    const dateCellRender = (date: any) => {
-        if(selectedDates.includes(new Date(date).getTime())) return <div>Clicked</div>
-        return null;
+interface UnableSectionContentProps {
+    value?: any;
+    onChange: (dataRange: any) => void
+}
+
+
+const UnableSectionContent = (props: UnableSectionContentProps) => {
+    console.log(props)
+    const [selectedDateRange, setSelectedDateRange] = useState<Date[]>([]);
+
+    const onChange = (dateRange: any) => {
+        let start = new Date(dateRange[0]);
+        let end = new Date(dateRange[1]);
+        setSelectedDateRange([start, end])
     }
 
-    const onDaySelect = (date: any)=>{
-        let dateMs = new Date(date).getTime();
-        if(selectedDates.includes(dateMs)) return;
-        setSelectedDates([...selectedDates, dateMs]);
-    }
+    useEffect(() => {
+        props.onChange(selectedDateRange)
+    }, [selectedDateRange])
 
-    return (
-        <Calendar onSelect={onDaySelect} locale={localePL} dateCellRender={dateCellRender} />
-    )
+    return (<RangePicker onChange={onChange} locale={localePL}/>)
 }
 
 export const UnableSection = () => {
     return (
         <>
-            <Title level={4}>Niedostępne terminy</Title>
-            <Form.Item name={"unavailable-dates"}>
-                <UnableSectionContent/>
-            </Form.Item>
+            <Title level={4}>Niemożliwy termin wizyty</Title>
+            <Form.List name="unavailableDates">
+                {(fields: any, options: any) => {
+                    return (
+                        <Space style={{width: '100%'}} direction={"vertical"}>
+                            {fields.map((field: any) => {
+                                return (
+                                    <Space key={field.key} direction={"horizontal"} align={"baseline"}>
+                                        <Form.Item rules={[
+                                            {
+                                                required: true,
+                                                message: "Proszę wybrać zakres",
+                                            },
+                                        ]}  {...field} fieldKey={field.fieldKey}>
+                                            <UnableSectionContent onChange={() => {
+                                            }}/>
+                                        </Form.Item>
+                                        <MinusCircleOutlined
+                                            style={{marginLeft: "10px"}}
+                                            onClick={() => {
+                                                options.remove(field.name);
+                                            }}
+                                        />
+                                    </Space>
+                                );
+                            })}
+                            <Form.Item>
+                                <Button
+                                    type="dashed"
+                                    onClick={() => {
+                                        options.add();
+                                    }}
+                                    block
+                                >
+                                    <PlusOutlined/> Dodaj zakres
+                                </Button>
+                            </Form.Item>
+                        </Space>
+                    );
+                }}
+            </Form.List>
+
         </>
     );
 };
