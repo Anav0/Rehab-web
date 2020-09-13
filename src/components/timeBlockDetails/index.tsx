@@ -81,8 +81,8 @@ export const SiteDetails = (props: SiteDetailsProps) => {
                     split={false}
                     dataSource={patientNames}
                     renderItem={(item) => <List.Item>{item}</List.Item>}
-                ></List>
-                <Space></Space>
+                />
+
             </Descriptions.Item>
         </Descriptions>
     );

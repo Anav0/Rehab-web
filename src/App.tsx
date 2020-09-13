@@ -19,7 +19,6 @@ import treatments from "./mock/treatments";
 import api from "./api";
 import {getRandomElement, parseTimeBlocksFromPayload} from "./helpers";
 
-
 interface StateProps {
     patients: Patient[];
     timeBlocks: TimeBlock[];
@@ -57,6 +56,8 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 const App = (props: AppProps) => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
     const [isTesting, setIsTesting] = useState<boolean>(false);
+    const [unavailableDates, setUnavailableDates] = useState<any>([]);
+
     const onWeekChanged = (date: any, dateString: string) => {
         props.updateSelectedDate(new Date(date));
     };
@@ -147,6 +148,7 @@ const App = (props: AppProps) => {
                 timeBlocks={props.timeBlocks}
                 appointments={props.appointments}
                 selectedDate={props.selectedDate}
+                unavailableDates={unavailableDates}
             />
             <Modal
                 closable={false}
@@ -158,7 +160,10 @@ const App = (props: AppProps) => {
                 cancelText={"Zamknij"}
                 onCancel={() => setModalVisibility(false)}
             >
-                <AppointmentForm OnSendSuccess={() => setModalVisibility(false)}/>
+                <AppointmentForm OnSendSuccess={(unavailableDates: any) => {
+                    setModalVisibility(false)
+                    setUnavailableDates(unavailableDates)
+                }}/>
             </Modal>
         </main>
     );

@@ -16,6 +16,7 @@ interface WeekPlannerProps {
   startHour: string;
   timeBlocks: TimeBlock[];
   appointments: Appointment[];
+  unavailableDates: any;
 }
 
 const formatDate = (date: Date) => {
@@ -67,6 +68,17 @@ const convertToDictionaryByDate = (list: any[]) => {
   return output;
 };
 
+const isTimeBlockAvailable = (timeBlock: TimeBlock, unavailableDates: any) : boolean => {
+  for(let pair of unavailableDates){
+    let start = new Date(pair[0]);
+    start.setHours(0, 0, 0, 0)
+    let end = new Date(pair[1]);
+    end.setHours(23, 0, 0, 0)
+    if(timeBlock.StartDate.getTime() >= start.getTime() && timeBlock.StartDate.getTime() <= end.getTime()) return false
+  }
+  return true;
+}
+
 const getCalendarCellsData = (
   hours: string[],
   days: Date[],
@@ -106,6 +118,7 @@ const getCalendarCellsData = (
         day,
         timeStamp,
         isNew: blocksByDay[key] != null ? blocksByDay[key].IsNew : false,
+        isBlocked: blocksByDay[key] != null ? !isTimeBlockAvailable(blocksByDay[key], props.unavailableDates) : false
       });
       k++;
     }
@@ -179,6 +192,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
       {calendarCells.map((data: CalendarCellData) => {
         return (
           <CalendarCell
+            isBlocked={data.isBlocked}
             isNew={data.isNew}
             key={Uuid.uuidv4()}
             cellData={data}

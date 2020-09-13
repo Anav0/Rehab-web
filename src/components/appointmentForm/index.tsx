@@ -16,6 +16,7 @@ import {PatientSection} from "./patientSection";
 import {AppointmentFormData} from "../../models/appointmentFormData";
 import {Proximity} from "../proximityConstraint/proximity";
 import {UnableSection} from "./unableSection";
+import {filterTimeBlocksByDates} from "../../mock/timeBlocks";
 
 const {Title} = Typography;
 
@@ -48,12 +49,16 @@ const mapDispatch = {
         type: "UPDATE_DATE",
         payload: date,
     }),
+    fillBlockedTimeBlocks: (timeBlocks: TimeBlock[]) => ({
+        type: "FILL_BLOCKED_TIMEBLOCKS",
+        payload: timeBlocks,
+    }),
 };
 
 const connector = connect(mapProps, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type AppointmentFormProps = PropsFromRedux & {
-    OnSendSuccess: () => void;
+    OnSendSuccess: (unavailableDates: any) => void;
 };
 
 class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
@@ -107,12 +112,9 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         }));
         try {
             if (!formData.patient) throw new Error("Nie wybrano pacjenta");
-            console.log(formData)
-            return;
             this.markTimeBlocksAs(false);
-
             let payload = new ApiPayload(
-                this.props.timeBlocks,
+                filterTimeBlocksByDates(this.props.timeBlocks, formData.unavailableDates),
                 this.compilePreferences(formData),
                 this.compileConstraints(),
                 1,
@@ -128,7 +130,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
             if (sol)
                 blocks = sol[0].Blocks
 
-            this.props.OnSendSuccess();
+            this.props.OnSendSuccess(formData.unavailableDates);
 
             notification.success({
                 message: "Sukces",

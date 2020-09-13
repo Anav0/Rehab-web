@@ -15,14 +15,14 @@ interface UnableSectionContentProps {
     onChange: (dataRange: any) => void
 }
 
-
 const UnableSectionContent = (props: UnableSectionContentProps) => {
-    console.log(props)
-    const [selectedDateRange, setSelectedDateRange] = useState<Date[]>([]);
+    let start = props.value ? props.value[0] : null;
+    let end = props.value ? props.value[1] : null;
+    const [selectedDateRange, setSelectedDateRange] = useState<any>([start, end]);
 
     const onChange = (dateRange: any) => {
-        let start = new Date(dateRange[0]);
-        let end = new Date(dateRange[1]);
+        let start = dateRange[0];
+        let end = dateRange[1];
         setSelectedDateRange([start, end])
     }
 
@@ -30,7 +30,7 @@ const UnableSectionContent = (props: UnableSectionContentProps) => {
         props.onChange(selectedDateRange)
     }, [selectedDateRange])
 
-    return (<RangePicker onChange={onChange} locale={localePL}/>)
+    return (<RangePicker defaultValue={selectedDateRange} onChange={onChange} locale={localePL}/>)
 }
 
 export const UnableSection = () => {

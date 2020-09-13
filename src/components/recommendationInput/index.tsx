@@ -6,22 +6,20 @@ import {Recommendation} from "../../models/recommendation";
 
 const { Option } = Select;
 
-
-
 interface RecommendationInputProps {
+    value?: any;
     treatments: Treatment[],
     onChange: (recommendation: Recommendation) => void;
     style?: CSSProperties
 }
 
 const RecommendationInput = (props: RecommendationInputProps) => {
-
-    const [howManyTimes, setHowManyTimes] = useState(1);
-    const [treatment, setTreatment] = useState(props.treatments[0]);
+    const [repeat, setRepeat] = useState(props.value ? props.value.repeat : 1);
+    const [treatment, setTreatment] = useState(props.value ? props.value.treatment : props.treatments[0]);
 
     const triggerOnChange = ()=>{
         if(props.onChange) props.onChange({
-            repeat: howManyTimes,
+            repeat: repeat,
             treatment
         })
     }
@@ -32,19 +30,19 @@ const RecommendationInput = (props: RecommendationInputProps) => {
     };
 
     const onNumberChanged = (howMany: string | number | undefined) => {
-        if(howMany) setHowManyTimes(+howMany);
+        if(howMany) setRepeat(+howMany);
     }
 
     useEffect(()=>{
         triggerOnChange()
-    },[treatment, howManyTimes])
+    },[treatment, repeat])
 
     return (
         <Space style={props.style} direction={"horizontal"}>
             <Select
                 style={{width: '150px'}}
                 placeholder="Wyszukaj procedurę"
-                defaultValue={props.treatments[0].Id}
+                defaultValue={treatment.Id}
                 onChange={onTreatmentChange}>
                 {props.treatments.map((treatment) => {
                     return (
@@ -54,7 +52,7 @@ const RecommendationInput = (props: RecommendationInputProps) => {
                     );
                 })}
             </Select>
-            <InputNumber required placeholder={"Ilość powtórzeń"} style={{width: '150px'}} min={1} max={50} defaultValue={1} onChange={onNumberChanged}/>
+            <InputNumber required placeholder={"Ilość powtórzeń"} style={{width: '150px'}} min={1} max={50} defaultValue={repeat} onChange={onNumberChanged}/>
         </Space>
     );
 };
