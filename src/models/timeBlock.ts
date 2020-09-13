@@ -16,7 +16,7 @@ export class TimeBlock {
     this.Sites = sites;
   }
 
-  get end(): Date {
+  get EndDate(): Date {
     let tmp = new Date(this.StartDate);
     tmp.setMinutes(tmp.getMinutes() + this.DurationInMinutes);
     return tmp;

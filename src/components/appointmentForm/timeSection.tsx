@@ -56,7 +56,7 @@ export const TimeSection = () => {
         <div ref={timeSelectorContainerRef}>
             <Title level={4}>Preferowany termin wizyty</Title>
         </div>
-            <Form.List name="times">
+            <Form.List  name="times">
                 {(fields: any, options: any) => {
                     let canAddMore = canAddMoreDays(fields);
                     return (

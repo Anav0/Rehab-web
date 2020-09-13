@@ -1,17 +1,15 @@
-import React, { CSSProperties, useState } from "react";
-import { Modal } from "antd";
+import React, { useState } from "react";
+import {Affix, Modal} from "antd";
 import { SiteDetails } from "../timeBlockDetails";
 import "./index.css";
 import { Uuid } from "../../helpers";
-import { TreatmentSite } from "../../models/treatmentSite";
 import { CalendarCellData } from "../../models/calendarCellData";
 import { Collapse } from "antd";
-import {defaultBlocksConfig} from "../../models/timeBlockConfig";
-import {Patient} from "../../models/patient";
 
 const { Panel } = Collapse;
 
 interface CalendarCellProps {
+  isBlocked: boolean;
   cellData: CalendarCellData;
   isNew: boolean;
 }
@@ -59,7 +57,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
       <div
         style={props.cellData.style}
         onClick={() => setVisible(true)}
-        className={`cell-container ${props.isNew ? "new-cell" : ""}`}
+        className={`cell-container ${props.isNew ? "new-cell" : ""} ${props.isBlocked ? "blocked-cell" : ""}`}
       >
         {used}
         { "/" }

@@ -10,3 +10,7 @@
 .new-cell{
   border: #91d5ff dotted 5px;
 }
+
+.blocked-cell{
+  border: #f5222d solid 3px;
+}

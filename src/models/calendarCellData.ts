@@ -7,4 +7,5 @@ export interface CalendarCellData {
   day: Date;
   timeStamp: string;
   isNew: boolean;
+  isBlocked: boolean;
 }
