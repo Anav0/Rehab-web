@@ -69,7 +69,8 @@ const convertToDictionaryByDate = (list: any[]) => {
 };
 
 const isTimeBlockAvailable = (timeBlock: TimeBlock, unavailableDates: any) : boolean => {
-  for(let pair of unavailableDates){
+  if(!unavailableDates) return true;
+ for(let pair of unavailableDates){
     let start = new Date(pair[0]);
     start.setHours(0, 0, 0, 0)
     let end = new Date(pair[1]);

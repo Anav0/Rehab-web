@@ -39,8 +39,8 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     for (let property in props.site.Capacity) {
         let capacity = props.site.Capacity[property];
         let current = capacityFullness[property];
-        let enlisted = `Ilość wizyt: ${current}`;
-        let free = `Pozostało wolnych minut: ${capacity}`;
+        let enlisted = `Zajęte miejsca: ${current}`;
+        let free = `Wolne miejsca: ${capacity}`;
         let treatment = treatments.find((x) => x.Id === property);
         descriptors.push(
             <Descriptions.Item
