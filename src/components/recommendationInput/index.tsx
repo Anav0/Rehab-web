@@ -47,7 +47,7 @@ const RecommendationInput = (props: RecommendationInputProps) => {
                 {props.treatments.map((treatment) => {
                     return (
                         <Option key={Uuid.uuidv4()} value={treatment.Id}>
-                            {treatment.Name}
+                            {treatment.Name} {`(${treatment.DurationInMinutes}m)`}
                         </Option>
                     );
                 })}
