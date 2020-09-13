@@ -1,38 +1,37 @@
-import { TreatmentSite } from "../models/treatmentSite";
-import {defaultBlocksConfig} from "../models/timeBlockConfig";
+import {TreatmentSite} from "../models/treatmentSite";
 
 function newSites() {
-  return [
-    new TreatmentSite(
-      "0",
-      "Sala gimnastyczna A",
-      { },
-      { "0": 2 * defaultBlocksConfig.durationInMinutes, "1": 4 * defaultBlocksConfig.durationInMinutes },
-      []
-    ),
-    new TreatmentSite("2", "Pokój masażu", {}, { "2": defaultBlocksConfig.durationInMinutes }, []),
-  ];
+    return [
+        new TreatmentSite(
+            "0",
+            "Sala gimnastyczna A",
+            {"0": {"1": 1}},
+            {"0": 2, "1": 4},
+            []
+        ),
+        new TreatmentSite("2", "Pokój masażu", {}, {"2": 1}, []),
+    ];
 }
 
 function newSites2() {
-  return [
-    new TreatmentSite(
-      "0",
-      "Sala gimnastyczna B",
-      { },
-      { "0": 2 * defaultBlocksConfig.durationInMinutes, "1": defaultBlocksConfig.durationInMinutes },
-      []
-    ),
-    new TreatmentSite("2", "Pokój masażu", {}, { "2": defaultBlocksConfig.durationInMinutes }, []),
-  ];
+    return [
+        new TreatmentSite(
+            "0",
+            "Sala gimnastyczna B",
+            {},
+            {"0": 2, "1": 1},
+            []
+        ),
+        new TreatmentSite("2", "Pokój masażu", {}, {"2": 1}, []),
+    ];
 }
 
 export const sitesByDay: TreatmentSite[][] = [
-  newSites(),
-  newSites2(),
-  newSites(),
-  newSites2(),
-  newSites(),
-  newSites2(),
-  newSites(),
+    newSites(),
+    newSites2(),
+    newSites(),
+    newSites2(),
+    newSites(),
+    newSites2(),
+    newSites(),
 ];
