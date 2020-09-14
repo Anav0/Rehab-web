@@ -10,7 +10,6 @@ import {parseTimeBlocksFromPayload,} from "../../helpers";
 import {TimeBlock} from "../../models/timeBlock";
 import {Referral} from "../../models/referral";
 import {TimeSection} from "./timeSection";
-import {ConstraintsSection} from "./constraintsSection";
 import {ProcedureSection} from "./procedureSection";
 import {PatientSection} from "./patientSection";
 import {AppointmentFormData} from "../../models/appointmentFormData";
@@ -71,19 +70,6 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         };
     }
 
-    compileConstraints = () => {
-        return this.state.proximityState
-            ? [
-                {
-                    type: "proximity",
-                    treatment: this.state.proximityState.treatment,
-                    offset:
-                        this.state.proximityState.offset * this.state.proximityState.sign,
-                },
-            ]
-            : [];
-    };
-
     compilePreferences = (values: AppointmentFormData) => {
         let allPreferences: any = [];
         let preference: any = {type: "time", days: []};
@@ -116,7 +102,6 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
             let payload = new ApiPayload(
                 filterTimeBlocksByDates(this.props.timeBlocks, formData.unavailableDates),
                 this.compilePreferences(formData),
-                this.compileConstraints(),
                 1,
                 new Referral(formData.patient, formData.recommendations)
             );
@@ -179,7 +164,6 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                 <PatientSection/>
                 <UnableSection/>
                 <TimeSection/>
-                <ConstraintsSection/>
                 <ProcedureSection/>
                 <Form.Item>
                     <Button
