@@ -23,6 +23,7 @@ export class ProximityConstraint extends React.Component<
       treatment: mockTreatments[0],
       treatmentIndex: 0,
     };
+      this.props.onChange({...this.state})
   }
 
   componentWillUnmount() {

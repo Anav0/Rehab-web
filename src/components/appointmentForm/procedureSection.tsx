@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {Button, Form, Space, Typography} from "antd";
-import RecommendationInput from "../recommendationInput";
+import TreatmentInput from "../treatmentInput";
 import mockedTreatments from "../../mock/treatments";
-import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
+import {PlusOutlined} from "@ant-design/icons";
 
 const {Title} = Typography;
 
@@ -18,15 +18,10 @@ export const ProcedureSection = () => {
                                 return (
                                     <Space key={field.key} direction={"horizontal"} align={"baseline"}>
                                         <Form.Item  {...field} fieldKey={field.fieldKey}>
-                                            <RecommendationInput treatments={mockedTreatments} onChange={() => {
-                                            }}/>
-                                        </Form.Item>
-                                        <MinusCircleOutlined
-                                            style={{marginLeft: "10px"}}
-                                            onClick={() => {
+                                            <TreatmentInput treatments={mockedTreatments} onDelete={() => {
                                                 options.remove(field.name);
-                                            }}
-                                        />
+                                            }} onChange={() => {}}/>
+                                        </Form.Item>
                                     </Space>
                                 );
                             })}

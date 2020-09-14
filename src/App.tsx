@@ -54,7 +54,7 @@ const connector = connect(mapProps, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 const App = (props: AppProps) => {
-    const [isModalVisible, setModalVisibility] = useState<boolean>(false);
+    const [isModalVisible, setModalVisibility] = useState<boolean>(true);
     const [isTesting, setIsTesting] = useState<boolean>(false);
     const [unavailableDates, setUnavailableDates] = useState<any>([]);
 
@@ -88,17 +88,19 @@ const App = (props: AppProps) => {
         let constraints: any = []
         let recommendations: Recommendation[] = [
             {
-                repeat: 2,
-                treatment: treatments[0]
+                Repeat: 2,
+                Treatment: treatments[0],
+                RawConstraints: []
             },
             {
-                repeat: 2,
-                treatment: treatments[2]
+                Repeat: 2,
+                Treatment: treatments[2],
+                RawConstraints: []
             },
         ]
         try {
             setIsTesting(true);
-            let payload = new ApiPayload(props.timeBlocks, preferences, constraints, 4, new Referral(getRandomElement(patients), recommendations))
+            let payload = new ApiPayload(props.timeBlocks, preferences, 4, new Referral(getRandomElement(patients), recommendations))
             let response = await api.find.treatment(payload);
             let schedulingResult = response.data;
             let timeBlocks = parseTimeBlocksFromPayload(schedulingResult);
