@@ -1,19 +1,22 @@
 import {Appointment} from "./appointment";
+import {Sex} from "./patient";
 
 export class TreatmentSite {
-    public Id: string;
-    public Name: string;
-    public BlocageLookup: any;
-    public Capacity: any;
-    public readonly  OriginalCapacitySum: number
-    public Appointments: Appointment[];
+    Id: string;
+    Name: string;
+    BlocageLookup: any;
+    Capacity: any;
+    readonly OriginalCapacitySum: number
+    Appointments: Appointment[];
+    SexConstraintTreatments: {[key: string]: Sex};
 
     constructor(
         id: string,
         name: string,
         blocageLookup: object,
         capacity: object,
-        appointments: Appointment[]
+        appointments: Appointment[],
+        SexConstraintTreatments = {}
     ) {
         this.Id = id;
         this.Name = name;
@@ -21,9 +24,10 @@ export class TreatmentSite {
         this.Capacity = capacity;
         this.OriginalCapacitySum = this.sumCapacity(capacity)
         this.Appointments = appointments;
+        this.SexConstraintTreatments = SexConstraintTreatments;
     }
 
-    private sumCapacity(capacity: any){
+    private sumCapacity(capacity: any) {
         let value = 0;
         for (let property in capacity) {
             value += +capacity[property]
