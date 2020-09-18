@@ -6,6 +6,7 @@ import {TreatmentSite} from "../../models/treatmentSite";
 import {Descriptions} from "antd";
 import treatments from "../../mock/treatments";
 import {defaultBlocksConfig} from "../../models/timeBlockConfig";
+import {Sex} from "../../models/patient";
 
 interface SiteDetailsProps {
     site: TreatmentSite;
@@ -21,6 +22,13 @@ export const SiteDetails = (props: SiteDetailsProps) => {
         }
         return sum;
     };
+
+    const getTreatmentSexConstraint = (treatmentId: string, site: TreatmentSite): string =>{
+        if(!site.SexConstraintTreatments.hasOwnProperty(treatmentId)) return "";
+        let sex = site.SexConstraintTreatments[treatmentId];
+        if(!sex) return "";
+        return Sex[sex].toString()[0];
+    }
 
     let capacityFullness: { [key: string]: number } = {};
     const descriptors = [];
@@ -47,7 +55,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
                 key={Uuid.uuidv4()}
                 label={
                     <span style={{color: colorOptions[i]}}>
-            {treatment ? treatment.Name : "Nie znaleziono zabiegu"}
+            {treatment ? `${treatment.Name} ${getTreatmentSexConstraint(treatment.Id,props.site)}` : "Nie znaleziono zabiegu"}
           </span>
                 }
             >
