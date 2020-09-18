@@ -54,7 +54,7 @@ const connector = connect(mapProps, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 const App = (props: AppProps) => {
-    const [isModalVisible, setModalVisibility] = useState<boolean>(true);
+    const [isModalVisible, setModalVisibility] = useState<boolean>(false);
     const [isTesting, setIsTesting] = useState<boolean>(false);
     const [unavailableDates, setUnavailableDates] = useState<any>([]);
 
