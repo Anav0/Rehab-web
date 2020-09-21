@@ -11,7 +11,7 @@ interface ProximityConstraintProps {
   onChange: (info?: Proximity) => void;
 }
 
-export class ProximityConstraint extends React.Component<
+export class ProximityConstraintUI extends React.Component<
   ProximityConstraintProps,
   Proximity
 > {
@@ -20,7 +20,7 @@ export class ProximityConstraint extends React.Component<
     this.state = {
       offset: 60,
       sign: -1,
-      treatment: mockTreatments[0],
+      treatmentId: mockTreatments[0].Id,
       treatmentIndex: 0,
     };
       this.props.onChange({...this.state})
@@ -82,7 +82,7 @@ export class ProximityConstraint extends React.Component<
           onChange={(event: any) => {
             this.setState(
               (state, props) => ({
-                treatment: mockTreatments[event],
+                  treatmentId: mockTreatments[event].Id,
                 treatmentIndex: event,
               }),
               () => this.props.onChange(this.state)

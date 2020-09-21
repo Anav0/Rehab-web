@@ -102,8 +102,8 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
             let payload = new ApiPayload(
                 filterTimeBlocksByDates(this.props.timeBlocks, formData.unavailableDates),
                 this.compilePreferences(formData),
-                1,
-                new Referral(formData.patient, formData.recommendations)
+                new Referral(formData.patient, formData.recommendations),
+
             );
             const response = await api.find.treatment(payload);
             const schedulingResult = response.data;

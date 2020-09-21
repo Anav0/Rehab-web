@@ -18,7 +18,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     const getTreatmentFullness = (site: TreatmentSite, treatmentId: string) => {
         let sum = 0;
         for (let appointment of site.Appointments) {
-            if (appointment.Treatment.Id === treatmentId) sum++;
+            if (appointment.TreatmentId === treatmentId) sum++;
         }
         return sum;
     };
@@ -70,7 +70,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     }
 
     let patientNames = props.site.Appointments.map((x, i) => {
-        let treatmentId = x.Treatment.Id;
+        let treatmentId = x.TreatmentId;
         let color = colorOptions[+treatmentId];
         return (
             <span key={Uuid.uuidv4()} style={{color}}>

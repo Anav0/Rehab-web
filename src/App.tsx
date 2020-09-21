@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import "./App.css";
-import {Modal, DatePicker, Button} from "antd";
+import {Modal, DatePicker, Button, Space} from "antd";
 import "moment/locale/pl";
 import localePL from "antd/es/date-picker/locale/pl_PL";
 import {Patient} from "./models/patient";
@@ -17,7 +17,11 @@ import patients from "./mock/patients";
 import {Recommendation} from "./models/recommendation";
 import treatments from "./mock/treatments";
 import api from "./api";
-import {getRandomElement, parseTimeBlocksFromPayload} from "./helpers";
+import {parseTimeBlocksFromPayload} from "./helpers";
+import {RawConstraint} from "./mock/constraints";
+import {RawProximityConstraint} from "./models/rawProximityConstraint";
+import {TreatmentConstraints} from "./components/treatmentConstraints";
+import {treatmentConstraints} from "./mock/treatmentConstraints";
 
 interface StateProps {
     patients: Patient[];
@@ -83,24 +87,17 @@ const App = (props: AppProps) => {
                     }
                 ]
             }
-
         ]
-        let constraints: any = []
+
         let recommendations: Recommendation[] = [
             {
-                Repeat: 2,
+                Repeat: 1,
                 Treatment: treatments[0],
-                RawConstraints: []
-            },
-            {
-                Repeat: 2,
-                Treatment: treatments[2],
-                RawConstraints: []
             },
         ]
         try {
             setIsTesting(true);
-            let payload = new ApiPayload(props.timeBlocks, preferences, 4, new Referral(getRandomElement(patients), recommendations))
+            let payload = new ApiPayload(props.timeBlocks, preferences, new Referral(patients[0], recommendations), treatmentConstraints)
             let response = await api.find.treatment(payload);
             let schedulingResult = response.data;
             let timeBlocks = parseTimeBlocksFromPayload(schedulingResult);
@@ -127,7 +124,7 @@ const App = (props: AppProps) => {
               })}
           </span>
                 </div>
-                <div className="app-header-content">
+                <Space direction={"horizontal"} size={"large"} className="app-header-content">
                     <DatePicker
                         allowClear={false}
                         format={"YYYY-MM-DD"}
@@ -141,7 +138,8 @@ const App = (props: AppProps) => {
                     <Button loading={isTesting} onClick={sendTestPayload}>
                         Test
                     </Button>
-                </div>
+                    <TreatmentConstraints treatments={treatments} treatmentsConstraints={treatmentConstraints}/>
+                </Space>
             </div>
             <WeekPlanner
                 interval={defaultBlocksConfig.durationInMinutes}
@@ -169,6 +167,5 @@ const App = (props: AppProps) => {
             </Modal>
         </main>
     );
-};
-
+}
 export default connect(mapProps, mapDispatch)(App);

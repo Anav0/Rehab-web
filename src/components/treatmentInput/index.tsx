@@ -5,7 +5,7 @@ import {Treatment} from "../../models/treatment";
 import {Recommendation} from "../../models/recommendation";
 import {Constraint, constraints} from "../../mock/constraints";
 import {Tag} from 'antd';
-import {ProximityConstraint} from "../proximityConstraint";
+import {ProximityConstraintUI} from "../proximityConstraint";
 import {MinusCircleOutlined} from "@ant-design/icons";
 
 const {CheckableTag} = Tag;
@@ -27,8 +27,7 @@ const TreatmentInput = (props: TreatmentInputProps) => {
     const triggerOnChange = () => {
         if (props.onChange) props.onChange({
             Repeat: repeat,
-            Treatment: treatment,
-            RawConstraints: constraintsData
+            Treatment: treatment
         })
     }
 
@@ -47,12 +46,12 @@ const TreatmentInput = (props: TreatmentInputProps) => {
 
 
     const onConstraintClick = (isChecked: boolean, constraint: Constraint) => {
-        setSelectedConstraints(isChecked ? [...selectedConstraints, constraint] : selectedConstraints.filter(x => x.type !== constraint.type))
-        if (!isChecked) setConstraintsData([...constraintsData.filter(x => x.type !== constraint.type)]);
+        setSelectedConstraints(isChecked ? [...selectedConstraints, constraint] : selectedConstraints.filter(x => x.Type !== constraint.Type))
+        if (!isChecked) setConstraintsData([...constraintsData.filter(x => x.type !== constraint.Type)]);
     }
 
     const constraintsUI: { [id: string]: ReactNode } = {
-        "proximity": <ProximityConstraint key={"proximity-constraint"} onChange={(data: any) => {
+        "proximity": <ProximityConstraintUI key={"proximity-constraint"} onChange={(data: any) => {
             if (!data) return;
             let dataWithId = {type: "proximity", ...data};
             setConstraintsData([...constraintsData.filter(x => x.type !== dataWithId.type), dataWithId])
@@ -87,10 +86,10 @@ const TreatmentInput = (props: TreatmentInputProps) => {
             <Space direction={"horizontal"}>
                 {constraints.map(constraint => <CheckableTag checked={selectedConstraints.indexOf(constraint) > -1}
                                                              onChange={(isChecked) => onConstraintClick(isChecked, constraint)}
-                                                             key={constraint.type + "-treatmentInput"}>{constraint.text}</CheckableTag>)}
+                                                             key={constraint.Type + "-treatmentInput"}>{constraint.Text}</CheckableTag>)}
             </Space>
             <Space>
-                {selectedConstraints.map(constraint => constraintsUI[constraint.type])}
+                {selectedConstraints.map(constraint => constraintsUI[constraint.Type])}
             </Space>
         </Space>
     );
