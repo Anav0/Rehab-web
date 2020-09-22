@@ -18,10 +18,9 @@ import {Recommendation} from "./models/recommendation";
 import treatments from "./mock/treatments";
 import api from "./api";
 import {parseTimeBlocksFromPayload} from "./helpers";
-import {RawConstraint} from "./mock/constraints";
-import {RawProximityConstraint} from "./models/rawProximityConstraint";
 import {TreatmentConstraints} from "./components/treatmentConstraints";
 import {treatmentConstraints} from "./mock/treatmentConstraints";
+import {updateTimeblock} from "./store/timeblocks/actions";
 
 interface StateProps {
     patients: Patient[];
@@ -68,6 +67,12 @@ const App = (props: AppProps) => {
 
     useEffect(() => {
         console.log("App useEffect called");
+        let timeBlockId = 10
+        for (let i=1;i<=2;i++){
+        props.timeBlocks[timeBlockId].Sites[1].tryAddingAppointment(new Appointment("2",patients[0]))
+        updateTimeblock(props.timeBlocks[timeBlockId])
+            timeBlockId+=25;
+        }
     }, [props]);
 
     async function sendTestPayload() {
@@ -76,13 +81,28 @@ const App = (props: AppProps) => {
                 type: "time",
                 days: [
                     {
-                        dayOfWeek: 0, //Niedziela,
-                        start: "2020-09-02T06:00:00",
+                        dayOfWeek: 0,
+                        start: "2020-09-02T04:00:00",
                         end: "2020-09-02T14:00:00",
                     },
                     {
-                        dayOfWeek: 6, //Sobota,
-                        start: "2020-09-02T10:00:00",
+                        dayOfWeek: 1,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 2,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 3,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 4,
+                        start: "2020-09-02T04:00:00",
                         end: "2020-09-02T14:00:00",
                     }
                 ]
@@ -91,7 +111,7 @@ const App = (props: AppProps) => {
 
         let recommendations: Recommendation[] = [
             {
-                Repeat: 1,
+                Repeat: 20,
                 Treatment: treatments[0],
             },
         ]

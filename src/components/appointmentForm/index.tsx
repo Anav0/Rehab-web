@@ -16,6 +16,8 @@ import {AppointmentFormData} from "../../models/appointmentFormData";
 import {Proximity} from "../proximityConstraint/proximity";
 import {UnableSection} from "./unableSection";
 import {filterTimeBlocksByDates} from "../../mock/timeBlocks";
+import treatments from "../../mock/treatments";
+import {treatmentConstraints} from "../../mock/treatmentConstraints";
 
 const {Title} = Typography;
 
@@ -99,11 +101,13 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         try {
             if (!formData.patient) throw new Error("Nie wybrano pacjenta");
             this.markTimeBlocksAs(false);
+
+
             let payload = new ApiPayload(
                 filterTimeBlocksByDates(this.props.timeBlocks, formData.unavailableDates),
                 this.compilePreferences(formData),
                 new Referral(formData.patient, formData.recommendations),
-
+                treatmentConstraints
             );
             const response = await api.find.treatment(payload);
             const schedulingResult = response.data;

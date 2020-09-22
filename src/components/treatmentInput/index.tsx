@@ -1,14 +1,11 @@
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import {InputNumber, Select, Space} from "antd";
 import {Uuid} from "../../helpers";
 import {Treatment} from "../../models/treatment";
 import {Recommendation} from "../../models/recommendation";
-import {Constraint, constraints} from "../../mock/constraints";
-import {Tag} from 'antd';
-import {ProximityConstraintUI} from "../proximityConstraint";
+import {Constraint} from "../../mock/constraints";
 import {MinusCircleOutlined} from "@ant-design/icons";
 
-const {CheckableTag} = Tag;
 const {Option} = Select;
 
 interface TreatmentInputProps {
@@ -45,18 +42,18 @@ const TreatmentInput = (props: TreatmentInputProps) => {
     }, [constraintsData, treatment, repeat])
 
 
-    const onConstraintClick = (isChecked: boolean, constraint: Constraint) => {
-        setSelectedConstraints(isChecked ? [...selectedConstraints, constraint] : selectedConstraints.filter(x => x.Type !== constraint.Type))
-        if (!isChecked) setConstraintsData([...constraintsData.filter(x => x.type !== constraint.Type)]);
-    }
-
-    const constraintsUI: { [id: string]: ReactNode } = {
-        "proximity": <ProximityConstraintUI key={"proximity-constraint"} onChange={(data: any) => {
-            if (!data) return;
-            let dataWithId = {type: "proximity", ...data};
-            setConstraintsData([...constraintsData.filter(x => x.type !== dataWithId.type), dataWithId])
-        }}/>
-    }
+    // const onConstraintClick = (isChecked: boolean, constraint: Constraint) => {
+    //     setSelectedConstraints(isChecked ? [...selectedConstraints, constraint] : selectedConstraints.filter(x => x.Type !== constraint.Type))
+    //     if (!isChecked) setConstraintsData([...constraintsData.filter(x => x.type !== constraint.Type)]);
+    // }
+    //
+    // const constraintsUI: { [id: string]: ReactNode } = {
+    //     "proximity": <ProximityConstraintUI key={"proximity-constraint"} onChange={(data: any) => {
+    //         if (!data) return;
+    //         let dataWithId = {type: "proximity", ...data};
+    //         setConstraintsData([...constraintsData.filter(x => x.type !== dataWithId.type), dataWithId])
+    //     }}/>
+    // }
 
     return (
         <Space direction={"vertical"} size={"large"}>
@@ -83,14 +80,14 @@ const TreatmentInput = (props: TreatmentInputProps) => {
                     }}
                 />
             </Space>
-            <Space direction={"horizontal"}>
-                {constraints.map(constraint => <CheckableTag checked={selectedConstraints.indexOf(constraint) > -1}
-                                                             onChange={(isChecked) => onConstraintClick(isChecked, constraint)}
-                                                             key={constraint.Type + "-treatmentInput"}>{constraint.Text}</CheckableTag>)}
-            </Space>
-            <Space>
-                {selectedConstraints.map(constraint => constraintsUI[constraint.Type])}
-            </Space>
+            {/*<Space direction={"horizontal"}>*/}
+            {/*    {constraints.map(constraint => <CheckableTag checked={selectedConstraints.indexOf(constraint) > -1}*/}
+            {/*                                                 onChange={(isChecked) => onConstraintClick(isChecked, constraint)}*/}
+            {/*                                                 key={constraint.Type + "-treatmentInput"}>{constraint.Text}</CheckableTag>)}*/}
+            {/*</Space>*/}
+            {/*<Space>*/}
+            {/*    {selectedConstraints.map(constraint => constraintsUI[constraint.Type])}*/}
+            {/*</Space>*/}
         </Space>
     );
 };

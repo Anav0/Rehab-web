@@ -50,7 +50,6 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
     }
 
     useEffect(() => {
-        console.log("USE EFFECT")
         setDate(processProps(props))
     }, [props])
 

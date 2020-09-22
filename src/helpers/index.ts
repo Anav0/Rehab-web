@@ -1,5 +1,6 @@
 import {TimeBlock} from "../models/timeBlock";
 import {SchedulingResult} from "../models/SchedulingResult";
+import { cloneDeep } from "lodash";
 
 export class Uuid {
     static uuidv4 = () => {
@@ -20,8 +21,8 @@ export const dateToTime = (date: Date, lang: string = "pl") => {
     });
 };
 
-export const copy = (object: object) => {
-    return JSON.parse(JSON.stringify(object));
+export const copy = (object: any) => {
+    return cloneDeep(object)
 };
 
 export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
@@ -40,6 +41,6 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
     return timeBlocksToUpdate;
 }
 
-export function getRandomElement(arr: any[]){
+export function getRandomElement(arr: any[]) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
