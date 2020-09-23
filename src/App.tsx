@@ -67,7 +67,7 @@ const App = (props: AppProps) => {
 
     useEffect(() => {
         console.log("App useEffect called");
-        let timeBlockId = 10
+        let timeBlockId = 20
         props.timeBlocks[timeBlockId].Sites[3].tryAddingAppointment(new Appointment("3",patients[0]))
         updateTimeblock(props.timeBlocks[timeBlockId])
     }, [props]);
@@ -108,7 +108,7 @@ const App = (props: AppProps) => {
 
         let recommendations: Recommendation[] = [
             {
-                Repeat: 20,
+                Repeat: 10,
                 Treatment: treatments[4],
             },
         ]

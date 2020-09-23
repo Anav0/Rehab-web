@@ -37,10 +37,10 @@ function newSites2() {
 
 export const sitesByDay: TreatmentSite[][] = [
     newSites(),
-    newSites2(),
     newSites(),
-    newSites2(),
     newSites(),
-    newSites2(),
+    newSites(),
+    newSites(),
+    newSites(),
     newSites(),
 ];

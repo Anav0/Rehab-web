@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Button, Modal, Table} from "antd";
+import {Button, Modal, Space, Table} from "antd";
 import {ReactElement, useEffect, useState} from "react";
 import {RawConstraint} from "../../mock/constraints";
 import {Treatment} from "../../models/treatment";
@@ -45,7 +45,7 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
             let beforeOrAfter = proximity.Offset > 0 ? "przed" : "po";
             let constraintTreatment = treatments.find(x => x.Id === proximity.TreatmentId);
             if (!constraintTreatment) throw new Error(`Nie znaleziono procedury o id ${proximity.TreatmentId}`);
-            return (<span>{Math.abs(proximity.Offset)}min {beforeOrAfter} {constraintTreatment.Name}</span>)
+            return (<span key={data.Type+"-"+constraintTreatment.Name+proximity.Offset}>{Math.abs(proximity.Offset)}min {beforeOrAfter} {constraintTreatment.Name}</span>)
         }
     }
 
@@ -74,7 +74,7 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
             dataIndex: 'constraints',
             key: 'constraints',
             render(constraints: RawConstraint[]) {
-                return <>
+                return <Space direction={"vertical"}>
                     {
                         constraints.length > 0 ?
                             constraints.map(constraint => {
@@ -82,7 +82,7 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
                                 return renderFn ? renderFn(constraint) :
                                     <span>{`Nie znaleziono ograniczenia o type: ${constraint.Type}`}</span>;
                             }) : <span>Brak ograniczeń</span>}
-                </>;
+                </Space>;
             },
         },
     ]
