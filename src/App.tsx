@@ -68,11 +68,8 @@ const App = (props: AppProps) => {
     useEffect(() => {
         console.log("App useEffect called");
         let timeBlockId = 10
-        for (let i=1;i<=2;i++){
-        props.timeBlocks[timeBlockId].Sites[1].tryAddingAppointment(new Appointment("2",patients[0]))
+        props.timeBlocks[timeBlockId].Sites[3].tryAddingAppointment(new Appointment("3",patients[0]))
         updateTimeblock(props.timeBlocks[timeBlockId])
-            timeBlockId+=25;
-        }
     }, [props]);
 
     async function sendTestPayload() {
@@ -112,7 +109,7 @@ const App = (props: AppProps) => {
         let recommendations: Recommendation[] = [
             {
                 Repeat: 20,
-                Treatment: treatments[0],
+                Treatment: treatments[4],
             },
         ]
         try {

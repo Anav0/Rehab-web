@@ -11,11 +11,13 @@ function newSites() {
             "0",
             "Sala gimnastyczna A",
             {"0": {"1": 1}},
-            {"0": 2, "1": 4},
+            {"0": 2, "1": 4, "6": 2, "8": 2, "9": 2, "10": 2},
             [],
             sexConstraintForSiteA
         ),
-        new TreatmentSite("2", "Pokój masażu", {}, {"2": 1}, []),
+        new TreatmentSite("2", "Pokój masażu", {}, {"2": 1, "5": 1}, []),
+        new TreatmentSite("3", "Kriokomora", {}, {"4": 1}, []),
+        new TreatmentSite("4", "Pokój z laserem", {}, {"3": 2}, []),
     ];
 }
 
@@ -29,6 +31,7 @@ function newSites2() {
             [],
         ),
         new TreatmentSite("2", "Pokój masażu", {}, {"2": 1}, []),
+        new TreatmentSite("4", "Pokój z laserem", {}, {"3": 2}, []),
     ];
 }
 
