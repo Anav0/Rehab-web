@@ -26,14 +26,12 @@ interface StateProps {
     patients: Patient[];
     timeBlocks: TimeBlock[];
     selectedDate: Date;
-    appointments: Appointment[];
 }
 
 const mapProps = (state: RootState): StateProps => ({
     patients: state.patients.patients,
     timeBlocks: state.timeBlocks.timeBlocks,
     selectedDate: state.selectedDate.selectedDate,
-    appointments: state.appointments.appointments,
 });
 
 const mapDispatch = {
@@ -163,7 +161,6 @@ const App = (props: AppProps) => {
                 startHour={defaultBlocksConfig.startHour}
                 endHour={defaultBlocksConfig.endHour}
                 timeBlocks={props.timeBlocks}
-                appointments={props.appointments}
                 selectedDate={props.selectedDate}
                 unavailableDates={unavailableDates}
             />

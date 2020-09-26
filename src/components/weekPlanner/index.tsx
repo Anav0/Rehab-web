@@ -6,7 +6,6 @@ import { TimeBlock } from "../../models/timeBlock";
 import { formatKey } from "../../mock/timeBlocks";
 import { CalendarCellData } from "../../models/calendarCellData";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
-import { Appointment } from "../../models/appointment";
 import { sitesByDay } from "../../mock/sites";
 
 interface WeekPlannerProps {
@@ -15,7 +14,6 @@ interface WeekPlannerProps {
   endHour: string;
   startHour: string;
   timeBlocks: TimeBlock[];
-  appointments: Appointment[];
   unavailableDates: any;
 }
 
