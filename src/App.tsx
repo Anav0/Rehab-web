@@ -17,7 +17,7 @@ import patients from "./mock/patients";
 import {Recommendation} from "./models/recommendation";
 import treatments from "./mock/treatments";
 import api from "./api";
-import {parseTimeBlocksFromPayload} from "./helpers";
+import {getAllTreatmentsAsDict, parseTimeBlocksFromPayload} from "./helpers";
 import {TreatmentConstraints} from "./components/treatmentConstraints";
 import {treatmentConstraints} from "./mock/treatmentConstraints";
 import {updateTimeblock} from "./store/timeblocks/actions";
@@ -65,9 +65,12 @@ const App = (props: AppProps) => {
 
     useEffect(() => {
         console.log("App useEffect called");
-        let timeBlockId = 20
-        props.timeBlocks[timeBlockId].Sites[3].tryAddingAppointment(new Appointment("3",patients[0]))
-        updateTimeblock(props.timeBlocks[timeBlockId])
+        // let initId = 10
+        // for (let i = 10; i > 0; i--) {
+        //     let newId = Math.round(initId+Math.random()*20);
+        //     props.timeBlocks[newId].Sites[3].tryAddingAppointment(new Appointment("3", patients[0]))
+        //     updateTimeblock(props.timeBlocks[initId])
+        // }
     }, [props]);
 
     async function sendTestPayload() {
@@ -109,10 +112,14 @@ const App = (props: AppProps) => {
                 Repeat: 10,
                 Treatment: treatments[4],
             },
+            {
+                Repeat: 10,
+                Treatment: treatments[3],
+            },
         ]
         try {
             setIsTesting(true);
-            let payload = new ApiPayload(props.timeBlocks, preferences, new Referral(patients[0], recommendations), treatmentConstraints)
+            let payload = new ApiPayload(props.timeBlocks, preferences, new Referral(patients[0], recommendations), treatmentConstraints, getAllTreatmentsAsDict())
             let response = await api.find.treatment(payload);
             let schedulingResult = response.data;
             let timeBlocks = parseTimeBlocksFromPayload(schedulingResult);

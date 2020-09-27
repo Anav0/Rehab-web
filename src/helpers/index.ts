@@ -1,6 +1,8 @@
 import {TimeBlock} from "../models/timeBlock";
 import {SchedulingResult} from "../models/SchedulingResult";
 import { cloneDeep } from "lodash";
+import mockTreatments from "../mock/treatments";
+import {Treatment} from "../models/treatment";
 
 export class Uuid {
     static uuidv4 = () => {
@@ -28,7 +30,7 @@ export const copy = (object: any) => {
 export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
     let timeBlocksToUpdate: TimeBlock[] = []
     for (let variant of schedulingResult.TreatmentSolutionVariants) {
-        for (let key of Object.keys(variant.Solutions)) {
+        for (let key in variant.Solutions) {
             for (let solution of variant.Solutions[key]) {
                 for (let block of solution.Blocks) {
                     let timeBlock = new TimeBlock(new Date(block.StartDate), block.DurationInMinutes, block.Sites);
@@ -43,4 +45,12 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
 
 export function getRandomElement(arr: any[]) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+export function getAllTreatmentsAsDict(){
+    let dict: {[key: string]: Treatment} = {};
+    for(let treatment of mockTreatments){
+        dict[treatment.Id] = treatment;
+    }
+    return dict;
 }

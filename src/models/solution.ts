@@ -1,12 +1,11 @@
-import { TimeBlock } from "./timeBlock";
-import { TreatmentSite } from "./treatmentSite";
+import {TimeBlock} from "./timeBlock";
 
 export class Solution {
-  public Blocks: TimeBlock[];
-  public Site: TreatmentSite;
+    public Blocks: TimeBlock[];
+    public PickedSitePos: number;
 
-  constructor(site: TreatmentSite, blocks: TimeBlock[]) {
-    this.Blocks = blocks;
-    this.Site = site;
-  }
+    constructor(pickedSitePos: number, blocks: TimeBlock[]) {
+        this.Blocks = blocks;
+        this.PickedSitePos = pickedSitePos;
+    }
 }
