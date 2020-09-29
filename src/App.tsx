@@ -109,12 +109,16 @@ const App = (props: AppProps) => {
 
         let recommendations: Recommendation[] = [
             {
-                Repeat: 10,
+                Repeat: 2,
                 Treatment: treatments[4],
             },
             {
-                Repeat: 10,
+                Repeat: 4,
                 Treatment: treatments[3],
+            },
+            {
+                Repeat: 2,
+                Treatment: treatments[4],
             },
         ]
         try {
