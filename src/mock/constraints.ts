@@ -1,11 +1,15 @@
 export interface Constraint {
-    type: string,
-    text: string,
+    Type: string,
+    Text: string,
 }
 
 export const constraints: Constraint[] = [
     {
-        type: "proximity",
-        text: "Odległość"
+        Type: "proximity",
+        Text: "Odległość"
     }
 ]
+
+export interface RawConstraint {
+    Type: string,
+}

@@ -36,14 +36,14 @@ export class TreatmentSite {
     }
 
     tryAddingAppointment(appointment: Appointment): boolean {
-        if (!(appointment.Treatment.Id in this.Capacity)) return false;
-        if (this.Capacity[appointment.Treatment.Id] <= 0) return false;
+        if (!(appointment.TreatmentId in this.Capacity)) return false;
+        if (this.Capacity[appointment.TreatmentId] <= 0) return false;
 
-        this.Capacity[appointment.Treatment.Id]--;
+        this.Capacity[appointment.TreatmentId]--;
         this.Appointments.push(appointment);
 
-        if (appointment.Treatment.Id in this.BlocageLookup) {
-            let treatmentBlocage = this.BlocageLookup[appointment.Treatment.Id];
+        if (appointment.TreatmentId in this.BlocageLookup) {
+            let treatmentBlocage = this.BlocageLookup[appointment.TreatmentId];
             for (let pair of treatmentBlocage) {
                 this.Capacity[pair.Key] -= pair.Value;
             }

@@ -6,7 +6,7 @@ import {RootState} from "../../store";
 import {Button, Form, notification, Space, Typography,} from "antd";
 import {ApiPayload} from "../../models/apiPayload";
 import api from "../../api";
-import {parseTimeBlocksFromPayload,} from "../../helpers";
+import {getAllTreatmentsAsDict, parseTimeBlocksFromPayload,} from "../../helpers";
 import {TimeBlock} from "../../models/timeBlock";
 import {Referral} from "../../models/referral";
 import {TimeSection} from "./timeSection";
@@ -16,6 +16,7 @@ import {AppointmentFormData} from "../../models/appointmentFormData";
 import {Proximity} from "../proximityConstraint/proximity";
 import {UnableSection} from "./unableSection";
 import {filterTimeBlocksByDates} from "../../mock/timeBlocks";
+import {treatmentConstraints} from "../../mock/treatmentConstraints";
 
 const {Title} = Typography;
 
@@ -99,11 +100,14 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         try {
             if (!formData.patient) throw new Error("Nie wybrano pacjenta");
             this.markTimeBlocksAs(false);
+
+
             let payload = new ApiPayload(
                 filterTimeBlocksByDates(this.props.timeBlocks, formData.unavailableDates),
                 this.compilePreferences(formData),
-                1,
-                new Referral(formData.patient, formData.recommendations)
+                new Referral(formData.patient, formData.recommendations),
+                treatmentConstraints,
+                getAllTreatmentsAsDict()
             );
             const response = await api.find.treatment(payload);
             const schedulingResult = response.data;

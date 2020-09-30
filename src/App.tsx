@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import "./App.css";
-import {Modal, DatePicker, Button} from "antd";
+import {Modal, DatePicker, Button, Space} from "antd";
 import "moment/locale/pl";
 import localePL from "antd/es/date-picker/locale/pl_PL";
 import {Patient} from "./models/patient";
@@ -10,27 +10,26 @@ import {connect, ConnectedProps} from "react-redux";
 import AppointmentForm from "./components/appointmentForm";
 import {TimeBlock} from "./models/timeBlock";
 import {defaultBlocksConfig} from "./models/timeBlockConfig";
-import {Appointment} from "./models/appointment";
 import {ApiPayload} from "./models/apiPayload";
 import {Referral} from "./models/referral";
 import patients from "./mock/patients";
 import {Recommendation} from "./models/recommendation";
 import treatments from "./mock/treatments";
 import api from "./api";
-import {getRandomElement, parseTimeBlocksFromPayload} from "./helpers";
+import {getAllTreatmentsAsDict, parseTimeBlocksFromPayload} from "./helpers";
+import {TreatmentConstraints} from "./components/treatmentConstraints";
+import {treatmentConstraints} from "./mock/treatmentConstraints";
 
 interface StateProps {
     patients: Patient[];
     timeBlocks: TimeBlock[];
     selectedDate: Date;
-    appointments: Appointment[];
 }
 
 const mapProps = (state: RootState): StateProps => ({
     patients: state.patients.patients,
     timeBlocks: state.timeBlocks.timeBlocks,
     selectedDate: state.selectedDate.selectedDate,
-    appointments: state.appointments.appointments,
 });
 
 const mapDispatch = {
@@ -64,6 +63,12 @@ const App = (props: AppProps) => {
 
     useEffect(() => {
         console.log("App useEffect called");
+        // let initId = 10
+        // for (let i = 10; i > 0; i--) {
+        //     let newId = Math.round(initId+Math.random()*20);
+        //     props.timeBlocks[newId].Sites[3].tryAddingAppointment(new Appointment("3", patients[0]))
+        //     updateTimeblock(props.timeBlocks[initId])
+        // }
     }, [props]);
 
     async function sendTestPayload() {
@@ -72,35 +77,61 @@ const App = (props: AppProps) => {
                 type: "time",
                 days: [
                     {
-                        dayOfWeek: 0, //Niedziela,
-                        start: "2020-09-02T06:00:00",
+                        dayOfWeek: 0,
+                        start: "2020-09-02T04:00:00",
                         end: "2020-09-02T14:00:00",
                     },
                     {
-                        dayOfWeek: 6, //Sobota,
-                        start: "2020-09-02T10:00:00",
+                        dayOfWeek: 1,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 2,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 3,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 4,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 5,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 6,
+                        start: "2020-09-02T04:00:00",
                         end: "2020-09-02T14:00:00",
                     }
                 ]
             }
-
         ]
-        let constraints: any = []
+
         let recommendations: Recommendation[] = [
             {
-                Repeat: 2,
-                Treatment: treatments[0],
-                RawConstraints: []
+                Repeat: 4,
+                Treatment: treatments[3],
+            },
+            {
+                Repeat: 4,
+                Treatment: treatments[4],
             },
             {
                 Repeat: 2,
-                Treatment: treatments[2],
-                RawConstraints: []
+                Treatment: treatments[5],
             },
         ]
         try {
             setIsTesting(true);
-            let payload = new ApiPayload(props.timeBlocks, preferences, 4, new Referral(getRandomElement(patients), recommendations))
+            let payload = new ApiPayload(props.timeBlocks, preferences, new Referral(patients[0], recommendations), treatmentConstraints, getAllTreatmentsAsDict())
             let response = await api.find.treatment(payload);
             let schedulingResult = response.data;
             let timeBlocks = parseTimeBlocksFromPayload(schedulingResult);
@@ -127,7 +158,7 @@ const App = (props: AppProps) => {
               })}
           </span>
                 </div>
-                <div className="app-header-content">
+                <Space direction={"horizontal"} size={"large"} className="app-header-content">
                     <DatePicker
                         allowClear={false}
                         format={"YYYY-MM-DD"}
@@ -141,14 +172,14 @@ const App = (props: AppProps) => {
                     <Button loading={isTesting} onClick={sendTestPayload}>
                         Test
                     </Button>
-                </div>
+                    <TreatmentConstraints treatments={treatments} treatmentsConstraints={treatmentConstraints}/>
+                </Space>
             </div>
             <WeekPlanner
                 interval={defaultBlocksConfig.durationInMinutes}
                 startHour={defaultBlocksConfig.startHour}
                 endHour={defaultBlocksConfig.endHour}
                 timeBlocks={props.timeBlocks}
-                appointments={props.appointments}
                 selectedDate={props.selectedDate}
                 unavailableDates={unavailableDates}
             />
@@ -169,6 +200,5 @@ const App = (props: AppProps) => {
             </Modal>
         </main>
     );
-};
-
+}
 export default connect(mapProps, mapDispatch)(App);

@@ -1,8 +1,6 @@
-import {Treatment} from "../../models/treatment";
-
 export interface Proximity {
     sign: number;
     offset: number;
-    treatment: Treatment;
+    treatmentId: string;
     treatmentIndex: number;
 }
