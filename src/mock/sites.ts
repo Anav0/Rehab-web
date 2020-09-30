@@ -10,10 +10,10 @@ function newSites() {
         new TreatmentSite(
             "0",
             "Sala gimnastyczna A",
-            {"0": {"1": 1}},
+            {},
             {"0": 2, "1": 4, "6": 2, "8": 2, "9": 2, "10": 2},
             [],
-            sexConstraintForSiteA
+            {}
         ),
         new TreatmentSite("2", "Pokój masażu", {}, {"2": 1, "5": 1}, []),
         new TreatmentSite("3", "Kriokomora", {}, {"4": 1}, []),

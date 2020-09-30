@@ -10,7 +10,6 @@ import {connect, ConnectedProps} from "react-redux";
 import AppointmentForm from "./components/appointmentForm";
 import {TimeBlock} from "./models/timeBlock";
 import {defaultBlocksConfig} from "./models/timeBlockConfig";
-import {Appointment} from "./models/appointment";
 import {ApiPayload} from "./models/apiPayload";
 import {Referral} from "./models/referral";
 import patients from "./mock/patients";
@@ -20,7 +19,6 @@ import api from "./api";
 import {getAllTreatmentsAsDict, parseTimeBlocksFromPayload} from "./helpers";
 import {TreatmentConstraints} from "./components/treatmentConstraints";
 import {treatmentConstraints} from "./mock/treatmentConstraints";
-import {updateTimeblock} from "./store/timeblocks/actions";
 
 interface StateProps {
     patients: Patient[];
@@ -102,6 +100,16 @@ const App = (props: AppProps) => {
                         dayOfWeek: 4,
                         start: "2020-09-02T04:00:00",
                         end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 5,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
+                    },
+                    {
+                        dayOfWeek: 6,
+                        start: "2020-09-02T04:00:00",
+                        end: "2020-09-02T14:00:00",
                     }
                 ]
             }
@@ -109,16 +117,16 @@ const App = (props: AppProps) => {
 
         let recommendations: Recommendation[] = [
             {
-                Repeat: 2,
-                Treatment: treatments[4],
-            },
-            {
                 Repeat: 4,
                 Treatment: treatments[3],
             },
             {
-                Repeat: 2,
+                Repeat: 4,
                 Treatment: treatments[4],
+            },
+            {
+                Repeat: 2,
+                Treatment: treatments[5],
             },
         ]
         try {
