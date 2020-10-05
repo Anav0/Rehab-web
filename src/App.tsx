@@ -124,14 +124,6 @@ const App = (props: AppProps) => {
         Repeat: 2,
         Treatment: treatments[3],
       },
-      {
-        Repeat: 2,
-        Treatment: treatments[4],
-      },
-      {
-        Repeat: 2,
-        Treatment: treatments[5],
-      },
     ];
     try {
       setIsTesting(true);

@@ -29,9 +29,11 @@ export const copy = (object: any) => {
 
 export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
   let timeBlocksToUpdate: TimeBlock[] = [];
+    console.log(schedulingResult.TreatmentSolutionVariants.length)
   for (let variant of schedulingResult.TreatmentSolutionVariants) {
     for (let key in variant.Solutions) {
       for (let solution of variant.Solutions[key]) {
+
         for (let block of solution.Blocks) {
           let timeBlock = new TimeBlock(
             new Date(block.StartDate),
@@ -39,6 +41,7 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
             block.Sites
           );
           timeBlock.IsNew = true;
+          console.log(timeBlock.StartDate)
           timeBlocksToUpdate.push(timeBlock);
         }
       }
