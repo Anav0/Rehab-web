@@ -16,7 +16,11 @@ import patients from "./mock/patients";
 import { Recommendation } from "./models/recommendation";
 import treatments from "./mock/treatments";
 import api from "./api";
-import { getAllTreatmentsAsDict, parseTimeBlocksFromPayload } from "./helpers";
+import {
+  getAllTreatmentsAsDict,
+  getRandomElement,
+  parseTimeBlocksFromPayload,
+} from "./helpers";
 import { TreatmentConstraints } from "./components/treatmentConstraints";
 import { treatmentConstraints } from "./mock/treatmentConstraints";
 import { updateTimeblock } from "./store/timeblocks/actions";
@@ -121,8 +125,16 @@ const App = (props: AppProps) => {
 
     let recommendations: Recommendation[] = [
       {
-        Repeat: 2,
+        Repeat: 5,
         Treatment: treatments[3],
+      },
+      {
+        Repeat: 5,
+        Treatment: treatments[4],
+      },
+      {
+        Repeat: 10,
+        Treatment: treatments[9],
       },
     ];
     try {
@@ -130,7 +142,7 @@ const App = (props: AppProps) => {
       let payload = new ApiPayload(
         props.timeBlocks,
         preferences,
-        new Referral(patients[0], recommendations),
+        new Referral(getRandomElement(patients), recommendations),
         treatmentConstraints,
         getAllTreatmentsAsDict()
       );
