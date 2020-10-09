@@ -1,6 +1,8 @@
 import { TreatmentSite } from "./treatmentSite";
+import {Uuid} from "../helpers";
 
 export class TimeBlock {
+  Id: string;
   StartDate: Date;
   DurationInMinutes: number;
   Sites: TreatmentSite[];
@@ -11,6 +13,7 @@ export class TimeBlock {
     durationInMinutes: number = 60,
     sites: TreatmentSite[]
   ) {
+    this.Id = Uuid.uuidv4();
     this.StartDate = start;
     this.DurationInMinutes = durationInMinutes;
     this.Sites = sites;

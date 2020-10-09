@@ -125,17 +125,14 @@ const App = (props: AppProps) => {
 
     let recommendations: Recommendation[] = [
       {
-        Repeat: 5,
+        Repeat: 1,
         Treatment: treatments[3],
       },
       {
-        Repeat: 5,
+        Repeat: 1,
         Treatment: treatments[4],
       },
-      {
-        Repeat: 10,
-        Treatment: treatments[9],
-      },
+
     ];
     try {
       setIsTesting(true);
