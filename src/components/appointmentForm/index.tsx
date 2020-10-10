@@ -87,11 +87,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         return allPreferences;
     };
 
-    markTimeBlocksAs = (IsNew: boolean) => {
-        for (let timeBlock of this.props.timeBlocks)
-            timeBlock.IsNew = IsNew;
-        this.props.bulkTimeBlocksUpdate(this.props.timeBlocks)
-    }
+
 
     send = async (formData: AppointmentFormData) => {
         this.setState(() => ({
@@ -99,8 +95,8 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         }));
         try {
             if (!formData.patient) throw new Error("Nie wybrano pacjenta");
-            this.markTimeBlocksAs(false);
-
+            for (let timeBlock of this.props.timeBlocks) timeBlock.IsNew = false;
+            this.props.bulkTimeBlocksUpdate(this.props.timeBlocks);
 
             let payload = new ApiPayload(
                 filterTimeBlocksByDates(this.props.timeBlocks, formData.unavailableDates),

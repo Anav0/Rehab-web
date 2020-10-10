@@ -132,7 +132,6 @@ const App = (props: AppProps) => {
         Repeat: 1,
         Treatment: treatments[4],
       },
-
     ];
     try {
       setIsTesting(true);
@@ -145,6 +144,7 @@ const App = (props: AppProps) => {
       );
       let response = await api.find.treatment(payload);
       let schedulingResult = response.data;
+      for (let timeBlock of props.timeBlocks) timeBlock.IsNew = false;
       let timeBlocks = parseTimeBlocksFromPayload(schedulingResult);
       props.bulkTimeBlocksUpdate(timeBlocks);
     } catch (error) {
