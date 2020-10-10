@@ -23,8 +23,6 @@ import {
 } from "./helpers";
 import { TreatmentConstraints } from "./components/treatmentConstraints";
 import { treatmentConstraints } from "./mock/treatmentConstraints";
-import { updateTimeblock } from "./store/timeblocks/actions";
-import { Appointment } from "./models/appointment";
 
 interface StateProps {
   patients: Patient[];
@@ -53,15 +51,16 @@ const mapDispatch = {
   }),
 };
 
-type AppProps = PropsFromRedux & {};
-
 const connector = connect(mapProps, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type AppProps = PropsFromRedux & {};
 
 const App = (props: AppProps) => {
   const [isModalVisible, setModalVisibility] = useState<boolean>(false);
   const [isTesting, setIsTesting] = useState<boolean>(false);
   const [unavailableDates, setUnavailableDates] = useState<any>([]);
+  const [timeBlocksForSelectedDate, setTimeBlocksForSelectedDate] = useState<TimeBlock[]>([]);
 
   const onWeekChanged = (date: any, dateString: string) => {
     props.updateSelectedDate(new Date(date));
@@ -69,15 +68,22 @@ const App = (props: AppProps) => {
 
   useEffect(() => {
     console.log("App useEffect called");
-    // let initId = 10;
-    // for (let i = 10; i > 0; i--) {
-    //   let newId = Math.round(initId + Math.random() * 20);
-    //   props.timeBlocks[newId].Sites[3].tryAddingAppointment(
-    //     new Appointment("3", patients[0])
-    //   );
-    //   updateTimeblock(props.timeBlocks[initId]);
-    // }
-  }, [props]);
+    let dayOfMonthStart = props.selectedDate.getDate()-props.selectedDate.getDay();
+    let dayOfMonthEnd = dayOfMonthStart+7;
+    let month = props.selectedDate.getMonth()
+    let year = props.selectedDate.getFullYear()
+    let blocks: TimeBlock[]= [];
+    for(let block of props.timeBlocks){
+      if(block.StartDate.getFullYear()===year && block.StartDate.getMonth()===month){
+        let blockDayOfMonth = block.StartDate.getDate();
+        if(blockDayOfMonth>=dayOfMonthStart && blockDayOfMonth <= dayOfMonthEnd){
+          blocks.push(block)
+        }
+      }
+
+    }
+    setTimeBlocksForSelectedDate(blocks)
+  }, [props.selectedDate, props.timeBlocks, props]);
 
   async function sendTestPayload() {
     let preferences = [
@@ -196,7 +202,7 @@ const App = (props: AppProps) => {
         interval={defaultBlocksConfig.durationInMinutes}
         startHour={defaultBlocksConfig.startHour}
         endHour={defaultBlocksConfig.endHour}
-        timeBlocks={props.timeBlocks}
+        timeBlocks={timeBlocksForSelectedDate}
         selectedDate={props.selectedDate}
         unavailableDates={unavailableDates}
       />
@@ -220,4 +226,4 @@ const App = (props: AppProps) => {
     </main>
   );
 };
-export default connect(mapProps, mapDispatch)(App);
+export default connector(App);

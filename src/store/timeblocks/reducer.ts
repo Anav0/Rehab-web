@@ -1,6 +1,7 @@
 import { existingBlocks, generateTimeBlockRange } from "../../mock/timeBlocks";
 import { TimeBlockActionType, TimeBlockState } from "./types";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
+import { copy } from "../../helpers";
 
 let split = defaultBlocksConfig.startHour.split(":");
 let startHour = +split[0];
@@ -24,15 +25,17 @@ export const timeblockReducer = (
   switch (action.type) {
     case "ADD_TIMEBLOCK":
       state.timeBlocks = [...state.timeBlocks, action.payload];
-      return { ...state };
+      return copy(state);
     case "FILL_TIMEBLOCK":
       for (let timeBlock of action.payload) {
         let blockToChangeIndex = state.timeBlocks.findIndex(
           (x) => x.StartDate.getTime() === timeBlock.StartDate.getTime()
         );
+        if (blockToChangeIndex === -1)
+          throw new Error("No block with this id in store");
         state.timeBlocks[blockToChangeIndex] = timeBlock;
       }
-      return { ...state };
+      return copy(state);
     case "UPDATE_TIMEBLOCK":
       let index = state.timeBlocks.findIndex(
         (block) =>
@@ -41,7 +44,7 @@ export const timeblockReducer = (
       if (index === undefined || index == -1)
         state.timeBlocks.push(action.payload);
       state.timeBlocks[index] = action.payload;
-      return { ...state };
+      return copy(state);
     default:
       return state;
   }
