@@ -1,11 +1,10 @@
 import React from "react";
 import "./index.css";
 import {Uuid} from "../../helpers";
-import {List, Space} from "antd";
+import {List} from "antd";
 import {TreatmentSite} from "../../models/treatmentSite";
 import {Descriptions} from "antd";
 import treatments from "../../mock/treatments";
-import {defaultBlocksConfig} from "../../models/timeBlockConfig";
 import {Sex} from "../../models/patient";
 
 interface SiteDetailsProps {
@@ -13,7 +12,7 @@ interface SiteDetailsProps {
 }
 
 export const SiteDetails = (props: SiteDetailsProps) => {
-    const colorOptions: string[] = [];
+    const colorOptions: { [key: string]: string } = {};;
 
     const getTreatmentFullness = (site: TreatmentSite, treatmentId: string) => {
         let sum = 0;
@@ -34,27 +33,29 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     const descriptors = [];
     let i = 0;
     for (let property in props.site.Capacity) {
+        let treatment = treatments.find((x) => x.Id === property);
+        if(!treatment) throw Error("Treatment not found");
         capacityFullness[property] = getTreatmentFullness(props.site, property);
-        let colorHSL = 200 + i * 40;
+        let colorHSL = 50 + i * 50;
         if (colorHSL > 300) {
             i = 0;
-            colorHSL = 100 + i * 40;
+            colorHSL = 50 + i * 50;
         }
-        colorOptions.push(`hsl(${colorHSL},75%,50%)`);
+        colorOptions[treatment.Id] = `hsl(${colorHSL},75%,50%)`;
         i++;
     }
-    i = 0;
     for (let property in props.site.Capacity) {
         let capacity = props.site.Capacity[property];
         let current = capacityFullness[property];
         let enlisted = `Zajęte miejsca: ${current}`;
         let free = `Wolne miejsca: ${capacity}`;
         let treatment = treatments.find((x) => x.Id === property);
+        if(!treatment) throw Error("Treatment not found");
         descriptors.push(
             <Descriptions.Item
                 key={Uuid.uuidv4()}
                 label={
-                    <span style={{color: colorOptions[i]}}>
+                    <span style={{color: colorOptions[treatment.Id]}}>
             {treatment ? `${treatment.Name} ${getTreatmentSexConstraint(treatment.Id,props.site)}` : "Nie znaleziono zabiegu"}
           </span>
                 }
@@ -66,7 +67,6 @@ export const SiteDetails = (props: SiteDetailsProps) => {
                 />
             </Descriptions.Item>
         );
-        i++;
     }
 
     let patientNames = props.site.Appointments.map((x, i) => {
