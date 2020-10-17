@@ -85,7 +85,6 @@ export class DayAndHour extends React.Component<DayAndHourProps, TimePreference>
                     {children}
                 </Select>
                 <RangePicker
-                    picker={"time"}
                     format={"HH:mm"}
                     defaultValue={this.state.hourRange}
                     onChange={this.onHourChange}
