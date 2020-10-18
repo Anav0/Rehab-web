@@ -57,7 +57,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
       <div
         style={props.cellData.style}
         onClick={() => setVisible(true)}
-        className={`cell-container ${props.isNew ? "new-cell" : ""} ${props.isBlocked ? "blocked-cell" : ""}`}
+        className={`${visible ? 'cell-selected' : ''} cell-container ${props.isNew ? "new-cell" : ""} ${props.isBlocked ? "blocked-cell" : ""}`}
       >
         {used}
         { "/" }

@@ -14,3 +14,7 @@
 .blocked-cell{
   border: #f5222d solid 3px;
 }
+
+.cell-selected{
+  border: orange solid 5px !important;
+}
