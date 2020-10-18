@@ -18,11 +18,14 @@ import treatments from "./mock/treatments";
 import api from "./api";
 import {
   getAllTreatmentsAsDict,
+  getNumberInRange,
   getRandomElement,
   parseTimeBlocksFromPayload,
 } from "./helpers";
 import { TreatmentConstraints } from "./components/treatmentConstraints";
 import { treatmentConstraints } from "./mock/treatmentConstraints";
+import { TreatmentSite } from "./models/treatmentSite";
+import { Appointment } from "./models/appointment";
 
 interface StateProps {
   patients: Patient[];
@@ -65,6 +68,10 @@ const App = (props: AppProps) => {
   const onWeekChanged = (date: any, dateString: string) => {
     props.updateSelectedDate(new Date(date));
   };
+
+  useEffect(()=>{
+    populateBlocks(props.timeBlocks.slice(0,props.timeBlocks.length/4), 20, 0.5);
+  },[])
 
   useEffect(() => {
     console.log("App useEffect called");
@@ -131,20 +138,30 @@ const App = (props: AppProps) => {
 
     let recommendations: Recommendation[] = [
       {
-        Repeat: 1,
+        Repeat: 4,
         Treatment: treatments[3],
       },
       {
-        Repeat: 1,
+        Repeat: 4,
         Treatment: treatments[4],
+      },
+      {
+        Repeat: 2,
+        Treatment: treatments[6],
+      },
+       {
+        Repeat: 2,
+        Treatment: treatments[2],
       },
     ];
     try {
       setIsTesting(true);
+      let patient = getRandomElement(patients);
+      console.log(patient.Name);
       let payload = new ApiPayload(
         props.timeBlocks,
         preferences,
-        new Referral(getRandomElement(patients), recommendations),
+        new Referral(patient, recommendations),
         treatmentConstraints,
         getAllTreatmentsAsDict()
       );
@@ -227,3 +244,19 @@ const App = (props: AppProps) => {
   );
 };
 export default connector(App);
+
+function populateBlocks(timeBlocks: TimeBlock[], maxAppointPerBlock: number = 4, chances: number = 0.65) {
+  for (let i = 0; i < timeBlocks.length; i++) {
+    let block = timeBlocks[i];
+
+    if (Math.random() >= chances) {
+      let k = getNumberInRange(0,maxAppointPerBlock);
+      while (k > 0) {
+          let randomSite = getRandomElement(block.Sites) as TreatmentSite;
+          let acceptedTreatmentsIds = Object.keys(randomSite.Capacity);
+          randomSite.tryAddingAppointment(new Appointment(getRandomElement(acceptedTreatmentsIds), getRandomElement(patients)));
+          k--;
+        }
+      }
+  }
+}
