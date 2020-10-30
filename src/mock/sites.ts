@@ -24,8 +24,6 @@ function newSites() {
 function newSites2() {
   return [
     new TreatmentSite("0", "Sala gimnastyczna B", {}, { "0": 2, "1": 1 }, []),
-    new TreatmentSite("2", "Pokój masażu", {}, { "2": 1 }, []),
-    new TreatmentSite("4", "Pokój z laserem", {}, { "3": 2 }, []),
   ];
 }
 

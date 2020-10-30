@@ -70,7 +70,7 @@ const App = (props: AppProps) => {
   };
 
   useEffect(()=>{
-    populateBlocks(props.timeBlocks.slice(0,props.timeBlocks.length/4), 20, 0.5);
+    populateBlocks(props.timeBlocks.slice(0,props.timeBlocks.length/4), 5, 0.1);
   },[])
 
   useEffect(() => {
@@ -138,20 +138,20 @@ const App = (props: AppProps) => {
 
     let recommendations: Recommendation[] = [
       {
-        Repeat: 4,
+        Repeat: 5,
         Treatment: treatments[3],
       },
       {
-        Repeat: 4,
+        Repeat: 5,
+        Treatment: treatments[8],
+      },
+      {
+        Repeat: 5,
         Treatment: treatments[4],
       },
       {
-        Repeat: 2,
+        Repeat: 5,
         Treatment: treatments[6],
-      },
-       {
-        Repeat: 2,
-        Treatment: treatments[2],
       },
     ];
     try {
