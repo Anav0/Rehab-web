@@ -18,6 +18,7 @@ import treatments from "./mock/treatments";
 import api from "./api";
 import {
   getAllTreatmentsAsDict,
+  getMonday,
   getNumberInRange,
   getRandomElement,
   parseTimeBlocksFromPayload,
@@ -70,24 +71,25 @@ const App = (props: AppProps) => {
   };
 
   useEffect(()=>{
+    console.log("Populating blocks");
+    console.log(props.timeBlocks.length);
     populateBlocks(props.timeBlocks.slice(0,props.timeBlocks.length/4), 5, 0.1);
   },[])
 
   useEffect(() => {
     console.log("App useEffect called");
-    let dayOfMonthStart = props.selectedDate.getDate()-props.selectedDate.getDay();
-    let dayOfMonthEnd = dayOfMonthStart+7;
-    let month = props.selectedDate.getMonth()
-    let year = props.selectedDate.getFullYear()
+    let start = getMonday(props.selectedDate)
+    start.setHours(0,0,1)
+    let end = new Date()
+    end.setDate(start.getDate()+6)
+    end.setHours(23,59,59)
+
     let blocks: TimeBlock[]= [];
     for(let block of props.timeBlocks){
-      if(block.StartDate.getFullYear()===year && block.StartDate.getMonth()===month){
-        let blockDayOfMonth = block.StartDate.getDate();
-        if(blockDayOfMonth>=dayOfMonthStart && blockDayOfMonth <= dayOfMonthEnd){
+        let blockDayTime = block.StartDate.getTime();
+        if(blockDayTime >= start.getTime() && blockDayTime <= end.getTime()){
           blocks.push(block)
         }
-      }
-
     }
     setTimeBlocksForSelectedDate(blocks)
   }, [props.selectedDate, props.timeBlocks, props]);
@@ -250,7 +252,7 @@ function populateBlocks(timeBlocks: TimeBlock[], maxAppointPerBlock: number = 4,
     let block = timeBlocks[i];
 
     if (Math.random() >= chances) {
-      let k = getNumberInRange(0,maxAppointPerBlock);
+      let k = getNumberInRange(0, maxAppointPerBlock);
       while (k > 0) {
           let randomSite = getRandomElement(block.Sites) as TreatmentSite;
           let acceptedTreatmentsIds = Object.keys(randomSite.Capacity);
