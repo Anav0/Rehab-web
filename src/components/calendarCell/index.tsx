@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import {Affix, Modal} from "antd";
 import { SiteDetails } from "../timeBlockDetails";
 import "./index.css";
-import { Uuid } from "../../helpers";
 import { CalendarCellData } from "../../models/calendarCellData";
 import { Collapse } from "antd";
+import { Uuid } from "../../helpers/uuid";
 
 const { Panel } = Collapse;
 

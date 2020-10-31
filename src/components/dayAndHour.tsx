@@ -1,6 +1,6 @@
 import React from "react";
 import {Select, TimePicker} from "antd";
-import {Uuid} from "../helpers";
+import {Uuid} from "../helpers/uuid";
 import moment from 'moment';
 import {defaultBlocksConfig} from "../models/timeBlockConfig";
 import {TimePreference} from "../models/timePreference";

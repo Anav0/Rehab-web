@@ -19,14 +19,12 @@ import api from "./api";
 import {
   getAllTreatmentsAsDict,
   getMonday,
-  getNumberInRange,
   getRandomElement,
   parseTimeBlocksFromPayload,
+  populateBlocks,
 } from "./helpers";
 import { TreatmentConstraints } from "./components/treatmentConstraints";
 import { treatmentConstraints } from "./mock/treatmentConstraints";
-import { TreatmentSite } from "./models/treatmentSite";
-import { Appointment } from "./models/appointment";
 
 interface StateProps {
   patients: Patient[];
@@ -72,7 +70,6 @@ const App = (props: AppProps) => {
 
   useEffect(()=>{
     console.log("Populating blocks");
-    console.log(props.timeBlocks.length);
     populateBlocks(props.timeBlocks.slice(0,props.timeBlocks.length/4), 5, 0.1);
   },[])
 
@@ -246,19 +243,3 @@ const App = (props: AppProps) => {
   );
 };
 export default connector(App);
-
-function populateBlocks(timeBlocks: TimeBlock[], maxAppointPerBlock: number = 4, chances: number = 0.65) {
-  for (let i = 0; i < timeBlocks.length; i++) {
-    let block = timeBlocks[i];
-
-    if (Math.random() >= chances) {
-      let k = getNumberInRange(0, maxAppointPerBlock);
-      while (k > 0) {
-          let randomSite = getRandomElement(block.Sites) as TreatmentSite;
-          let acceptedTreatmentsIds = Object.keys(randomSite.Capacity);
-          randomSite.tryAddingAppointment(new Appointment(getRandomElement(acceptedTreatmentsIds), getRandomElement(patients)));
-          k--;
-        }
-      }
-  }
-}

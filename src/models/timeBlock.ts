@@ -1,5 +1,5 @@
 import { TreatmentSite } from "./treatmentSite";
-import {Uuid} from "../helpers";
+import { Uuid } from "../helpers/uuid";
 
 export class TimeBlock {
   Id: string;

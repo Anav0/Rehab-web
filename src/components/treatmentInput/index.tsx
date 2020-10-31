@@ -1,10 +1,9 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {InputNumber, Select, Space} from "antd";
-import {Uuid} from "../../helpers";
 import {Treatment} from "../../models/treatment";
 import {Recommendation} from "../../models/recommendation";
-import {Constraint} from "../../mock/constraints";
 import {MinusCircleOutlined} from "@ant-design/icons";
+import { Uuid } from '../../helpers/uuid';
 
 const {Option} = Select;
 

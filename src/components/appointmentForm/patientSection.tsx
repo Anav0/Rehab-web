@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {AutoComplete, Form, Select} from "antd";
-import {Uuid} from "../../helpers";
 import {Patient} from "../../models/patient";
 import {useState} from "react";
 import mockPatients from "../../mock/patients";

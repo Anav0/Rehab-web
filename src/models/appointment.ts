@@ -1,5 +1,5 @@
+import { Uuid } from "../helpers/uuid";
 import { Patient } from "./patient";
-import { Uuid } from "../helpers";
 
 export class Appointment {
   Id: string;

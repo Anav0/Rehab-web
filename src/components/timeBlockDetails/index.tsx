@@ -1,11 +1,11 @@
 import React from "react";
 import "./index.css";
-import {Uuid} from "../../helpers";
 import {List} from "antd";
 import {TreatmentSite} from "../../models/treatmentSite";
 import {Descriptions} from "antd";
 import treatments from "../../mock/treatments";
 import {Sex} from "../../models/patient";
+import { Uuid } from "../../helpers/uuid";
 
 interface SiteDetailsProps {
     site: TreatmentSite;

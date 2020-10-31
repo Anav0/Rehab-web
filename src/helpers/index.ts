@@ -3,18 +3,9 @@ import { SchedulingResult } from "../models/SchedulingResult";
 import { cloneDeep } from "lodash";
 import mockTreatments from "../mock/treatments";
 import { Treatment } from "../models/treatment";
-
-export class Uuid {
-  static uuidv4 = () => {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (
-      c
-    ) {
-      var r = (Math.random() * 16) | 0,
-        v = c == "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  };
-}
+import { TreatmentSite } from "../models/treatmentSite";
+import { Appointment } from "../models/appointment";
+import patients from "../mock/patients";
 
 export const dateToTime = (date: Date, lang: string = "pl") => {
   return date.toLocaleTimeString(lang, {
@@ -70,4 +61,30 @@ export function getMonday(d: Date) {
   var day = d.getDay(),
     diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
   return new Date(d.setDate(diff));
+}
+
+export function populateBlocks(
+  timeBlocks: TimeBlock[],
+  maxAppointPerBlock: number = 4,
+  chances: number = 0.65
+) {
+  for (let i = 0; i < timeBlocks.length; i++) {
+    let block = timeBlocks[i];
+
+    if (Math.random() <= chances) {
+      let k = getNumberInRange(0, maxAppointPerBlock);
+
+      while (k > 0) {
+        let randomSite = getRandomElement(block.Sites) as TreatmentSite;
+        let acceptedTreatmentsIds = Object.keys(randomSite.Capacity);
+        randomSite.tryAddingAppointment(
+          new Appointment(
+            getRandomElement(acceptedTreatmentsIds),
+            getRandomElement(patients)
+          )
+        );
+        k--;
+      }
+    }
+  }
 }

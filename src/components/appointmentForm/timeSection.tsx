@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import {Affix, Button, Form,  Space,  Typography} from "antd";
 import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
 import {DayAndHour} from "../dayAndHour";
-import {CloseOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import {copy, Uuid} from "../../helpers";
+import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
+import {copy} from "../../helpers";
 import {TimePreference} from "../../models/timePreference";
+import { Uuid } from '../../helpers/uuid';
 
 const {Title} = Typography;
 

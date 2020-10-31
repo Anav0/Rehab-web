@@ -1,4 +1,4 @@
-import { Uuid } from "../helpers";
+import { Uuid } from "../helpers/uuid";
 
 export class Patient {
   Id: string;

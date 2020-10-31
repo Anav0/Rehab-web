@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";
 import { CalendarCell } from "../calendarCell";
-import { Uuid, copy } from "../../helpers";
+import { copy } from "../../helpers";
 import { TimeBlock } from "../../models/timeBlock";
 import { formatKey } from "../../mock/timeBlocks";
 import { CalendarCellData } from "../../models/calendarCellData";
 import { defaultBlocksConfig } from "../../models/timeBlockConfig";
 import { sitesByDay } from "../../mock/sites";
+import { Uuid } from "../../helpers/uuid";
 
 interface WeekPlannerProps {
   interval: number;

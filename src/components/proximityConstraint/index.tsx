@@ -1,6 +1,6 @@
 import React from "react";
 import {Select, Space} from "antd";
-import {Uuid} from "../../helpers";
+import {Uuid} from "../../helpers/uuid";
 import mockTreatments from "../../mock/treatments";
 import {Treatment} from "../../models/treatment";
 import {Proximity} from "./proximity";
