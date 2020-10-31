@@ -77,14 +77,16 @@ const App = (props: AppProps) => {
     console.log("App useEffect called");
     let start = getMonday(props.selectedDate)
     start.setHours(0,0,1)
-    let end = new Date()
+    let end = new Date(start)
     end.setDate(start.getDate()+6)
     end.setHours(23,59,59)
 
     let blocks: TimeBlock[]= [];
+
     for(let block of props.timeBlocks){
         let blockDayTime = block.StartDate.getTime();
         if(blockDayTime >= start.getTime() && blockDayTime <= end.getTime()){
+          console.log(block.StartDate)
           blocks.push(block)
         }
     }
