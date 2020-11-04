@@ -2,10 +2,6 @@ import { TreatmentSite } from "../models/treatmentSite";
 import { Sex } from "../models/patient";
 
 function newSites() {
-  const sexConstraintForSiteA: { [key: string]: Sex } = {
-    "0": Sex.FEMALE,
-  };
-
   return [
     new TreatmentSite(
       "0",
@@ -18,6 +14,14 @@ function newSites() {
     new TreatmentSite("2", "Pokój masażu", {}, { "2": 1, "5": 1 }, []),
     new TreatmentSite("3", "Kriokomora", {}, { "4": 1 }, []),
     new TreatmentSite("4", "Pokój z laserem", {}, { "3": 2 }, []),
+    new TreatmentSite(
+      "5",
+      "Pokój masażu tylko dla kobiet",
+      {},
+      { "2": 1, "5": 1 },
+      [],
+      { "2": Sex.FEMALE, "5": Sex.FEMALE }
+    ),
   ];
 }
 
