@@ -3,7 +3,7 @@ import "./App.css";
 import { Modal, DatePicker, Button, Space } from "antd";
 import "moment/locale/pl";
 import localePL from "antd/es/date-picker/locale/pl_PL";
-import { Patient } from "./models/patient";
+import { Patient, Sex } from "./models/patient";
 import WeekPlanner from "./components/weekPlanner";
 import { RootState } from "./store";
 import { connect, ConnectedProps } from "react-redux";
@@ -150,7 +150,7 @@ const App = (props: AppProps) => {
     try {
       setIsTesting(true);
       let patient = getRandomElement(patients);
-      console.log(patient.Name);
+      console.log(`${patient.Name} ${Sex[patient.Sex]}`);
       let payload = new ApiPayload(
         props.timeBlocks,
         preferences,
