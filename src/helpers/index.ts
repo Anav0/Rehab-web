@@ -63,28 +63,4 @@ export function getMonday(d: Date) {
   return new Date(d.setDate(diff));
 }
 
-export function populateBlocks(
-  timeBlocks: TimeBlock[],
-  maxAppointPerBlock: number = 4,
-  chances: number = 0.65
-) {
-  for (let i = 0; i < timeBlocks.length; i++) {
-    let block = timeBlocks[i];
 
-    if (Math.random() <= chances) {
-      let k = getNumberInRange(0, maxAppointPerBlock);
-
-      while (k > 0) {
-        let randomSite = getRandomElement(block.Sites) as TreatmentSite;
-        let acceptedTreatmentsIds = Object.keys(randomSite.Capacity);
-        randomSite.tryAddingAppointment(
-          new Appointment(
-            getRandomElement(acceptedTreatmentsIds),
-            getRandomElement(patients)
-          )
-        );
-        k--;
-      }
-    }
-  }
-}

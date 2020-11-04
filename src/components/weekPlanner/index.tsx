@@ -47,6 +47,7 @@ const getHours = (props: WeekPlannerProps) => {
 
 const getDays = (selectedDate: Date) => {
   let baseDay = selectedDate.getDay();
+
   let days: Date[] = [];
   for (let i = 1; i <= 7; i++) {
     let newDate = new Date(selectedDate);

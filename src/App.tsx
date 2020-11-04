@@ -21,10 +21,10 @@ import {
   getMonday,
   getRandomElement,
   parseTimeBlocksFromPayload,
-  populateBlocks,
 } from "./helpers";
 import { TreatmentConstraints } from "./components/treatmentConstraints";
 import { treatmentConstraints } from "./mock/treatmentConstraints";
+import { BlockPopulator } from "./helpers/blockPopulator";
 
 interface StateProps {
   patients: Patient[];
@@ -70,7 +70,8 @@ const App = (props: AppProps) => {
 
   useEffect(()=>{
     console.log("Populating blocks");
-    populateBlocks(props.timeBlocks.slice(0,props.timeBlocks.length/4), 5, 0.1);
+    BlockPopulator.populateRandomly(props.timeBlocks.slice(0,props.timeBlocks.length/4), 6, 0.85);
+    //BlockPopulator.populate(props.timeBlocks.slice(0,props.timeBlocks.length/4))
   },[])
 
   useEffect(() => {
@@ -86,7 +87,6 @@ const App = (props: AppProps) => {
     for(let block of props.timeBlocks){
         let blockDayTime = block.StartDate.getTime();
         if(blockDayTime >= start.getTime() && blockDayTime <= end.getTime()){
-          console.log(block.StartDate)
           blocks.push(block)
         }
     }
@@ -139,20 +139,12 @@ const App = (props: AppProps) => {
 
     let recommendations: Recommendation[] = [
       {
-        Repeat: 5,
-        Treatment: treatments[3],
+        Repeat: 10,
+        Treatment: treatments[2],
       },
       {
-        Repeat: 5,
-        Treatment: treatments[8],
-      },
-      {
-        Repeat: 5,
-        Treatment: treatments[4],
-      },
-      {
-        Repeat: 5,
-        Treatment: treatments[6],
+        Repeat: 10,
+        Treatment: treatments[5],
       },
     ];
     try {
@@ -167,9 +159,8 @@ const App = (props: AppProps) => {
         getAllTreatmentsAsDict()
       );
       let response = await api.find.treatment(payload);
-      let schedulingResult = response.data;
       for (let timeBlock of props.timeBlocks) timeBlock.IsNew = false;
-      let timeBlocks = parseTimeBlocksFromPayload(schedulingResult);
+      let timeBlocks = parseTimeBlocksFromPayload(response.data);
       props.bulkTimeBlocksUpdate(timeBlocks);
     } catch (error) {
       console.error(error);
