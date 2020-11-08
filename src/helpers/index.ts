@@ -20,6 +20,7 @@ export const copy = (object: any) => {
 
 export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
   let timeBlocksToUpdate: TimeBlock[] = [];
+  let changedBlocksStartTimes = [];
   console.log(schedulingResult.TreatmentSolutionVariants.length);
   for (let variant of schedulingResult.TreatmentSolutionVariants) {
     for (let key in variant.Solutions) {
@@ -31,12 +32,13 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
             block.Sites
           );
           timeBlock.IsNew = true;
-          console.log(timeBlock.StartDate);
+          changedBlocksStartTimes.push(timeBlock.StartDate);
           timeBlocksToUpdate.push(timeBlock);
         }
       }
     }
   }
+  console.log(changedBlocksStartTimes);
   return timeBlocksToUpdate;
 }
 
@@ -61,30 +63,4 @@ export function getMonday(d: Date) {
   var day = d.getDay(),
     diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
   return new Date(d.setDate(diff));
-}
-
-export function populateBlocks(
-  timeBlocks: TimeBlock[],
-  maxAppointPerBlock: number = 4,
-  chances: number = 0.65
-) {
-  for (let i = 0; i < timeBlocks.length; i++) {
-    let block = timeBlocks[i];
-
-    if (Math.random() <= chances) {
-      let k = getNumberInRange(0, maxAppointPerBlock);
-
-      while (k > 0) {
-        let randomSite = getRandomElement(block.Sites) as TreatmentSite;
-        let acceptedTreatmentsIds = Object.keys(randomSite.Capacity);
-        randomSite.tryAddingAppointment(
-          new Appointment(
-            getRandomElement(acceptedTreatmentsIds),
-            getRandomElement(patients)
-          )
-        );
-        k--;
-      }
-    }
-  }
 }
