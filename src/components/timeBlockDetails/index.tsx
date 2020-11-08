@@ -22,12 +22,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
         return sum;
     };
 
-    const getTreatmentSexConstraint = (treatmentId: string, site: TreatmentSite): string =>{
-        if(!site.SexConstraintTreatments.hasOwnProperty(treatmentId)) return "";
-        let sex = site.SexConstraintTreatments[treatmentId];
-        if(!sex) return "";
-        return Sex[sex].toString()[0];
-    }
+
 
     let capacityFullness: { [key: string]: number } = {};
     const descriptors = [];
@@ -56,7 +51,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
                 key={Uuid.uuidv4()}
                 label={
                     <span style={{color: colorOptions[treatment.Id]}}>
-            {treatment ? `${treatment.Name} ${getTreatmentSexConstraint(treatment.Id,props.site)}` : "Nie znaleziono zabiegu"}
+            {treatment ? `${treatment.Name} ${props.site.SexConstraintTreatments.length>0 ? "S" : ""}` : "Nie znaleziono zabiegu"}
           </span>
                 }
             >
@@ -74,7 +69,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
         let color = colorOptions[+treatmentId];
         return (
             <span key={Uuid.uuidv4()} style={{color}}>
-        {x.Patient.Name}
+        {x.Patient.Name} {Sex[x.Patient.Sex][0]}
       </span>
         );
     });

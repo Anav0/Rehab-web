@@ -1,5 +1,4 @@
 import { Appointment } from "./appointment";
-import { Sex } from "./patient";
 
 export class TreatmentSite {
   Id: string;
@@ -8,7 +7,7 @@ export class TreatmentSite {
   Capacity: { [treatmentId: string]: number };
   readonly OriginalCapacitySum: number;
   Appointments: Appointment[];
-  SexConstraintTreatments: { [treatmentId: string]: Sex };
+  SexConstraintTreatments: string[];
 
   constructor(
     id: string,
@@ -16,7 +15,7 @@ export class TreatmentSite {
     blocageLookup: { [treatmentId: string]: { [treatmentId: string]: number } },
     capacity: { [treatmentId: string]: number },
     appointments: Appointment[],
-    SexConstraintTreatments = {}
+    SexConstraintTreatments: string[] = []
   ) {
     this.Id = id;
     this.Name = name;
@@ -38,6 +37,14 @@ export class TreatmentSite {
   tryAddingAppointment(appointment: Appointment): boolean {
     if (!(appointment.TreatmentId in this.Capacity)) return false;
     if (this.Capacity[appointment.TreatmentId] <= 0) return false;
+
+    if (
+      this.SexConstraintTreatments.includes(appointment.TreatmentId) &&
+      this.Appointments.length > 0
+    ) {
+      let sexofFirstPatient = this.Appointments[0].Patient.Sex;
+      if (appointment.Patient.Sex !== sexofFirstPatient) return false;
+    }
 
     this.Capacity[appointment.TreatmentId]--;
     this.Appointments.push(appointment);
