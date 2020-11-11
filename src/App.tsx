@@ -139,12 +139,28 @@ const App = (props: AppProps) => {
 
     let recommendations: Recommendation[] = [
       {
-        Repeat: 10,
+        Repeat: 2,
         Treatment: treatments[2],
       },
       {
-        Repeat: 10,
+        Repeat: 2,
         Treatment: treatments[5],
+      },
+      {
+        Repeat: 2,
+        Treatment: treatments[9],
+      },
+      {
+        Repeat: 2,
+        Treatment: treatments[8],
+      },
+      {
+        Repeat: 2,
+        Treatment: treatments[3],
+      },
+      {
+        Repeat: 2,
+        Treatment: treatments[4],
       },
     ];
     try {
@@ -156,7 +172,8 @@ const App = (props: AppProps) => {
         preferences,
         new Referral(patient, recommendations),
         treatmentConstraints,
-        getAllTreatmentsAsDict()
+        getAllTreatmentsAsDict(),
+        {}
       );
       let response = await api.find.treatment(payload);
       for (let timeBlock of props.timeBlocks) timeBlock.IsNew = false;
