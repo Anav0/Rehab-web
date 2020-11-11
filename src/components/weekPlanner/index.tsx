@@ -30,29 +30,35 @@ const getHours = (props: WeekPlannerProps) => {
   let splitedEndHour = props.endHour.split(":");
   let splitedStartHour = props.startHour.split(":");
 
-  let helperDate = new Date();
-  helperDate.setHours(+splitedStartHour[0], +splitedStartHour[1], 0);
+  let changingDate = new Date();
+  changingDate.setHours(+splitedStartHour[0], +splitedStartHour[1], 0);
 
-  let endTime = new Date();
-  endTime.setHours(+splitedEndHour[0], +splitedEndHour[1], 0);
+  let referenceDate = new Date();
+  referenceDate.setHours(+splitedEndHour[0], +splitedEndHour[1], 0);
 
   do {
-    let newItem = "";
-    newItem += helperDate.toLocaleTimeString(lang, timeConfig);
-    helperDate.setTime(helperDate.getTime() + props.interval * 60000);
-    hours.push(newItem);
-  } while (helperDate.getTime() <= endTime.getTime());
+    let newHour = "";
+    newHour += changingDate.toLocaleTimeString(lang, timeConfig);
+    changingDate.setTime(changingDate.getTime() + props.interval * 60000);
+    hours.push(newHour);
+  } while (changingDate.getTime() <= referenceDate.getTime());
   return hours;
 };
 
-const getDays = (selectedDate: Date) => {
-  let baseDay = selectedDate.getDay();
+const getMonday=(d: Date)=> {
+  d = new Date(d);
+  var day = d.getDay(),
+      diff = d.getDate() - day + (day === 0 ? -6:1);
+  return new Date(d.setDate(diff));
+}
 
+const getDays = (selectedDate: Date) => {
   let days: Date[] = [];
-  for (let i = 1; i <= 7; i++) {
-    let newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + (i - baseDay));
-    days.push(newDate);
+  let monday = getMonday(selectedDate)
+  for (let i = 0; i < 7; i++) {
+    let tmp = new Date(monday);
+    tmp.setDate(tmp.getDate()+i)
+    days.push(tmp);
   }
   return days;
 };
@@ -87,7 +93,6 @@ const getCalendarCellsData = (
 ) => {
   let tmpCalendarCellData: CalendarCellData[] = [];
   let i = 0;
-
   let blocksByDay = convertToDictionaryByDate(props.timeBlocks);
 
   for (let timeStamp of hours) {
@@ -128,28 +133,18 @@ const getCalendarCellsData = (
   return tmpCalendarCellData;
 };
 
-const initGrid = (props: WeekPlannerProps) => {
-  const hours = getHours(props);
-  const days = getDays(props.selectedDate);
-  const calendarCells = getCalendarCellsData(hours, days, props);
-
-  return {
-    hours,
-    days,
-    calendarCells,
-  };
-};
-
 const WeekPlanner = (props: WeekPlannerProps) => {
   const [calendarCells, setCalendarCells] = useState<CalendarCellData[]>([]);
   const [days, setDays] = useState<any>([]);
   const [hours, setHours] = useState<any>([]);
 
   useEffect(() => {
-    const { hours, days, calendarCells: calendarCalls } = initGrid(props);
+    let hours = getHours(props);
+    let days = getDays(props.selectedDate);
+    let calendarCells = getCalendarCellsData(hours, days, props);
     setHours(hours);
     setDays(days);
-    setCalendarCells(calendarCalls);
+    setCalendarCells(calendarCells);
   }, [props]);
 
   return (
@@ -163,10 +158,8 @@ const WeekPlanner = (props: WeekPlannerProps) => {
           gridRow: `${i + 2}/${i + 3}`,
         };
 
-        let className = `planner-day ${isToday ? "bold" : ""}`;
-
         return (
-          <span style={style} className={className} key={x.toString()}>
+          <span style={style} className={`planner-day ${isToday ? "bold" : ""}`} key={x.toString()}>
             {x.toLocaleDateString("pl", {
               weekday: "long",
             })}

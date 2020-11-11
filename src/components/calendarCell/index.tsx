@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Affix, Modal} from "antd";
+import {Modal} from "antd";
 import { SiteDetails } from "../timeBlockDetails";
 import "./index.css";
 import { CalendarCellData } from "../../models/calendarCellData";
