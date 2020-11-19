@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {Button, Modal, Space, Table} from "antd";
-import {ReactElement, useEffect, useState} from "react";
-import {RawConstraint} from "../../mock/constraints";
-import {Treatment} from "../../models/treatment";
-import {RawProximityConstraint} from "../../models/rawProximityConstraint";
-import treatments from "../../mock/treatments";
+import {ReactElement, useEffect, useState} from 'react';
+import {Button, Modal, Space, Table} from 'antd';
+import {RawConstraint} from '../../mock/constraints';
+import {Treatment} from '../../models/treatment';
+import {RawProximityConstraint} from '../../models/rawProximityConstraint';
+import treatments from '../../mock/treatments';
 
 interface TreatmentConstraintsProps {
     treatments: Treatment[]
@@ -20,38 +20,42 @@ interface TreatmentConstraintsUIModel {
 
 export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-    const [data, setDate] = useState<TreatmentConstraintsUIModel[]>([])
+    const [data, setDate] = useState<TreatmentConstraintsUIModel[]>([]);
 
     const processProps = (props: TreatmentConstraintsProps) => {
-        let processedData: TreatmentConstraintsUIModel[] = []
+        let processedData: TreatmentConstraintsUIModel[] = [];
 
         for (let treatment of props.treatments) {
-            let treatmentConstraints = props.treatmentsConstraints[treatment.Id]
+            let treatmentConstraints = props.treatmentsConstraints[treatment.Id];
 
             processedData.push({
                 duration: treatment.DurationInMinutes,
                 procedure: treatment.Name,
                 id: treatment.Id,
-                constraints: treatmentConstraints ? treatmentConstraints : []
-            })
+                constraints: treatmentConstraints ? treatmentConstraints : [],
+            });
         }
 
         return processedData;
-    }
+    };
 
     const constraintUI: { [key: string]: (data: RawConstraint) => ReactElement } = {
-        "proximity": (data: RawConstraint) => {
+        'proximity': (data: RawConstraint) => {
             let proximity = data as RawProximityConstraint;
-            let beforeOrAfter = proximity.Offset > 0 ? "przed" : "po";
-            let constraintTreatment = treatments.find(x => x.Id === proximity.TreatmentId);
-            if (!constraintTreatment) throw new Error(`Nie znaleziono procedury o id ${proximity.TreatmentId}`);
-            return (<span key={data.Type+"-"+constraintTreatment.Name+proximity.Offset}>{Math.abs(proximity.Offset)}min {beforeOrAfter} {constraintTreatment.Name}</span>)
-        }
-    }
+            let beforeOrAfter = proximity.Offset > 0 ? 'przed' : 'po';
+            let constraintTreatment = treatments.find(
+                x => x.Id === proximity.TreatmentId);
+            if (!constraintTreatment) throw new Error(
+                `Nie znaleziono procedury o id ${proximity.TreatmentId}`);
+            return (<span key={data.Type + '-' + constraintTreatment.Name +
+            proximity.Offset}>{Math.abs(
+                proximity.Offset)}min {beforeOrAfter} {constraintTreatment.Name}</span>);
+        },
+    };
 
     useEffect(() => {
-        setDate(processProps(props))
-    }, [props])
+        setDate(processProps(props));
+    }, [props]);
 
     const columns = [
         {
@@ -74,7 +78,7 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
             dataIndex: 'constraints',
             key: 'constraints',
             render(constraints: RawConstraint[]) {
-                return <Space direction={"vertical"}>
+                return <Space direction={'vertical'}>
                     {
                         constraints.length > 0 ?
                             constraints.map(constraint => {
@@ -85,14 +89,14 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
                 </Space>;
             },
         },
-    ]
+    ];
 
     return (
         <>
             <Button onClick={() => setIsModalVisible(!isModalVisible)}>
                 Procedury
             </Button>
-            <Modal title="Szczegóły dotyczące procedur"
+            <Modal title='Szczegóły dotyczące procedur'
                    visible={isModalVisible}
                    onCancel={() => setIsModalVisible(false)}
                    onOk={() => setIsModalVisible(false)}

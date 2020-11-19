@@ -1,17 +1,18 @@
 .planner-container {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(1fr, 7);
-  grid-auto-rows: 1fr;
-  margin-top: 5rem;
-  grid-gap: 0.5rem;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(1fr, 7);
+    grid-auto-rows: 1fr;
+    margin-top: 5rem;
+    grid-gap: 0.5rem;
 }
+
 .planner-hour,
 .planner-meeting,
 .planner-day {
-  place-self: center;
-  cursor: default;
+    place-self: center;
+    cursor: default;
 }
 
 .planner-hour {
@@ -21,17 +22,18 @@
 }
 
 .planner-day {
-  width: 8rem;
-  min-height: 4rem;
+    width: 8rem;
+    min-height: 4rem;
 }
-.day-preference{
-  margin-top:10px;
-  width:100%;
-  display:flex;
-  align-items: baseline;
+
+.day-preference {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    align-items: baseline;
 
 }
 
-.day-preference .ant-select{
-  width:10rem !important;
+.day-preference .ant-select {
+    width: 10rem !important;
 }

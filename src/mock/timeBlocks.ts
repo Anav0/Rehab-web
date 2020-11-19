@@ -1,96 +1,96 @@
-import { TimeBlock } from "../models/timeBlock";
-import { defaultBlocksConfig } from "../models/timeBlockConfig";
-import { sitesByDay } from "./sites";
-import { copy } from "../helpers";
+import {TimeBlock} from '../models/timeBlock';
+import {defaultBlocksConfig} from '../models/timeBlockConfig';
+import {sitesByDay} from './sites';
+import {copy} from '../helpers';
 
 export const existingBlocks = [];
 
 export const formatKey = (date: Date) => {
-  return `${date.toDateString()} ${date.toLocaleString("pl", {
-    hour: "2-digit",
-    minute: "2-digit",
-  })}`;
+    return `${date.toDateString()} ${date.toLocaleString('pl', {
+        hour: '2-digit',
+        minute: '2-digit',
+    })}`;
 };
 
 function getBlocksByDay(
-  blocks: TimeBlock[]
+    blocks: TimeBlock[],
 ): {
-  [key: string]: TimeBlock;
-} {
-  let blocksByDay: {
     [key: string]: TimeBlock;
-  } = {};
+} {
+    let blocksByDay: {
+        [key: string]: TimeBlock;
+    } = {};
 
-  for (let block of blocks) {
-    let key = formatKey(block.StartDate);
-    blocksByDay[key] = block;
-  }
-  return blocksByDay;
+    for (let block of blocks) {
+        let key = formatKey(block.StartDate);
+        blocksByDay[key] = block;
+    }
+    return blocksByDay;
 }
 
 export function generateTimeBlockRange(
-  start: Date,
-  end: Date,
-  existingBlocks: TimeBlock[]
+    start: Date,
+    end: Date,
+    existingBlocks: TimeBlock[],
 ) {
-  let generatedBlocks: TimeBlock[] = [];
-  let current = new Date(start);
+    let generatedBlocks: TimeBlock[] = [];
+    let current = new Date(start);
 
-  let startHour = defaultBlocksConfig.startHour.split(":");
-  let endHour = defaultBlocksConfig.endHour.split(":");
-  let duration = defaultBlocksConfig.durationInMinutes;
+    let startHour = defaultBlocksConfig.startHour.split(':');
+    let endHour = defaultBlocksConfig.endHour.split(':');
+    let duration = defaultBlocksConfig.durationInMinutes;
 
-  let endDate = new Date(start);
-  endDate.setHours(+endHour[0], +endHour[1], 0);
+    let endDate = new Date(start);
+    endDate.setHours(+endHour[0], +endHour[1], 0);
 
-  let blocksByDay = getBlocksByDay(existingBlocks);
+    let blocksByDay = getBlocksByDay(existingBlocks);
 
-  while (current < end) {
-    if (current.getTime() > endDate.getTime()) {
-      current.setDate(current.getDate() + 1);
-      endDate.setDate(endDate.getDate() + 1);
-      current.setHours(+startHour[0], +startHour[1], 0, 0);
+    while (current < end) {
+        if (current.getTime() > endDate.getTime()) {
+            current.setDate(current.getDate() + 1);
+            endDate.setDate(endDate.getDate() + 1);
+            current.setHours(+startHour[0], +startHour[1], 0, 0);
+        }
+        let key = formatKey(current);
+        if (key in blocksByDay) {
+            generatedBlocks.push(blocksByDay[key]);
+        } else {
+            let sitesFoGivenDay = copy(sitesByDay[current.getDay()]);
+            generatedBlocks.push(
+                new TimeBlock(new Date(current), duration, [...sitesFoGivenDay]),
+            );
+        }
+        current.setMinutes(current.getMinutes() + duration, 0, 0);
     }
-    let key = formatKey(current);
-    if (key in blocksByDay) {
-      generatedBlocks.push(blocksByDay[key]);
-    } else {
-      let sitesFoGivenDay = copy(sitesByDay[current.getDay()]);
-      generatedBlocks.push(
-        new TimeBlock(new Date(current), duration, [...sitesFoGivenDay])
-      );
-    }
-    current.setMinutes(current.getMinutes() + duration, 0, 0);
-  }
-  return generatedBlocks;
+    return generatedBlocks;
 }
 
 export function setDatesTime(
-  h: number,
-  m: number,
-  s: number,
-  ms: number,
-  date: Date = new Date()
+    h: number,
+    m: number,
+    s: number,
+    ms: number,
+    date: Date = new Date(),
 ) {
-  date.setHours(h, m, s, ms);
-  return date;
+    date.setHours(h, m, s, ms);
+    return date;
 }
 
 export function filterTimeBlocksByDates(
-  timeBlocks: TimeBlock[],
-  unavailableDates: any
+    timeBlocks: TimeBlock[],
+    unavailableDates: any,
 ): TimeBlock[] {
-  if (!unavailableDates) return timeBlocks;
-  for (let dateRange of unavailableDates) {
-    let start = new Date(dateRange[0]);
-    start.setHours(5, 0, 0, 0);
-    let end = new Date(dateRange[1]);
-    end.setHours(235, 0, 0, 0);
-    timeBlocks = timeBlocks.filter(
-      (x) =>
-        x.StartDate.getTime() < start.getTime() ||
-        x.StartDate.getTime() > end.getTime()
-    );
-  }
-  return timeBlocks;
+    if (!unavailableDates) return timeBlocks;
+    for (let dateRange of unavailableDates) {
+        let start = new Date(dateRange[0]);
+        start.setHours(5, 0, 0, 0);
+        let end = new Date(dateRange[1]);
+        end.setHours(235, 0, 0, 0);
+        timeBlocks = timeBlocks.filter(
+            (x) =>
+                x.StartDate.getTime() < start.getTime() ||
+                x.StartDate.getTime() > end.getTime(),
+        );
+    }
+    return timeBlocks;
 }

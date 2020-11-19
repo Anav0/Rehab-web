@@ -1,4 +1,4 @@
-import {Treatment} from "./treatment";
+import {Treatment} from './treatment';
 
 export interface Recommendation {
     Treatment: Treatment,

@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
-import {Affix, Button, Form,  Space,  Typography} from "antd";
+import {Affix, Button, Form, Space, Typography} from "antd";
 import {canAddMoreDays, getPresetBtnsData} from "../../helpers/presets";
 import {DayAndHour} from "../dayAndHour";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {copy} from "../../helpers";
 import {TimePreference} from "../../models/timePreference";
-import { Uuid } from '../../helpers/uuid';
+import {Uuid} from '../../helpers/uuid';
 
 const {Title} = Typography;
 
@@ -54,10 +54,10 @@ export const TimeSection = () => {
 
     return (
         <>
-        <div ref={timeSelectorContainerRef}>
-            <Title level={4}>Preferowany termin wizyty</Title>
-        </div>
-            <Form.List  name="times">
+            <div ref={timeSelectorContainerRef}>
+                <Title level={4}>Preferowany termin wizyty</Title>
+            </div>
+            <Form.List name="times">
                 {(fields: any, options: any) => {
                     let canAddMore = canAddMoreDays(fields);
                     return (
@@ -123,6 +123,6 @@ export const TimeSection = () => {
                     );
                 }}
             </Form.List>
-            </>
+        </>
     );
 };

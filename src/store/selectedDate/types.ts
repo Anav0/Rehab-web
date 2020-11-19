@@ -1,12 +1,12 @@
-export const UPDATE_DATE = "UPDATE_DATE";
+export const UPDATE_DATE = 'UPDATE_DATE';
 
 interface UpdateSelectedDate {
-  type: typeof UPDATE_DATE;
-  payload: Date;
+    type: typeof UPDATE_DATE;
+    payload: Date;
 }
 
 export interface SelectedDateState {
-  selectedDate: Date;
+    selectedDate: Date;
 }
 
 export type SelectedDateActionType = UpdateSelectedDate;

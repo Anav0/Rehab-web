@@ -1,11 +1,11 @@
-import { CSSProperties } from "react";
-import { TimeBlock } from "./timeBlock";
+import {CSSProperties} from 'react';
+import {TimeBlock} from './timeBlock';
 
 export interface CalendarCellData {
-  style: CSSProperties;
-  timeBlock: TimeBlock;
-  day: Date;
-  timeStamp: string;
-  isNew: boolean;
-  isBlocked: boolean;
+    style: CSSProperties;
+    timeBlock: TimeBlock;
+    day: Date;
+    timeStamp: string;
+    isNew: boolean;
+    isBlocked: boolean;
 }

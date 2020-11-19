@@ -1,4 +1,4 @@
-import {TimeBlock} from "./timeBlock";
+import {TimeBlock} from './timeBlock';
 
 export class Solution {
     public Blocks: TimeBlock[];

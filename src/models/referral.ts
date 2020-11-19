@@ -1,9 +1,9 @@
-import {Recommendation} from "./recommendation";
-import {Patient} from "./patient";
+import {Recommendation} from './recommendation';
+import {Patient} from './patient';
 
 export class Referral {
     Patient: Patient;
-    Recommendations: Recommendation[]
+    Recommendations: Recommendation[];
 
     constructor(Patient: Patient, Recommendations: Recommendation[]) {
         this.Patient = Patient;

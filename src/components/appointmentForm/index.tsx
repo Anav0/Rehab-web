@@ -1,22 +1,22 @@
-import "./index.css";
-import React, {Component} from "react";
-import {connect, ConnectedProps} from "react-redux";
-import {Patient} from "../../models/patient";
-import {RootState} from "../../store";
-import {Button, Form, notification, Space, Typography,} from "antd";
-import {ApiPayload} from "../../models/apiPayload";
-import api from "../../api";
-import {getAllTreatmentsAsDict, parseTimeBlocksFromPayload,} from "../../helpers";
-import {TimeBlock} from "../../models/timeBlock";
-import {Referral} from "../../models/referral";
-import {TimeSection} from "./timeSection";
-import {ProcedureSection} from "./procedureSection";
-import {PatientSection} from "./patientSection";
-import {AppointmentFormData} from "../../models/appointmentFormData";
-import {Proximity} from "../proximityConstraint/proximity";
-import {UnableSection} from "./unableSection";
-import {filterTimeBlocksByDates} from "../../mock/timeBlocks";
-import {treatmentConstraints} from "../../mock/treatmentConstraints";
+import './index.css';
+import React, {Component} from 'react';
+import {connect, ConnectedProps} from 'react-redux';
+import {Patient} from '../../models/patient';
+import {RootState} from '../../store';
+import {Button, Form, notification, Space, Typography} from 'antd';
+import {ApiPayload} from '../../models/apiPayload';
+import api from '../../api';
+import {getAllTreatmentsAsDict, parseTimeBlocksFromPayload,} from '../../helpers';
+import {TimeBlock} from '../../models/timeBlock';
+import {Referral} from '../../models/referral';
+import {TimeSection} from './timeSection';
+import {ProcedureSection} from './procedureSection';
+import {PatientSection} from './patientSection';
+import {AppointmentFormData} from '../../models/appointmentFormData';
+import {Proximity} from '../proximityConstraint/proximity';
+import {UnableSection} from './unableSection';
+import {filterTimeBlocksByDates} from '../../mock/timeBlocks';
+import {treatmentConstraints} from '../../mock/treatmentConstraints';
 
 const {Title} = Typography;
 
@@ -38,19 +38,19 @@ const mapProps = (state: RootState): ComponentProps => ({
 
 const mapDispatch = {
     updateTimeBlock: (timeblock: TimeBlock) => ({
-        type: "UPDATE_TIMEBLOCK",
+        type: 'UPDATE_TIMEBLOCK',
         payload: timeblock,
     }),
     bulkTimeBlocksUpdate: (timeblocks: TimeBlock[]) => ({
-        type: "FILL_TIMEBLOCK",
+        type: 'BULK_UPDATE_TIMEBLOCKS',
         payload: timeblocks,
     }),
     updateSelectedDate: (date: Date) => ({
-        type: "UPDATE_DATE",
+        type: 'UPDATE_DATE',
         payload: date,
     }),
     fillBlockedTimeBlocks: (timeBlocks: TimeBlock[]) => ({
-        type: "FILL_BLOCKED_TIMEBLOCKS",
+        type: 'FILL_BLOCKED_TIMEBLOCKS',
         payload: timeBlocks,
     }),
 };
@@ -73,12 +73,12 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
 
     compilePreferences = (values: AppointmentFormData) => {
         let allPreferences: any = [];
-        let preference: any = {type: "time", days: []};
+        let preference: any = {type: 'time', days: []};
         for (let value of values.times) {
             let day: any = {
                 dayOfWeek: +value.day,
                 start: value.hourRange[0]._d.toISOString(),
-                end: value.hourRange[1]._d.toISOString()
+                end: value.hourRange[1]._d.toISOString(),
             };
             preference.days.push(day);
         }
@@ -87,14 +87,12 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
         return allPreferences;
     };
 
-
-
     send = async (formData: AppointmentFormData) => {
         this.setState(() => ({
             isProcessing: true,
         }));
         try {
-            if (!formData.patient) throw new Error("Nie wybrano pacjenta");
+            if (!formData.patient) throw new Error('Nie wybrano pacjenta');
             for (let timeBlock of this.props.timeBlocks) timeBlock.IsNew = false;
             this.props.bulkTimeBlocksUpdate(this.props.timeBlocks);
 
@@ -103,35 +101,35 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                 this.compilePreferences(formData),
                 new Referral(formData.patient, formData.recommendations),
                 treatmentConstraints,
-                getAllTreatmentsAsDict()
+                getAllTreatmentsAsDict(),
             );
-            const response = await api.find.treatment(payload);
+            const response = await api.find.solution(payload);
             const schedulingResult = response.data;
             let timeBlocks = parseTimeBlocksFromPayload(schedulingResult);
             this.props.bulkTimeBlocksUpdate(timeBlocks);
 
-            let sol = schedulingResult.TreatmentSolutionVariants[0].Solutions[0]
-            let blocks: TimeBlock[] = []
+            let sol = schedulingResult.TreatmentSolutionVariants[0].Solutions[0];
+            let blocks: TimeBlock[] = [];
             if (sol)
-                blocks = sol[0].Blocks
+                blocks = sol[0].Blocks;
 
             this.props.OnSendSuccess(formData.unavailableDates);
 
             notification.success({
-                message: "Sukces",
+                message: 'Sukces',
                 onClick: () => {
                     this.props.updateSelectedDate(new Date(blocks[0].StartDate));
                 },
                 description: (
-                    <Space direction="vertical">
+                    <Space direction='vertical'>
             <span>
-              {new Date(blocks[0].StartDate).toLocaleString("pl", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  weekday: "long",
-                  hour: "2-digit",
-                  minute: "2-digit",
+              {new Date(blocks[0].StartDate).toLocaleString('pl', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  weekday: 'long',
+                  hour: '2-digit',
+                  minute: '2-digit',
               })}
             </span>
                     </Space>
@@ -148,7 +146,7 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                     : error.message;
 
             notification.open({
-                message: "Error",
+                message: 'Error',
                 description: errMsg,
             });
             this.setState((state: ComponentState, props: AppointmentFormProps) => ({
@@ -168,8 +166,8 @@ class AppointmentForm extends Component<AppointmentFormProps, ComponentState> {
                 <Form.Item>
                     <Button
                         loading={this.state.isProcessing}
-                        type="primary"
-                        htmlType="submit"
+                        type='primary'
+                        htmlType='submit'
                     >
                         Wyślij
                     </Button>

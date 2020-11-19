@@ -1,10 +1,9 @@
 import * as React from 'react';
-import {Button, Form, Typography,} from "antd";
-import "moment/locale/pl";
-import localePL from "antd/es/date-picker/locale/pl_PL";
-import {DatePicker, Space} from 'antd';
-import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import {useEffect, useState} from "react";
+import {useEffect, useState} from 'react';
+import {Button, DatePicker, Form, Space, Typography} from 'antd';
+import 'moment/locale/pl';
+import localePL from 'antd/es/date-picker/locale/pl_PL';
+import {MinusCircleOutlined, PlusOutlined} from '@ant-design/icons';
 
 const {Title} = Typography;
 
@@ -23,38 +22,40 @@ const UnableSectionContent = (props: UnableSectionContentProps) => {
     const onChange = (dateRange: any) => {
         let start = dateRange[0];
         let end = dateRange[1];
-        setSelectedDateRange([start, end])
-    }
+        setSelectedDateRange([start, end]);
+    };
 
     useEffect(() => {
-        props.onChange(selectedDateRange)
-    }, [selectedDateRange])
+        props.onChange(selectedDateRange);
+    }, [selectedDateRange]);
 
-    return (<RangePicker defaultValue={selectedDateRange} onChange={onChange} locale={localePL}/>)
-}
+    return (<RangePicker defaultValue={selectedDateRange} onChange={onChange}
+                         locale={localePL}/>);
+};
 
 export const UnableSection = () => {
     return (
         <>
             <Title level={4}>Niemożliwy termin wizyty</Title>
-            <Form.List name="unavailableDates">
+            <Form.List name='unavailableDates'>
                 {(fields: any, options: any) => {
                     return (
-                        <Space style={{width: '100%'}} direction={"vertical"}>
+                        <Space style={{width: '100%'}} direction={'vertical'}>
                             {fields.map((field: any) => {
                                 return (
-                                    <Space key={field.key} direction={"horizontal"} align={"baseline"}>
+                                    <Space key={field.key} direction={'horizontal'}
+                                           align={'baseline'}>
                                         <Form.Item rules={[
                                             {
                                                 required: true,
-                                                message: "Proszę wybrać zakres",
+                                                message: 'Proszę wybrać zakres',
                                             },
                                         ]}  {...field} fieldKey={field.fieldKey}>
                                             <UnableSectionContent onChange={() => {
                                             }}/>
                                         </Form.Item>
                                         <MinusCircleOutlined
-                                            style={{marginLeft: "10px"}}
+                                            style={{marginLeft: '10px'}}
                                             onClick={() => {
                                                 options.remove(field.name);
                                             }}
@@ -64,7 +65,7 @@ export const UnableSection = () => {
                             })}
                             <Form.Item>
                                 <Button
-                                    type="dashed"
+                                    type='dashed'
                                     onClick={() => {
                                         options.add();
                                     }}

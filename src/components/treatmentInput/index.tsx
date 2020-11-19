@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {InputNumber, Select, Space} from "antd";
-import {Treatment} from "../../models/treatment";
-import {Recommendation} from "../../models/recommendation";
-import {MinusCircleOutlined} from "@ant-design/icons";
-import { Uuid } from '../../helpers/uuid';
+import {InputNumber, Select, Space} from 'antd';
+import {Treatment} from '../../models/treatment';
+import {Recommendation} from '../../models/recommendation';
+import {MinusCircleOutlined} from '@ant-design/icons';
+import {Uuid} from '../../helpers/uuid';
 
 const {Option} = Select;
 
@@ -16,30 +16,31 @@ interface TreatmentInputProps {
 
 const TreatmentInput = (props: TreatmentInputProps) => {
     const [repeat, setRepeat] = useState(props.value ? props.value.Repeat : 1);
-    const [treatment, setTreatment] = useState(props.value ? props.value.Treatment : props.treatments[0]);
+    const [treatment, setTreatment] = useState(
+        props.value ? props.value.Treatment : props.treatments[0]);
 
     const onTreatmentChange = (treatmentId: string) => {
-        let treatment = props.treatments.find(x => x.Id === treatmentId)
+        let treatment = props.treatments.find(x => x.Id === treatmentId);
         if (treatment) setTreatment(treatment);
     };
 
     const onNumberChanged = (howMany: string | number | undefined) => {
         if (howMany) setRepeat(+howMany);
-    }
+    };
 
     useEffect(() => {
         props.onChange({
             Repeat: repeat,
-            Treatment: {...treatment}
-        })
-    }, [repeat, treatment])
+            Treatment: {...treatment},
+        });
+    }, [repeat, treatment]);
 
     return (
-        <Space direction={"vertical"} size={"large"}>
-            <Space direction={"horizontal"}>
+        <Space direction={'vertical'} size={'large'}>
+            <Space direction={'horizontal'}>
                 <Select
                     style={{width: '150px'}}
-                    placeholder="Wyszukaj procedurę"
+                    placeholder='Wyszukaj procedurę'
                     defaultValue={treatment.Id}
                     onChange={onTreatmentChange}>
                     {props.treatments.map((treatment) => {
@@ -50,10 +51,11 @@ const TreatmentInput = (props: TreatmentInputProps) => {
                         );
                     })}
                 </Select>
-                <InputNumber required placeholder={"Ilość powtórzeń"} style={{width: '150px'}} min={1} max={50}
+                <InputNumber required placeholder={'Ilość powtórzeń'}
+                             style={{width: '150px'}} min={1} max={50}
                              defaultValue={repeat} onChange={onNumberChanged}/>
                 <MinusCircleOutlined
-                    style={{marginLeft: "10px"}}
+                    style={{marginLeft: '10px'}}
                     onClick={() => {
                         props.onDelete();
                     }}

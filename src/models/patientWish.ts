@@ -1,12 +1,12 @@
-import { Patient } from "./patient";
-import { Treatment } from "./treatment";
+import {Patient} from './patient';
+import {Treatment} from './treatment';
 
 export class PatientWish {
-  patient: Patient;
-  treatment: Treatment;
+    patient: Patient;
+    treatment: Treatment;
 
-  constructor(patient: Patient, treatment: Treatment) {
-    this.patient = patient;
-    this.treatment = treatment;
-  }
+    constructor(patient: Patient, treatment: Treatment) {
+        this.patient = patient;
+        this.treatment = treatment;
+    }
 }
