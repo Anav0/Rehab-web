@@ -13,12 +13,15 @@ import {AppointmentFormData} from '../../models/appointmentFormData';
 import {UnableSection} from './unableSection';
 import {filterTimeBlocksByDates} from '../../mock/timeBlocks';
 import {treatmentConstraints} from '../../mock/treatmentConstraints';
-import {useSweetState} from "../../store";
+import {useTimeBlocks} from "../../store/timeBlocks";
+import {useSelectedDate} from "../../store/selectedDate";
 
 const {Title} = Typography;
 
 const AppointmentForm = (props: any) => {
-    const [{timeBlocks, selectedDate}, {bulkUpdateBlocks, updateSelectedDate}] = useSweetState();
+    const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
+    const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
+
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const compilePreferences = (values: AppointmentFormData) => {
         let allPreferences: any = [];

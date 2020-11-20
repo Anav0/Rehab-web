@@ -1,15 +1,22 @@
+import {createHook, createStore} from "react-sweet-state";
+
 export type SelectedDateState = {
     selectedDate: Date
 }
 
-export const selectedDateInitState: SelectedDateState = {
+export const initialState: SelectedDateState = {
     selectedDate: new Date()
 }
 
-export const selectedDataActions = {
-    updateSelectedDate: (date: Date) => (operations: any) => {
-        operations.setState({
-            selectedDate: new Date(date),
-        });
-    },
-}
+const store = createStore({
+    initialState,
+    actions: {
+        updateSelectedDate: (date: Date) => ({setState}) => {
+            setState({
+                selectedDate: new Date(date),
+            });
+        },
+    }
+})
+
+export const useSelectedDate = createHook(store);

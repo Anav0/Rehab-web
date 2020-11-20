@@ -17,14 +17,18 @@ import {getAllTreatmentsAsDict, getMonday, getRandomElement, parseTimeBlocksFrom
 import {TreatmentConstraints} from './components/treatmentConstraints';
 import {treatmentConstraints} from './mock/treatmentConstraints';
 import {BlockPopulator} from './helpers/blockPopulator';
-import {useSweetState} from "./store";
+import {useTimeBlocks} from "./store/timeBlocks";
+import {useSelectedDate} from "./store/selectedDate";
+import {usePatients} from "./store/patients";
 
 const App = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
     const [isTesting, setIsTesting] = useState<boolean>(false);
     const [unavailableDates, setUnavailableDates] = useState<any>([]);
     const [timeBlocksForSelectedDate, setTimeBlocksForSelectedDate] = useState<TimeBlock[]>([]);
-    const [{timeBlocks, selectedDate, patients}, {updateSelectedDate, bulkUpdateBlocks}] = useSweetState();
+    const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
+    const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
+    const [{patients},] = usePatients()
 
     const onWeekChanged = (date: any) => {
         updateSelectedDate(date)
