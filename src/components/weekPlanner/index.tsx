@@ -5,6 +5,8 @@ import {TimeBlock} from '../../models/timeBlock';
 import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';
 import {formatDate, getCalendarCellsData, getDaysOfWeekForDate, getHours} from "./operations";
+import {ICalendarCellDataFilter, PatientsCellDataFilter} from "../../helpers/calendar-filters";
+import patients from "../../mock/patients";
 
 export interface WeekPlannerProps {
     interval: number;
@@ -19,6 +21,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     const [calendarCells, setCalendarCells] = useState<CalendarCellData[]>([]);
     const [days, setDays] = useState<any>([]);
     const [hours, setHours] = useState<any>([]);
+    const [filter, setFilter] = useState<ICalendarCellDataFilter>(new PatientsCellDataFilter(patients));
 
     useEffect(() => {
         let hours = getHours(props.startHour, props.endHour, props.interval);
@@ -26,6 +29,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
         let calendarCells = getCalendarCellsData(hours, days, props);
         setHours(hours);
         setDays(days);
+        filter.filter(calendarCells)
         setCalendarCells(calendarCells);
     }, [props]);
 
