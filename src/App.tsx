@@ -3,16 +3,13 @@ import './App.css';
 import {Button, DatePicker, Modal, Space} from 'antd';
 import 'moment/locale/pl';
 import localePL from 'antd/es/date-picker/locale/pl_PL';
-import {Patient, Sex} from './models/patient';
+import {Sex} from './models/patient';
 import WeekPlanner from './components/weekPlanner';
-import {RootState} from './store';
-import {connect, ConnectedProps} from 'react-redux';
 import AppointmentForm from './components/appointmentForm';
 import {TimeBlock} from './models/timeBlock';
 import {defaultBlocksConfig} from './models/timeBlockConfig';
 import {ApiPayload} from './models/apiPayload';
 import {Referral} from './models/referral';
-import patients from './mock/patients';
 import {Recommendation} from './models/recommendation';
 import treatments from './mock/treatments';
 import api from './api';
@@ -20,60 +17,29 @@ import {getAllTreatmentsAsDict, getMonday, getRandomElement, parseTimeBlocksFrom
 import {TreatmentConstraints} from './components/treatmentConstraints';
 import {treatmentConstraints} from './mock/treatmentConstraints';
 import {BlockPopulator} from './helpers/blockPopulator';
+import {useSweetState} from "./store";
 
-interface StateProps {
-    patients: Patient[];
-    timeBlocks: TimeBlock[];
-    selectedDate: Date;
-}
-
-const mapProps = (state: RootState): StateProps => ({
-    patients: state.patients.patients,
-    timeBlocks: state.timeBlocks.timeBlocks,
-    selectedDate: state.selectedDate.selectedDate,
-});
-
-const mapDispatch = {
-    updateTimeBlock: (timeblock: TimeBlock) => ({
-        type: 'UPDATE_TIMEBLOCK',
-        payload: timeblock,
-    }),
-    bulkTimeBlocksUpdate: (timeblocks: TimeBlock[]) => ({
-        type: 'BULK_UPDATE_TIMEBLOCKS',
-        payload: timeblocks,
-    }),
-    updateSelectedDate: (date: Date) => ({
-        type: 'UPDATE_DATE',
-        payload: date,
-    }),
-};
-
-const connector = connect(mapProps, mapDispatch);
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-type AppProps = PropsFromRedux & {};
-
-const App = (props: AppProps) => {
+const App = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
     const [isTesting, setIsTesting] = useState<boolean>(false);
     const [unavailableDates, setUnavailableDates] = useState<any>([]);
-    const [timeBlocksForSelectedDate, setTimeBlocksForSelectedDate] = useState<TimeBlock[]>(
-        []);
+    const [timeBlocksForSelectedDate, setTimeBlocksForSelectedDate] = useState<TimeBlock[]>([]);
+    const [{timeBlocks, selectedDate, patients}, {updateSelectedDate, bulkUpdateBlocks}] = useSweetState();
 
-    const onWeekChanged = (date: any, dateString: string) => {
-        props.updateSelectedDate(new Date(date));
+    const onWeekChanged = (date: any) => {
+        updateSelectedDate(date)
     };
 
     useEffect(() => {
         console.log('Populating blocks');
         BlockPopulator.populateRandomly(
-            props.timeBlocks.slice(0, props.timeBlocks.length / 4), 6, 0.85);
+            timeBlocks.slice(0, timeBlocks.length / 4), 6, 0.85);
         //BlockPopulator.populate(props.timeBlocks.slice(0,props.timeBlocks.length/4))
     }, []);
 
     useEffect(() => {
         console.log('App useEffect called');
-        let start = getMonday(props.selectedDate);
+        let start = getMonday(selectedDate);
         start.setHours(0, 0, 1);
         let end = new Date(start);
         end.setDate(start.getDate() + 6);
@@ -81,14 +47,14 @@ const App = (props: AppProps) => {
 
         let blocks: TimeBlock[] = [];
 
-        for (let block of props.timeBlocks) {
+        for (let block of timeBlocks) {
             let blockDayTime = block.StartDate.getTime();
             if (blockDayTime >= start.getTime() && blockDayTime <= end.getTime()) {
                 blocks.push(block);
             }
         }
         setTimeBlocksForSelectedDate(blocks);
-    }, [props.selectedDate, props.timeBlocks, props]);
+    }, [selectedDate, timeBlocks]);
 
     async function sendTestPayload() {
         let preferences = [
@@ -136,27 +102,27 @@ const App = (props: AppProps) => {
 
         let recommendations: Recommendation[] = [
             {
-                Repeat: 20,
+                Repeat: 2,
                 Treatment: treatments[2],
             },
             {
-                Repeat: 20,
+                Repeat: 2,
                 Treatment: treatments[5],
             },
             {
-                Repeat: 20,
+                Repeat: 2,
                 Treatment: treatments[9],
             },
             {
-                Repeat: 20,
+                Repeat: 2,
                 Treatment: treatments[8],
             },
             {
-                Repeat: 20,
+                Repeat: 2,
                 Treatment: treatments[3],
             },
             {
-                Repeat: 20,
+                Repeat: 2,
                 Treatment: treatments[4],
             },
         ];
@@ -165,7 +131,7 @@ const App = (props: AppProps) => {
             let patient = getRandomElement(patients);
             console.log(`${patient.Name} ${Sex[patient.Sex]}`);
             let payload = new ApiPayload(
-                props.timeBlocks,
+                timeBlocks,
                 preferences,
                 new Referral(patient, recommendations),
                 treatmentConstraints,
@@ -173,9 +139,9 @@ const App = (props: AppProps) => {
                 {},
             );
             let response = await api.find.solution(payload);
-            for (let timeBlock of props.timeBlocks) timeBlock.IsNew = false;
-            let timeBlocks = parseTimeBlocksFromPayload(response.data);
-            props.bulkTimeBlocksUpdate(timeBlocks);
+            for (let timeBlock of timeBlocks) timeBlock.IsNew = false;
+            let parsedTimeBlocks = parseTimeBlocksFromPayload(response.data);
+            bulkUpdateBlocks(parsedTimeBlocks)
         } catch (error) {
             console.error(error);
         } finally {
@@ -189,7 +155,7 @@ const App = (props: AppProps) => {
                 <div className='app-header-content app-header-content-column'>
           <span className='bold'>
             Wybrana data:{' '}
-              {props.selectedDate.toLocaleDateString('pl', {
+              {selectedDate.toLocaleDateString('pl', {
                   day: 'numeric',
                   weekday: 'long',
                   month: 'long',
@@ -226,7 +192,7 @@ const App = (props: AppProps) => {
                 startHour={defaultBlocksConfig.startHour}
                 endHour={defaultBlocksConfig.endHour}
                 timeBlocks={timeBlocksForSelectedDate}
-                selectedDate={props.selectedDate}
+                selectedDate={selectedDate}
                 unavailableDates={unavailableDates}
             />
             <Modal
@@ -249,4 +215,4 @@ const App = (props: AppProps) => {
         </main>
     );
 };
-export default connector(App);
+export default App;

@@ -1,12 +1,11 @@
-import {patientReducer} from './patients/reducer';
-import {timeblockReducer} from './timeblocks/reducer';
-import {selectedDateReducer} from './selectedDate/reducer';
-import {combineReducers} from 'redux';
+import {createHook, createStore} from 'react-sweet-state';
+import {patientActions, patientsInitState} from "./patients";
+import {timeBlocksActions, timeBlocksInitState} from "./timeBlocks";
+import {selectedDataActions, selectedDateInitState} from "./selectedDate";
 
-export const rootReducer = combineReducers({
-    patients: patientReducer,
-    timeBlocks: timeblockReducer,
-    selectedDate: selectedDateReducer,
+const store = createStore({
+    initialState: {...patientsInitState, ...timeBlocksInitState, ...selectedDateInitState},
+    actions: {...patientActions, ...timeBlocksActions, ...selectedDataActions}
 });
 
-export type RootState = ReturnType<typeof rootReducer>;
+export const useSweetState = createHook(store);
