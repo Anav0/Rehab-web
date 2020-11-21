@@ -5,9 +5,7 @@ import {TimeBlock} from '../../models/timeBlock';
 import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';
 import {formatDate, getCalendarCellsData, getDaysOfWeekForDate, getHours} from "./operations";
-import {ICalendarCellDataMarker} from "../../helpers/calendar-marking";
-import patients from "../../mock/patients";
-import {PatientsCellDataMarker} from "../../helpers/calendar-marking/patients-marker";
+import {useMarkers} from "../../store/markers";
 
 export interface WeekPlannerProps {
     interval: number;
@@ -22,7 +20,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     const [calendarCells, setCalendarCells] = useState<CalendarCellData[]>([]);
     const [days, setDays] = useState<any>([]);
     const [hours, setHours] = useState<any>([]);
-    const [marker, ] = useState<ICalendarCellDataMarker>(new PatientsCellDataMarker(patients));
+    const [{marker}, markersActions] = useMarkers();
 
     useEffect(() => {
         let hours = getHours(props.startHour, props.endHour, props.interval);
@@ -30,7 +28,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
         let calendarCells = getCalendarCellsData(hours, days, props);
         setHours(hours);
         setDays(days);
-        marker.mark(calendarCells)
+        if (marker) marker.mark(calendarCells)
         setCalendarCells(calendarCells);
     }, [props]);
 
