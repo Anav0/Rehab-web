@@ -4,16 +4,9 @@ import 'antd/dist/antd.css';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import {Provider} from 'react-redux';
-import {createStore} from 'redux';
-import {rootReducer} from './store';
-
-const store = createStore(rootReducer);
 
 ReactDOM.render(
-    <Provider store={store}>
-        <App/>
-    </Provider>,
+    <App/>,
     document.getElementById('root'),
 );
 
