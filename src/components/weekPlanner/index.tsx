@@ -20,7 +20,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     const [calendarCells, setCalendarCells] = useState<CalendarCellData[]>([]);
     const [days, setDays] = useState<any>([]);
     const [hours, setHours] = useState<any>([]);
-    const [{marker}, markersActions] = useMarkers();
+    const [{marker}, ] = useMarkers();
 
     useEffect(() => {
         let hours = getHours(props.startHour, props.endHour, props.interval);
@@ -30,7 +30,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
         setDays(days);
         if (marker) marker.mark(calendarCells)
         setCalendarCells(calendarCells);
-    }, [props]);
+    }, [props, marker]);
 
     return (
         <div className='planner-container'>
@@ -70,8 +70,6 @@ const WeekPlanner = (props: WeekPlannerProps) => {
             {calendarCells.map((data: CalendarCellData) => {
                 return (
                     <CalendarCell
-                        isBlocked={data.isBlocked}
-                        isNew={data.isNew}
                         key={Uuid.uuidv4()}
                         cellData={data}
                     />

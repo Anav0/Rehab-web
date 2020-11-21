@@ -12,7 +12,7 @@ const initialState: MarkersState = {
 const store = createStore({
     initialState,
     actions: {
-        changeMarker: (marker: ICalendarCellDataMarker) => ({setState}) => {
+        changeMarker: (marker: ICalendarCellDataMarker | undefined) => ({setState}) => {
             setState({
                 marker
             });

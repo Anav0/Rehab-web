@@ -15,12 +15,15 @@ import {filterTimeBlocksByDates} from '../../mock/timeBlocks';
 import {treatmentConstraints} from '../../mock/treatmentConstraints';
 import {useTimeBlocks} from "../../store/timeBlocks";
 import {useSelectedDate} from "../../store/selectedDate";
+import {useMarkers} from "../../store/markers";
+import {MarkCellsContainingBlocks} from "../../helpers/calendar-marking/MarkCellsContainingBlocks";
 
 const {Title} = Typography;
 
 const AppointmentForm = (props: any) => {
     const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
     const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
+    const [, {changeMarker}] = useMarkers()
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const compilePreferences = (values: AppointmentFormData) => {
@@ -43,9 +46,6 @@ const AppointmentForm = (props: any) => {
         setIsProcessing(true)
         try {
             if (!formData.patient) throw new Error('Nie wybrano pacjenta');
-            for (let timeBlock of timeBlocks) timeBlock.IsNew = false;
-            bulkUpdateBlocks(timeBlocks);
-
             let payload = new ApiPayload(
                 filterTimeBlocksByDates(timeBlocks, formData.unavailableDates),
                 compilePreferences(formData),
@@ -56,8 +56,8 @@ const AppointmentForm = (props: any) => {
             const response = await api.find.solution(payload);
             const schedulingResult = response.data;
             let parsedTimeBlocks = parseTimeBlocksFromPayload(schedulingResult);
+            changeMarker(new MarkCellsContainingBlocks("Nowe wizyty",parsedTimeBlocks))
             bulkUpdateBlocks(parsedTimeBlocks);
-
             let sol = schedulingResult.TreatmentSolutionVariants[0].Solutions[0];
             let blocks: TimeBlock[] = [];
             if (sol)

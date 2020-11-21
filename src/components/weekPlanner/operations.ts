@@ -105,10 +105,6 @@ export const getCalendarCellsData = (
                         ),
                 day,
                 timeStamp: timeRange,
-                isNew: blocksByDay[key] != null ? blocksByDay[key].IsNew : false,
-                isBlocked: blocksByDay[key] != null ?
-                    !isTimeBlockAvailable(blocksByDay[key], props.unavailableDates) :
-                    false,
             });
             k++;
         }

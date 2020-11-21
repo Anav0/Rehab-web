@@ -8,9 +8,7 @@ import {Uuid} from '../../helpers/uuid';
 const {Panel} = Collapse;
 
 interface CalendarCellProps {
-    isBlocked: boolean;
-    cellData: CalendarCellData;
-    isNew: boolean;
+    cellData: CalendarCellData
 }
 
 export const CalendarCell = (props: CalendarCellProps) => {
@@ -79,5 +77,5 @@ export const CalendarCell = (props: CalendarCellProps) => {
                 </Collapse>
             </Modal>
         </>
-    );
-};
+    )
+}

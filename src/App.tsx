@@ -20,6 +20,10 @@ import {BlockPopulator} from './helpers/blockPopulator';
 import {useTimeBlocks} from "./store/timeBlocks";
 import {useSelectedDate} from "./store/selectedDate";
 import {usePatients} from "./store/patients";
+import {MarkerSelector} from "./components/marker-selector";
+import {PatientMarkerSelector} from "./components/patient-marker-selector";
+import {useMarkers} from "./store/markers";
+import {MarkCellsContainingBlocks} from "./helpers/calendar-marking/MarkCellsContainingBlocks";
 
 const App = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
@@ -29,6 +33,7 @@ const App = () => {
     const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
     const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
     const [{patients},] = usePatients()
+    const [,{changeMarker}] = useMarkers()
 
     const onWeekChanged = (date: any) => {
         updateSelectedDate(date)
@@ -106,33 +111,17 @@ const App = () => {
 
         let recommendations: Recommendation[] = [
             {
-                Repeat: 2,
+                Repeat: 4,
                 Treatment: treatments[2],
             },
             {
-                Repeat: 2,
+                Repeat: 4,
                 Treatment: treatments[5],
-            },
-            {
-                Repeat: 2,
-                Treatment: treatments[9],
-            },
-            {
-                Repeat: 2,
-                Treatment: treatments[8],
-            },
-            {
-                Repeat: 2,
-                Treatment: treatments[3],
-            },
-            {
-                Repeat: 2,
-                Treatment: treatments[4],
             },
         ];
         try {
             setIsTesting(true);
-            let patient = getRandomElement(patients);
+            let patient = patients[0]//getRandomElement(patients);
             console.log(`${patient.Name} ${Sex[patient.Sex]}`);
             let payload = new ApiPayload(
                 timeBlocks,
@@ -143,8 +132,8 @@ const App = () => {
                 {},
             );
             let response = await api.find.solution(payload);
-            for (let timeBlock of timeBlocks) timeBlock.IsNew = false;
             let parsedTimeBlocks = parseTimeBlocksFromPayload(response.data);
+            changeMarker(new MarkCellsContainingBlocks("Nowe wizyty",parsedTimeBlocks))
             bulkUpdateBlocks(parsedTimeBlocks)
         } catch (error) {
             console.error(error);
@@ -185,6 +174,7 @@ const App = () => {
                     <Button loading={isTesting} onClick={sendTestPayload}>
                         Test
                     </Button>
+                    <PatientMarkerSelector/>
                     <TreatmentConstraints
                         treatments={treatments}
                         treatmentsConstraints={treatmentConstraints}

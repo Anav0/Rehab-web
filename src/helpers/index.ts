@@ -28,7 +28,6 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
                         block.DurationInMinutes,
                         block.Sites,
                     );
-                    timeBlock.IsNew = true;
                     changedBlocksStartTimes.push(timeBlock.StartDate);
                     timeBlocksToUpdate.push(timeBlock);
                 }
