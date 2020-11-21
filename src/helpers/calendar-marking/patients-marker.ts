@@ -1,17 +1,10 @@
-import {CalendarCellData} from "../../models/calendarCellData";
 import {Patient} from "../../models/patient";
 import {CSSProperties} from "react";
-import {copy} from "../index";
+import {copy, getRandomHexColor} from "../index";
+import {CalendarCellData} from "../../models/calendarCellData";
+import {ICalendarCellDataMarker} from "./index";
 
-export interface ICalendarCellDataFilter {
-    filter(calendarCellData: CalendarCellData[]): void
-}
-
-const getRandomHexColor = () => {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-}
-
-export class PatientsCellDataFilter implements ICalendarCellDataFilter {
+export class PatientsCellDataMarker implements ICalendarCellDataMarker {
     patients: Patient[]
     patientStyles: { [patientId: string]: CSSProperties } = {}
 
@@ -29,7 +22,7 @@ export class PatientsCellDataFilter implements ICalendarCellDataFilter {
         }
     }
 
-    filter(calendarCellData: CalendarCellData[]): void {
+    mark(calendarCellData: CalendarCellData[]): void {
         for (let cellData of calendarCellData) {
             cellData.timeBlock.Sites.some(site => site.Appointments.some(appointment => {
                 let isPatientIncluded = this.patients.includes(appointment.Patient);
