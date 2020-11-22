@@ -22,14 +22,18 @@
 }
 
 .app-header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
 }
 
-.app-header-content-column {
-    flex-direction: column;
+.app-header-procedures{
+    place-self: center end;
+}
+.app-header-date{
+    place-self: center center;
+}
+.app-header-actions{
+    place-self: center start;
 }
 
 .app-header-content > span {
@@ -40,3 +44,4 @@
 .app-header-content > div {
     margin: 1.2rem 0;
 }
+

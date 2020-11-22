@@ -1,20 +1,13 @@
-import {Patient} from "../../models/patient";
 import {CSSProperties} from "react";
 import {CalendarCellData} from "../../models/calendarCellData";
-import {ICalendarCellDataMarker} from "./index";
+import {MarkerWithPatient} from "./MarkerWithPatient";
+import {Patient} from "../../models/patient";
 
-export class PatientCellDataMarker implements ICalendarCellDataMarker {
-    patient: Patient | undefined
-    style: CSSProperties = {}
-    name: string
+export class PatientMarker extends MarkerWithPatient {
 
-    constructor(name: string, style: CSSProperties = {border: "#f88944 solid 4px"}) {
-        this.name = name;
+    constructor(name: string, patient: Patient | undefined = undefined, style: CSSProperties = {border: "#f88944 solid 4px"}) {
+        super(name, patient)
         this.style = style;
-    }
-
-    setPatient(patient: Patient) {
-        this.patient = patient
     }
 
     getMarkerName(): string {
