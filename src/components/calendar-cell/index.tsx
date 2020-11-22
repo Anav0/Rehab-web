@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Collapse, Modal} from 'antd';
-import {SiteDetails} from '../timeBlockDetails';
+import {SiteDetails} from '../timeblock-details';
 import './index.css';
 import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';

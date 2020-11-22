@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Button, Form, Space, Typography} from 'antd';
-import TreatmentInput from '../treatmentInput';
+import TreatmentInput from '../treatment-input';
 import mockedTreatments from '../../mock/treatments';
 import {PlusOutlined} from '@ant-design/icons';
 

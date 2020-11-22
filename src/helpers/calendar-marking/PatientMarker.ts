@@ -17,7 +17,7 @@ export class PatientMarker extends MarkerWithPatient {
     mark(calendarCellData: CalendarCellData[]): void {
         for (let cellData of calendarCellData) {
             cellData.timeBlock.Sites.some(site => site.Appointments.some(appointment => {
-                if (this.patient === undefined) throw new Error("Patient is undefined")
+                if (this.patient === undefined) return false
                 let isPatientIncluded = this.patient.Id === appointment.Patient.Id;
                 if (isPatientIncluded)
                     Object.assign(cellData.style, this.style);

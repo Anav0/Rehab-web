@@ -2,23 +2,27 @@ import React, {useEffect, useState} from "react";
 import {AutoComplete, Select, Space} from "antd";
 import {Patient} from "../../models/patient";
 import mockPatients from "../../mock/patients";
-import patients from "../../mock/patients";
 import {useMarkers} from "../../store/markers";
 import {TreatmentMarker} from "../../helpers/calendar-marking/TreatmentMarker";
 import treatments, {treatmentsColors} from "../../mock/treatments";
 import {MarkerWithPatient} from "../../helpers/calendar-marking/MarkerWithPatient";
 import {PatientMarker} from "../../helpers/calendar-marking/PatientMarker";
+import {usePatients} from "../../store/patients";
+import {filterPatients} from "../../helpers/patient-search";
+import * as _ from "lodash";
+
 const {Option} = Select;
 
 export const MarkBasedOnPatient = () => {
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-    const [selectedPatient, setSelectedPatient] = useState<Patient>(patients[0]);
     const [selectedMarkerKey, setSelectedMarkerKey] = useState<string | undefined>();
     const [, {changeMarker}] = useMarkers();
+    const [{selectedPatient: globalPatient}, {changeSelectedPatient}] = usePatients();
+
     const markers: { [key: string]: { name: string, marker: MarkerWithPatient } } = {
         "treatment": {
             name: "Zabiegi",
-            marker: new TreatmentMarker("zabiegi", selectedPatient, treatments, treatmentsColors),
+            marker: new TreatmentMarker("zabiegi", globalPatient, treatments, treatmentsColors),
         },
         "patient": {
             name: "Wszystko", marker: new PatientMarker("wszystko")
@@ -26,25 +30,20 @@ export const MarkBasedOnPatient = () => {
     }
 
     useEffect(() => {
-        console.log(selectedMarkerKey, selectedPatient.Name)
-    }, [selectedMarkerKey, selectedPatient])
-
-    const searchPatients = (searchPhrase: string) => {
-        searchPhrase = searchPhrase.toLowerCase().trim();
-        setFilteredPatients(mockPatients.filter((x: Patient) =>
-            x.Name.toLowerCase().includes(searchPhrase),
-        ));
-    };
+        changeSelectedPatient(globalPatient)
+        if (selectedMarkerKey)
+            onMarkerChange(selectedMarkerKey)
+    }, [globalPatient])
 
     const onMarkerChange = (key: string) => {
         setSelectedMarkerKey(key)
         if (key)
-            markers[key].marker.setPatient(selectedPatient)
+            markers[key].marker.setPatient(globalPatient)
         changeMarker(key ? markers[key].marker : undefined)
     }
 
-    const OnPatientSelect = (patientName: string, option: any) => {
-        setSelectedPatient(option.patient)
+    const onPatientChange = (patientName: string, option: any) => {
+        changeSelectedPatient(option.patient)
         if (!selectedMarkerKey) return;
         onMarkerChange(selectedMarkerKey)
     };
@@ -53,10 +52,10 @@ export const MarkBasedOnPatient = () => {
         <Space>
             <AutoComplete
                 style={{width: 160}}
-                defaultValue={patients[0].Name}
+                value={globalPatient ? globalPatient.Name : undefined}
                 placeholder='Filtruj po pacjencie'
-                onSearch={searchPatients}
-                onSelect={OnPatientSelect}
+                onSearch={(searchPhrase) => setFilteredPatients(filterPatients(searchPhrase, mockPatients))}
+                onChange={onPatientChange}
             >
                 {filteredPatients.map((x) => {
                     return (

@@ -1,8 +1,11 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {AutoComplete, Form, Select} from 'antd';
 import {Patient} from '../../models/patient';
 import mockPatients from '../../mock/patients';
+import {usePatients} from "../../store/patients";
+import {filterPatients} from "../../helpers/patient-search";
+import * as _ from "lodash";
 
 const {Option} = Select;
 
@@ -12,24 +15,20 @@ interface PatientSectionContentProps {
 
 const PatientSectionContent = (props: PatientSectionContentProps) => {
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+    const [{selectedPatient: globalPatient},{changeSelectedPatient}] = usePatients();
 
-    const searchPatients = (searchPhrase: string) => {
-        searchPhrase = searchPhrase.toLowerCase().trim();
-        setFilteredPatients(mockPatients.filter((x: Patient) =>
-            x.Name.toLowerCase().includes(searchPhrase),
-        ));
-    };
-
-    const onSelect = (patientName: string, option: any) => {
+    const onPatientChange = (patientName: string, option: any) => {
         if (option.patient)
             props.onChange(option.patient);
+        changeSelectedPatient(option.patient)
     };
 
     return (
         <AutoComplete
+            value={globalPatient ? globalPatient.Name : undefined}
             placeholder='Wyszukaj pacjenta'
-            onSearch={searchPatients}
-            onSelect={onSelect}
+            onSearch={(searchPhrase)=>setFilteredPatients(filterPatients(searchPhrase, mockPatients))}
+            onChange={onPatientChange}
         >
             {filteredPatients.map((x) => {
                 return (

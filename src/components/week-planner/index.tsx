@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './index.css';
-import {CalendarCell} from '../calendarCell';
+import {CalendarCell} from '../calendar-cell';
 import {TimeBlock} from '../../models/timeBlock';
 import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';
@@ -23,6 +23,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     const [{marker}, ] = useMarkers();
 
     useEffect(() => {
+        console.log("Calendar render")
         let hours = getHours(props.startHour, props.endHour, props.interval);
         let days = getDaysOfWeekForDate(props.selectedDate);
         let calendarCells = getCalendarCellsData(hours, days, props);

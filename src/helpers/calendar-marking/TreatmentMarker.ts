@@ -7,7 +7,7 @@ export class TreatmentMarker extends MarkerWithPatient {
     procedures: Treatment[]
     proceduresColors: string[]
 
-    constructor(name: string, patient: Patient, procedures: Treatment[], proceduresColors: string[]) {
+    constructor(name: string, patient: Patient | undefined, procedures: Treatment[], proceduresColors: string[]) {
         super(name, patient)
         this.procedures = procedures
         this.proceduresColors = proceduresColors
@@ -20,7 +20,7 @@ export class TreatmentMarker extends MarkerWithPatient {
     mark(calendarCellData: CalendarCellData[]): void {
         for (let cellData of calendarCellData) {
             cellData.timeBlock.Sites.some(x => x.Appointments.some(appointment => this.procedures.some(procedure => {
-                if (!this.patient) throw new Error("Patient is undefined")
+                if (!this.patient) return false;
                 let matches = procedure.Id === appointment.TreatmentId && appointment.Patient.Id === this.patient.Id;
                 if (matches) {
                     this.style.border = `${this.proceduresColors[this.procedures.indexOf(procedure)]} solid 4px`

@@ -17,7 +17,7 @@ export abstract class MarkerWithPatient implements ICalendarCellDataMarker {
         return this.name;
     }
 
-    public setPatient(patient: Patient) {
+    public setPatient(patient: Patient | undefined) {
         this.patient = patient
     }
 
