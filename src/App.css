@@ -23,25 +23,29 @@
 
 .app-header-content {
     display: grid;
+    grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr 2fr 1fr;
+    grid-gap: 2rem 1rem;
 }
 
 .app-header-procedures{
     place-self: center end;
 }
 .app-header-date{
-    place-self: center center;
+    place-self: center;
+}
+.app-header-selected-date{
+    grid-column: 2/3;
+    place-self: center;
 }
 .app-header-actions{
     place-self: center start;
+}
+.app-header-actions, .app-header-procedures, .app-header-date
+{
+grid-row: 2/3;
 }
 
 .app-header-content > span {
     font-size: 1.25rem;
 }
-
-.app-header-content > span,
-.app-header-content > div {
-    margin: 1.2rem 0;
-}
-

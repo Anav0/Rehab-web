@@ -114,6 +114,7 @@ export const TreatmentsList = (props: TreatmentsListProps) => {
             <Button icon={<ProfileTwoTone/>} onClick={() => setIsModalVisible(!isModalVisible)}>Procedury</Button>
             <Modal title='Szczegóły dotyczące procedur'
                    visible={isModalVisible}
+                   mask={false}
                    onCancel={() => setIsModalVisible(false)}
                    onOk={() => setIsModalVisible(false)}
             >

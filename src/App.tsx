@@ -162,9 +162,19 @@ const App = () => {
     return (
         <main className='layout'>
             <div className='app-header'>
+
                 <div
                     className='app-header-content'
                 >
+                     <span className='app-header-selected-date bold'>
+                              Wybrana data:{' '}
+                         {selectedDate.toLocaleDateString('pl', {
+                             day: 'numeric',
+                             weekday: 'long',
+                             month: 'long',
+                             year: 'numeric',
+                         })}
+                        </span>
                     <Space size={"large"} className='app-header-actions' direction={"horizontal"}>
                         <Button icon={<PlusSquareTwoTone/>} onClick={() => setModalVisibility(!isModalVisible)}>
                             Wyznacz zabieg
@@ -174,15 +184,6 @@ const App = () => {
                         </Button>
                     </Space>
                     <Space size={"large"} align={"center"} className='app-header-date' direction={"vertical"}>
-                        <span className='bold'>
-                              Wybrana data:{' '}
-                            {selectedDate.toLocaleDateString('pl', {
-                                day: 'numeric',
-                                weekday: 'long',
-                                month: 'long',
-                                year: 'numeric',
-                            })}
-                        </span>
                         <DatePicker
                             className='app-header-date'
                             allowClear={false}

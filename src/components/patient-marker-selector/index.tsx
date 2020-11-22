@@ -8,7 +8,6 @@ import {TreatmentMarker} from "../../helpers/calendar-marking/TreatmentMarker";
 import treatments, {treatmentsColors} from "../../mock/treatments";
 import {MarkerWithPatient} from "../../helpers/calendar-marking/MarkerWithPatient";
 import {PatientMarker} from "../../helpers/calendar-marking/PatientMarker";
-import {HighlightTwoTone} from '@ant-design/icons';
 const {Option} = Select;
 
 export const MarkBasedOnPatient = () => {
@@ -22,7 +21,7 @@ export const MarkBasedOnPatient = () => {
             marker: new TreatmentMarker("zabiegi", selectedPatient, treatments, treatmentsColors),
         },
         "patient": {
-            name: "wszystko", marker: new PatientMarker("wszystko")
+            name: "Wszystko", marker: new PatientMarker("wszystko")
         },
     }
 
