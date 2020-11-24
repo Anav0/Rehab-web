@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import './App.css';
-import {Button, DatePicker, Modal, Space} from 'antd';
+import {Button, DatePicker, Modal} from 'antd';
 import 'moment/locale/pl';
 import localePL from 'antd/es/date-picker/locale/pl_PL';
 import {Sex} from './models/patient';
@@ -24,6 +23,15 @@ import {useMarkers} from "./store/markers";
 import {MarkCellsContainingBlocks} from "./helpers/calendar-marking/MarkCellsContainingBlocks";
 import {useTreatments} from "./store/treatments";
 import {FrownTwoTone, PlusSquareTwoTone} from '@ant-design/icons';
+import {
+    AppHeader,
+    AppHeaderActions,
+    AppHeaderContent,
+    AppHeaderDate,
+    AppHeaderProcedures,
+    AppHeaderSelectedDate,
+    AppLayout
+} from "./styled/App.styled";
 
 const App = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
@@ -158,51 +166,46 @@ const App = () => {
             setIsTesting(false);
         }
     }
-
     return (
-        <main className='layout'>
-            <div className='app-header'>
-
-                <div
-                    className='app-header-content'
+        <AppLayout>
+            <AppHeader>
+                <AppHeaderContent
                 >
-                     <span className='app-header-selected-date bold'>
-                              Wybrana data:{' '}
-                         {selectedDate.toLocaleDateString('pl', {
-                             day: 'numeric',
-                             weekday: 'long',
-                             month: 'long',
-                             year: 'numeric',
-                         })}
-                        </span>
-                    <Space size={"large"} className='app-header-actions' direction={"horizontal"}>
+                    <AppHeaderSelectedDate>
+                        Wybrana data:{' '}
+                        {selectedDate.toLocaleDateString('pl', {
+                            day: 'numeric',
+                            weekday: 'long',
+                            month: 'long',
+                            year: 'numeric',
+                        })}
+                    </AppHeaderSelectedDate>
+                    <AppHeaderActions size={"large"} direction={"horizontal"}>
                         <Button icon={<PlusSquareTwoTone/>} onClick={() => setModalVisibility(!isModalVisible)}>
                             Wyznacz zabieg
                         </Button>
                         <Button icon={<FrownTwoTone/>} loading={isTesting} onClick={sendTestPayload}>
                             Test
                         </Button>
-                    </Space>
-                    <Space size={"large"} align={"center"} className='app-header-date' direction={"vertical"}>
+                    </AppHeaderActions>
+                    <AppHeaderDate size={"large"} align={"center"} direction={"vertical"}>
                         <DatePicker
-                            className='app-header-date'
                             allowClear={false}
                             format={'YYYY-MM-DD'}
                             locale={localePL}
                             onChange={onWeekChanged}
                             picker='week'
                         />
-                    </Space>
-
-                    <Space size={"large"} className='app-header-procedures' direction={"horizontal"}>
+                    </AppHeaderDate>
+                    <AppHeaderProcedures size={"large"} direction={"horizontal"}>
                         <MarkBasedOnPatient/>
                         <TreatmentsList
                             treatments={treatments}
                             treatmentsConstraints={treatmentConstraints}
                         />
-                    </Space>
-                </div>
-            </div>
+                    </AppHeaderProcedures>
+                </AppHeaderContent>
+            </AppHeader>
             <WeekPlanner
                 interval={defaultBlocksConfig.durationInMinutes}
                 startHour={defaultBlocksConfig.startHour}
@@ -228,7 +231,7 @@ const App = () => {
                     }}
                 />
             </Modal>
-        </main>
+        </AppLayout>
     );
 };
 export default App;

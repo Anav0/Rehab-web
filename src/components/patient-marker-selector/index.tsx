@@ -9,7 +9,7 @@ import {MarkerWithPatient} from "../../helpers/calendar-marking/MarkerWithPatien
 import {PatientMarker} from "../../helpers/calendar-marking/PatientMarker";
 import {usePatients} from "../../store/patients";
 import {filterPatients} from "../../helpers/patient-search";
-import * as _ from "lodash";
+import {debounce} from "lodash"
 
 const {Option} = Select;
 
@@ -54,7 +54,10 @@ export const MarkBasedOnPatient = () => {
                 style={{width: 160}}
                 value={globalPatient ? globalPatient.Name : undefined}
                 placeholder='Filtruj po pacjencie'
-                onSearch={(searchPhrase) => setFilteredPatients(filterPatients(searchPhrase, mockPatients))}
+                onSearch={debounce((searchPhrase) => {
+                        setFilteredPatients(filterPatients(searchPhrase, mockPatients))
+                    }
+                    , 250)}
                 onChange={onPatientChange}
             >
                 {filteredPatients.map((x) => {
