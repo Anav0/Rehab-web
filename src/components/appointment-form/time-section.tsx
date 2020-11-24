@@ -6,6 +6,7 @@ import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {copy} from "../../helpers";
 import {TimePreference} from "../../models/timePreference";
 import {Uuid} from '../../helpers/uuid';
+import {DayPreference} from "./styled";
 
 const {Title} = Typography;
 
@@ -20,9 +21,9 @@ export const TimeSection = () => {
         "6": "Sobota",
     };
 
-    const [timeSelectorContainerRef, setTimeSelectorContainerRef] = useState(null);
+    const [timeSelectorContainerRef,] = useState(null);
     const [availableDays, setAvailableDays] = useState<any>(copy(days));
-    const [allDays, setAllDays] = useState<any>(copy(days));
+    const [allDays,] = useState<any>(copy(days));
 
     const presets = getPresetBtnsData();
 
@@ -64,7 +65,7 @@ export const TimeSection = () => {
                         <>
                             {fields.map((field: any) => {
                                 return (
-                                    <div key={field.key} className={"day-preference"}>
+                                    <DayPreference key={field.key} >
                                         <Form.Item {...field} fieldKey={field.fieldKey}>
                                             <DayAndHour
                                                 onUnmount={(values: TimePreference) =>
@@ -83,7 +84,7 @@ export const TimeSection = () => {
                                                 options.remove(field.name);
                                             }}
                                         />
-                                    </div>
+                                    </DayPreference>
                                 );
                             })}
                             <Affix target={() => timeSelectorContainerRef}>

@@ -5,7 +5,6 @@ import {Patient} from '../../models/patient';
 import mockPatients from '../../mock/patients';
 import {usePatients} from "../../store/patients";
 import {filterPatients} from "../../helpers/patient-search";
-import * as _ from "lodash";
 import {debounce} from "lodash";
 
 const {Option} = Select;
