@@ -45,6 +45,7 @@ export const AppHeaderSelectedDate = styled.span`
     grid-column: 2/3;
     place-self: center;
     font-weight: bold;
+    font-size: 1.25rem;
 `
 export const AppHeaderActions = styled(Space)`
     ${position};

@@ -31,7 +31,7 @@ import {
     AppHeaderProcedures,
     AppHeaderSelectedDate,
     AppLayout
-} from "./styled/App.styled";
+} from "./App.styled";
 
 const App = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
