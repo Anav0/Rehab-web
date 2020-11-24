@@ -1,5 +1,4 @@
 import React from 'react';
-import './index.css';
 import {Descriptions, List} from 'antd';
 import {TreatmentSite} from '../../models/treatmentSite';
 import treatments from '../../mock/treatments';

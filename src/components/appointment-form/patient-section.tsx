@@ -5,7 +5,7 @@ import {Patient} from '../../models/patient';
 import mockPatients from '../../mock/patients';
 import {usePatients} from "../../store/patients";
 import {filterPatients} from "../../helpers/patient-search";
-import * as _ from "lodash";
+import {debounce} from "lodash";
 
 const {Option} = Select;
 
@@ -27,7 +27,10 @@ const PatientSectionContent = (props: PatientSectionContentProps) => {
         <AutoComplete
             value={globalPatient ? globalPatient.Name : undefined}
             placeholder='Wyszukaj pacjenta'
-            onSearch={(searchPhrase)=>setFilteredPatients(filterPatients(searchPhrase, mockPatients))}
+            onSearch={debounce((searchPhrase) => {
+                    setFilteredPatients(filterPatients(searchPhrase, mockPatients))
+                }
+                , 250)}
             onChange={onPatientChange}
         >
             {filteredPatients.map((x) => {

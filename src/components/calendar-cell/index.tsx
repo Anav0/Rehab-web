@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {Collapse, Modal} from 'antd';
 import {SiteDetails} from '../timeblock-details';
-import './index.css';
 import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';
+import {CellContainer} from "./styled";
+import {changeCellDataStyle, getLeftCapacity, getOriginalCapacity} from "./operations";
 
 const {Panel} = Collapse;
 
@@ -14,52 +15,22 @@ interface CalendarCellProps {
 export const CalendarCell = (props: CalendarCellProps) => {
     const [visible, setVisible] = useState(false);
 
-    const emptyColor = 'transparent';
-    const freeColor = 'hsl(120,95%,80%)';
-    const mediumColor = 'hsl(45,95%,80%)';
-    const fullColor = 'hsl(360,95%,80%)';
-
-    const getOriginalCapacity = () => {
-        return props.cellData.timeBlock.Sites.reduce((prev, curr, i, arr) => {
-            return prev + curr.OriginalCapacitySum;
-        }, 0);
-    };
-
-    const getLeftCapacity = () => {
-        return props.cellData.timeBlock.Sites.reduce((prev, curr, i, arr) => {
-            let value = 0;
-            for (let property in curr.Capacity) {
-                value += +curr.Capacity[property];
-            }
-            return prev + value;
-        }, 0);
-
-    };
-
-    let orig = getOriginalCapacity();
-    let left = getLeftCapacity();
+    let orig = getOriginalCapacity(props.cellData);
+    let left = getLeftCapacity(props.cellData);
     let used = orig - left;
-    let percent = (used / orig) * 100;
-    if (!props.cellData.style.backgroundColor) {
-        if (percent === 0) props.cellData.style.backgroundColor = emptyColor;
-        if (percent > 0 && percent <= 25)
-            props.cellData.style.backgroundColor = freeColor;
-        if (percent > 25 && percent <= 100)
-            props.cellData.style.backgroundColor = mediumColor;
-        if (percent >= 100) props.cellData.style.backgroundColor = fullColor;
-    }
+    changeCellDataStyle(orig, left, props.cellData);
 
     return (
         <>
-            <div
+            <CellContainer
                 style={props.cellData.style}
                 onClick={() => setVisible(true)}
-                className={`cell-container`}
+
             >
                 {used}
                 {'/'}
                 {orig}
-            </div>
+            </CellContainer>
             <Modal
                 title='Sale'
                 visible={visible}
