@@ -6,7 +6,6 @@ export class TimeBlock {
     StartDate: Date;
     DurationInMinutes: number;
     Sites: TreatmentSite[];
-    IsNew: boolean = false;
 
     constructor(
         start: Date,

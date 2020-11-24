@@ -5,6 +5,7 @@ import {copy} from "../../helpers";
 import {sitesByDay} from "../../mock/sites";
 import {defaultBlocksConfig} from "../../models/timeBlockConfig";
 import {WeekPlannerProps} from "./index";
+import {Uuid} from "../../helpers/uuid";
 
 export const formatDate = (date: Date) => {
     return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -89,6 +90,7 @@ export const getCalendarCellsData = (
             let key = formatKey(tmpDate);
             let sitesForGivenDay = copy(sitesByDay[tmpDate.getDay()]);
             tmpCalendarCellData.push({
+                id: Uuid.uuidv4(),
                 style: {
                     gridRow: `${k + 2}/${k + 3}`,
                     gridColumn: `${i + 2}/${i + 3}`,
@@ -103,10 +105,6 @@ export const getCalendarCellsData = (
                         ),
                 day,
                 timeStamp: timeRange,
-                isNew: blocksByDay[key] != null ? blocksByDay[key].IsNew : false,
-                isBlocked: blocksByDay[key] != null ?
-                    !isTimeBlockAvailable(blocksByDay[key], props.unavailableDates) :
-                    false,
             });
             k++;
         }

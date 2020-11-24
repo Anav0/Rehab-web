@@ -1,6 +1,7 @@
 import {Treatment} from '../models/treatment';
+import {getRandomHexColor} from "../helpers";
 
-export default [
+const treatments = [
     new Treatment('0', 'Rowerek', 20),
     new Treatment('1', 'Podciąganie', 20),
     new Treatment('2', 'Masaż', 10),
@@ -13,3 +14,7 @@ export default [
     new Treatment('9', 'Przysiady', 20),
     new Treatment('10', 'Podskoki', 10),
 ];
+
+export default treatments;
+
+export const treatmentsColors = treatments.map(x=>getRandomHexColor());

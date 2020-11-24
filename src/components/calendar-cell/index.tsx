@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Collapse, Modal} from 'antd';
-import {SiteDetails} from '../timeBlockDetails';
+import {SiteDetails} from '../timeblock-details';
 import './index.css';
 import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';
@@ -8,9 +8,7 @@ import {Uuid} from '../../helpers/uuid';
 const {Panel} = Collapse;
 
 interface CalendarCellProps {
-    isBlocked: boolean;
-    cellData: CalendarCellData;
-    isNew: boolean;
+    cellData: CalendarCellData
 }
 
 export const CalendarCell = (props: CalendarCellProps) => {
@@ -56,11 +54,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
             <div
                 style={props.cellData.style}
                 onClick={() => setVisible(true)}
-                className={`${visible ?
-                    'cell-selected' :
-                    ''} cell-container ${props.isNew ?
-                    'new-cell' :
-                    ''} ${props.isBlocked ? 'blocked-cell' : ''}`}
+                className={`cell-container`}
             >
                 {used}
                 {'/'}
@@ -83,5 +77,5 @@ export const CalendarCell = (props: CalendarCellProps) => {
                 </Collapse>
             </Modal>
         </>
-    );
-};
+    )
+}

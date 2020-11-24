@@ -1,30 +1,33 @@
 import * as React from 'react';
-import {ReactElement, useEffect, useState} from 'react';
+import {CSSProperties, ReactElement, useEffect, useState} from 'react';
 import {Button, Modal, Space, Table} from 'antd';
 import {RawConstraint} from '../../mock/constraints';
 import {Treatment} from '../../models/treatment';
 import {RawProximityConstraint} from '../../models/rawProximityConstraint';
-import treatments from '../../mock/treatments';
+import treatments, {treatmentsColors} from '../../mock/treatments';
+import {ProfileTwoTone} from '@ant-design/icons';
 
-interface TreatmentConstraintsProps {
+interface TreatmentsListProps {
     treatments: Treatment[]
     treatmentsConstraints: { [key: string]: RawConstraint[] }
 }
 
-interface TreatmentConstraintsUIModel {
+interface TreatmentListUIModel {
     id: string,
     procedure: string,
     duration: number,
+    color: string,
     constraints: RawConstraint[]
 }
 
-export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
+export const TreatmentsList = (props: TreatmentsListProps) => {
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-    const [data, setDate] = useState<TreatmentConstraintsUIModel[]>([]);
+    const [data, setDate] = useState<TreatmentListUIModel[]>([]);
 
-    const processProps = (props: TreatmentConstraintsProps) => {
-        let processedData: TreatmentConstraintsUIModel[] = [];
+    const processProps = (props: TreatmentsListProps) => {
+        let processedData: TreatmentListUIModel[] = [];
 
+        let i = 0;
         for (let treatment of props.treatments) {
             let treatmentConstraints = props.treatmentsConstraints[treatment.Id];
 
@@ -33,7 +36,9 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
                 procedure: treatment.Name,
                 id: treatment.Id,
                 constraints: treatmentConstraints ? treatmentConstraints : [],
+                color: treatmentsColors[i],
             });
+            i++;
         }
 
         return processedData;
@@ -58,6 +63,19 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
     }, [props]);
 
     const columns = [
+        {
+            title: 'Kolor',
+            dataIndex: 'color',
+            key: 'color',
+            render(color: string): JSX.Element {
+                let style: CSSProperties = {
+                    backgroundColor: color,
+                    width: "25px",
+                    height: "25px"
+                }
+                return <div style={style}/>
+            }
+        },
         {
             title: 'Id',
             dataIndex: 'id',
@@ -93,11 +111,10 @@ export const TreatmentConstraints = (props: TreatmentConstraintsProps) => {
 
     return (
         <>
-            <Button onClick={() => setIsModalVisible(!isModalVisible)}>
-                Procedury
-            </Button>
+            <Button icon={<ProfileTwoTone/>} onClick={() => setIsModalVisible(!isModalVisible)}>Procedury</Button>
             <Modal title='Szczegóły dotyczące procedur'
                    visible={isModalVisible}
+                   mask={false}
                    onCancel={() => setIsModalVisible(false)}
                    onOk={() => setIsModalVisible(false)}
             >

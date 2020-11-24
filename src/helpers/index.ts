@@ -28,7 +28,6 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
                         block.DurationInMinutes,
                         block.Sites,
                     );
-                    timeBlock.IsNew = true;
                     changedBlocksStartTimes.push(timeBlock.StartDate);
                     timeBlocksToUpdate.push(timeBlock);
                 }
@@ -57,7 +56,12 @@ export function getNumberInRange(min: number = 0, max: number = 100) {
 
 export function getMonday(d: Date) {
     d = new Date(d);
-    var day = d.getDay(),
+    let day = d.getDay(),
         diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
     return new Date(d.setDate(diff));
+}
+
+export const getRandomHexColor = () => {
+    const randomColor = Math.floor(Math.random() * 2 ** 24).toString(16).padStart(6, '0');
+    return `#${randomColor}`
 }

@@ -4,8 +4,10 @@ export type SelectedDateState = {
     selectedDate: Date
 }
 
+const date = new Date()
+date.setDate(date.getDate() + 1) //TODO: Remove after today's work
 export const initialState: SelectedDateState = {
-    selectedDate: new Date()
+    selectedDate: date
 }
 
 const store = createStore({

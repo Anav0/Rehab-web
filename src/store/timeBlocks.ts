@@ -2,6 +2,7 @@ import {defaultBlocksConfig} from "../models/timeBlockConfig";
 import {existingBlocks, generateTimeBlockRange} from "../mock/timeBlocks";
 import {TimeBlock} from "../models/timeBlock";
 import {createHook, createStore} from "react-sweet-state";
+import {copy} from "../helpers";
 
 let split = defaultBlocksConfig.startHour.split(':');
 let startHour = +split[0];
@@ -33,16 +34,17 @@ const store = createStore({
         },
         bulkUpdateBlocks: (blocksToUpdate: TimeBlock[]) => ({setState, getState}) => {
             let state = getState(); //TODO: is read only
+            let existingBlocks = copy(state.timeBlocks);
             for (let timeBlock of blocksToUpdate) {
-                let blockToChangeIndex = state.timeBlocks.findIndex(
+                let blockToChangeIndex = existingBlocks.findIndex(
                     (x: TimeBlock) => x.StartDate.getTime() === timeBlock.StartDate.getTime(),
                 );
                 if (blockToChangeIndex === -1)
                     throw new Error('No block with this id in timeBlocks');
-                state.timeBlocks[blockToChangeIndex] = timeBlock;
+                existingBlocks[blockToChangeIndex] = timeBlock;
             }
             setState({
-                timeBlocks: state.timeBlocks,
+                timeBlocks: existingBlocks,
             });
         },
     }

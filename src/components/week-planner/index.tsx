@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import './index.css';
-import {CalendarCell} from '../calendarCell';
+import {CalendarCell} from '../calendar-cell';
 import {TimeBlock} from '../../models/timeBlock';
 import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';
 import {formatDate, getCalendarCellsData, getDaysOfWeekForDate, getHours} from "./operations";
+import {useMarkers} from "../../store/markers";
 
 export interface WeekPlannerProps {
     interval: number;
@@ -19,15 +20,18 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     const [calendarCells, setCalendarCells] = useState<CalendarCellData[]>([]);
     const [days, setDays] = useState<any>([]);
     const [hours, setHours] = useState<any>([]);
+    const [{marker}, ] = useMarkers();
 
     useEffect(() => {
+        console.log("Calendar render")
         let hours = getHours(props.startHour, props.endHour, props.interval);
         let days = getDaysOfWeekForDate(props.selectedDate);
         let calendarCells = getCalendarCellsData(hours, days, props);
         setHours(hours);
         setDays(days);
+        if (marker) marker.mark(calendarCells)
         setCalendarCells(calendarCells);
-    }, [props]);
+    }, [props, marker]);
 
     return (
         <div className='planner-container'>
@@ -67,8 +71,6 @@ const WeekPlanner = (props: WeekPlannerProps) => {
             {calendarCells.map((data: CalendarCellData) => {
                 return (
                     <CalendarCell
-                        isBlocked={data.isBlocked}
-                        isNew={data.isNew}
                         key={Uuid.uuidv4()}
                         cellData={data}
                     />
