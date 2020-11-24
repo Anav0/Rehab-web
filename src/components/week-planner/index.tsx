@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import './index.css';
 import {CalendarCell} from '../calendar-cell';
 import {TimeBlock} from '../../models/timeBlock';
 import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';
 import {formatDate, getCalendarCellsData, getDaysOfWeekForDate, getHours} from "./operations";
 import {useMarkers} from "../../store/markers";
+import {WeekPlannerContainer, WeekPlannerDay, WeekPlannerElement} from "./styled";
 
 export interface WeekPlannerProps {
     interval: number;
@@ -20,7 +20,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     const [calendarCells, setCalendarCells] = useState<CalendarCellData[]>([]);
     const [days, setDays] = useState<any>([]);
     const [hours, setHours] = useState<any>([]);
-    const [{marker}, ] = useMarkers();
+    const [{marker},] = useMarkers();
 
     useEffect(() => {
         console.log("Calendar render")
@@ -34,7 +34,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     }, [props, marker]);
 
     return (
-        <div className='planner-container'>
+        <WeekPlannerContainer>
             {days.map((x: any, i: number) => {
                 let isToday = false;
                 if (formatDate(new Date()) === formatDate(x)) isToday = true;
@@ -45,16 +45,16 @@ const WeekPlanner = (props: WeekPlannerProps) => {
                 };
 
                 return (
-                    <span style={style}
-                          className={`planner-day ${isToday ? 'bold' : ''}`}
-                          key={x.toString()}>{x.toLocaleDateString('pl', {weekday: 'long',})}
+                    <WeekPlannerDay style={style}
+                                    className={`${isToday ? 'bold' : ''}`}
+                                    key={x.toString()}>{x.toLocaleDateString('pl', {weekday: 'long',})}
                         <br/>
                         {x.toLocaleDateString('pl', {
                             day: '2-digit',
                             month: 'long',
                             year: 'numeric',
                         })}
-          </span>
+                    </WeekPlannerDay>
                 );
             })}
             {hours.map((time: any, i: number) => {
@@ -63,9 +63,9 @@ const WeekPlanner = (props: WeekPlannerProps) => {
                     gridRow: `1/2`,
                 };
                 return (
-                    <span style={style} className='planner-hour' key={time}>
-            {time}
-          </span>
+                    <WeekPlannerElement style={style} key={time}>
+                        {time}
+                    </WeekPlannerElement>
                 );
             })}
             {calendarCells.map((data: CalendarCellData) => {
@@ -76,7 +76,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
                     />
                 );
             })}
-        </div>
+        </WeekPlannerContainer>
     );
 };
 
