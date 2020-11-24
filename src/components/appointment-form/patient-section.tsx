@@ -10,12 +10,12 @@ import {debounce} from "lodash";
 const {Option} = Select;
 
 interface PatientSectionContentProps {
-    onChange: (patient: Patient) => void;
+    onChange: (patient: Patient | undefined) => void;
 }
 
 const PatientSectionContent = (props: PatientSectionContentProps) => {
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-    const [{selectedPatient: globalPatient},{changeSelectedPatient}] = usePatients();
+    const [{selectedPatient: globalPatient}, {changeSelectedPatient}] = usePatients();
 
     const onPatientChange = (patientName: string, option: any) => {
         if (option.patient)
@@ -23,14 +23,17 @@ const PatientSectionContent = (props: PatientSectionContentProps) => {
         changeSelectedPatient(option.patient)
     };
 
+    useEffect(() => {
+        props.onChange(globalPatient);
+    }, [globalPatient])
+
     return (
         <AutoComplete
             value={globalPatient ? globalPatient.Name : undefined}
             placeholder='Wyszukaj pacjenta'
             onSearch={debounce((searchPhrase) => {
-                    setFilteredPatients(filterPatients(searchPhrase, mockPatients))
-                }
-                , 250)}
+                setFilteredPatients(filterPatients(searchPhrase, mockPatients))
+            }, 250)}
             onChange={onPatientChange}
         >
             {filteredPatients.map((x) => {

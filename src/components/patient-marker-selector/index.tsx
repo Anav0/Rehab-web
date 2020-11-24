@@ -30,7 +30,6 @@ export const MarkBasedOnPatient = () => {
     }
 
     useEffect(() => {
-        changeSelectedPatient(globalPatient)
         if (selectedMarkerKey)
             onMarkerChange(selectedMarkerKey)
     }, [globalPatient])
