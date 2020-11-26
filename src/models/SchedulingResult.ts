@@ -1,9 +1,9 @@
-import {TreatmentSolutionVariant} from './TreatmentSolutionVariant';
+import {RecommendationSolution} from './RecommendationSolution';
 
 export class SchedulingResult {
-    TreatmentSolutionVariants: TreatmentSolutionVariant[];
+    Solutions: RecommendationSolution[]
 
-    constructor(TreatmentSolutionVariants: TreatmentSolutionVariant[]) {
-        this.TreatmentSolutionVariants = TreatmentSolutionVariants;
+    constructor(Solutions: RecommendationSolution[]) {
+        this.Solutions = Solutions;
     }
 }

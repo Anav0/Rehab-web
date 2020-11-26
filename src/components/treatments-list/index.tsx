@@ -64,6 +64,11 @@ export const TreatmentsList = (props: TreatmentsListProps) => {
 
     const columns = [
         {
+            title: 'Id',
+            dataIndex: 'id',
+            key: 'id',
+        },
+        {
             title: 'Kolor',
             dataIndex: 'color',
             key: 'color',
@@ -75,11 +80,6 @@ export const TreatmentsList = (props: TreatmentsListProps) => {
                 }
                 return <div style={style}/>
             }
-        },
-        {
-            title: 'Id',
-            dataIndex: 'id',
-            key: 'id',
         },
         {
             title: 'Procedura',

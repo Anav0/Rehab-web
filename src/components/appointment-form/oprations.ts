@@ -7,7 +7,7 @@ import api from "../../api";
 import {TimeBlock} from "../../models/timeBlock";
 import {AppointmentFormData} from "../../models/appointmentFormData";
 
-const compilePreferences = (values: AppointmentFormData) => {
+export const compilePreferences = (values: AppointmentFormData) => {
     let allPreferences: any = [];
     let preference: any = {type: 'time', days: []};
     for (let value of values.times) {

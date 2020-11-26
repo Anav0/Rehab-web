@@ -9,32 +9,31 @@ import {AppointmentFormData} from '../../models/appointmentFormData';
 import {UnableSection} from './unable-section';
 import {useTimeBlocks} from "../../store/timeBlocks";
 import {useSelectedDate} from "../../store/selectedDate";
-import {useMarkers} from "../../store/markers";
-import {MarkCellsContainingBlocks} from "../../helpers/calendar-marking/MarkCellsContainingBlocks";
 import {NewAppointmentForm} from "./styled";
 import {schedule} from "./oprations";
+import {usePatients} from "../../store/patients";
 
 const {Title} = Typography;
 
 const AppointmentForm = (props: any) => {
     const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
     const [, {updateSelectedDate}] = useSelectedDate()
-    const [, {changeMarker}] = useMarkers()
+    const [, {changeSelectedPatient}] = usePatients()
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
     const send = async (formData: AppointmentFormData) => {
         setIsProcessing(true)
         try {
+            changeSelectedPatient(formData.patient);
             const response = await schedule(formData, timeBlocks)
             const schedulingResult = response.data;
             let parsedTimeBlocks = parseTimeBlocksFromPayload(schedulingResult);
-            changeMarker(new MarkCellsContainingBlocks("Nowe wizyty", parsedTimeBlocks))
             bulkUpdateBlocks(parsedTimeBlocks);
-            let sol = schedulingResult.TreatmentSolutionVariants[0].Solutions[0];
+            let sol = schedulingResult.Solutions[0].Solution;
             let blocks: TimeBlock[] = [];
             if (sol)
-                blocks = sol[0].Blocks;
+                blocks = sol.Blocks;
 
             props.OnSendSuccess(formData.unavailableDates);
 
@@ -60,6 +59,7 @@ const AppointmentForm = (props: any) => {
             });
             setIsProcessing(false)
         } catch (error) {
+            console.log("C")
             console.error(error)
             let errMsg =
                 error.response && error.response.data.error

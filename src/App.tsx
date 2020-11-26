@@ -40,7 +40,7 @@ const App = () => {
     const [timeBlocksForSelectedDate, setTimeBlocksForSelectedDate] = useState<TimeBlock[]>([]);
     const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
     const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
-    const [{patients},] = usePatients()
+    const [{patients}, {changeSelectedPatient}] = usePatients()
     const [, {changeMarker}] = useMarkers()
     const [{treatments},] = useTreatments()
 
@@ -156,9 +156,10 @@ const App = () => {
                 getAllTreatmentsAsDict(),
                 {},
             );
+            changeSelectedPatient(patient);
             let response = await api.find.solution(payload);
             let parsedTimeBlocks = parseTimeBlocksFromPayload(response.data);
-            changeMarker(new MarkCellsContainingBlocks("Nowe wizyty", parsedTimeBlocks))
+            //changeMarker(new MarkCellsContainingBlocks("Nowe wizyty", parsedTimeBlocks))
             bulkUpdateBlocks(parsedTimeBlocks)
         } catch (error) {
             console.error(error);
@@ -166,6 +167,7 @@ const App = () => {
             setIsTesting(false);
         }
     }
+
     return (
         <AppLayout>
             <AppHeader>

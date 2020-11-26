@@ -18,20 +18,16 @@ export const copy = (object: any) => {
 export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
     let timeBlocksToUpdate: TimeBlock[] = [];
     let changedBlocksStartTimes = [];
-    console.log(schedulingResult.TreatmentSolutionVariants.length);
-    for (let variant of schedulingResult.TreatmentSolutionVariants) {
-        for (let key in variant.Solutions) {
-            for (let solution of variant.Solutions[key]) {
-                for (let block of solution.Blocks) {
-                    let timeBlock = new TimeBlock(
-                        new Date(block.StartDate),
-                        block.DurationInMinutes,
-                        block.Sites,
-                    );
-                    changedBlocksStartTimes.push(timeBlock.StartDate);
-                    timeBlocksToUpdate.push(timeBlock);
-                }
-            }
+    console.log(schedulingResult.Solutions.length);
+    for (let solution of schedulingResult.Solutions) {
+        for (let block of solution.Solution.Blocks) {
+            let timeBlock = new TimeBlock(
+                new Date(block.StartDate),
+                block.DurationInMinutes,
+                block.Sites,
+            );
+            changedBlocksStartTimes.push(timeBlock.StartDate);
+            timeBlocksToUpdate.push(timeBlock);
         }
     }
     console.log(changedBlocksStartTimes);
