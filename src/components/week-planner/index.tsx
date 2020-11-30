@@ -6,6 +6,7 @@ import {Uuid} from '../../helpers/uuid';
 import {formatDate, getCalendarCellsData, getDaysOfWeekForDate, getHours} from "./operations";
 import {useMarkers} from "../../store/markers";
 import {WeekPlannerContainer, WeekPlannerDay, WeekPlannerElement} from "./styled";
+import {useTreatments} from "../../store/treatments";
 
 export interface WeekPlannerProps {
     interval: number;
@@ -21,6 +22,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     const [days, setDays] = useState<any>([]);
     const [hours, setHours] = useState<any>([]);
     const [{marker},] = useMarkers();
+    const [{treatmentsDict, treatmentsColors},] = useTreatments()
 
     useEffect(() => {
         console.log("Calendar render")
@@ -72,6 +74,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
                 return (
                     <CalendarCell
                         key={Uuid.uuidv4()}
+                        treatmentsDict={treatmentsDict}
                         cellData={data}
                     />
                 );

@@ -1,12 +1,13 @@
 import React from 'react';
 import {Descriptions, List} from 'antd';
 import {TreatmentSite} from '../../models/treatmentSite';
-import treatments from '../../mock/treatments';
 import {Sex} from '../../models/patient';
 import {Uuid} from '../../helpers/uuid';
+import {Treatment} from "../../models/treatment";
 
 interface SiteDetailsProps {
     site: TreatmentSite;
+    treatmentsDict: { [key: string]: Treatment }
 }
 
 export const SiteDetails = (props: SiteDetailsProps) => {
@@ -24,7 +25,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
     const descriptors = [];
     let i = 0;
     for (let property in props.site.Capacity) {
-        let treatment = treatments.find((x) => x.Id === property);
+        let treatment = props.treatmentsDict[property];
         if (!treatment) throw Error('Treatment not found');
         capacityFullness[property] = getTreatmentFullness(props.site, property);
         let colorHSL = 50 + i * 50;
@@ -40,7 +41,7 @@ export const SiteDetails = (props: SiteDetailsProps) => {
         let current = capacityFullness[property];
         let enlisted = `Zajęte miejsca: ${current}`;
         let free = `Wolne miejsca: ${capacity}`;
-        let treatment = treatments.find((x) => x.Id === property);
+        let treatment = props.treatmentsDict[property];
         if (!treatment) throw Error('Treatment not found');
         descriptors.push(
             <Descriptions.Item

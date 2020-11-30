@@ -1,9 +1,8 @@
 import {TreatmentSite} from "../../models/treatmentSite";
-import treatments from "../../mock/treatments";
 import {Descriptions, List} from "antd";
 import {Uuid} from "../../helpers/uuid";
 import React from "react";
-import {Sex} from "../../models/patient";
+import {Treatment} from "../../models/treatment";
 
 const getTreatmentFullness = (site: TreatmentSite, treatmentId: string) => {
     let sum = 0;
@@ -13,24 +12,7 @@ const getTreatmentFullness = (site: TreatmentSite, treatmentId: string) => {
     return sum;
 };
 
-export const generateColors = (site: TreatmentSite) => {
-    const colorOptions: { [key: string]: string } = {};
-    let i = 0;
-    for (let property in site.Capacity) {
-        let treatment = treatments.find((x) => x.Id === property);
-        if (!treatment) throw Error('Treatment not found');
-        let colorHSL = 50 + i * 50;
-        if (colorHSL > 300) {
-            i = 0;
-            colorHSL = 50 + i * 50;
-        }
-        colorOptions[treatment.Id] = `hsl(${colorHSL},75%,50%)`;
-        i++;
-    }
-    return colorOptions
-}
-
-export const generateDescriptors = (site: TreatmentSite, colorOptions: { [key: string]: string }) => {
+export const generateDescriptors = (site: TreatmentSite, treatments: Treatment[], colorOptions: { [key: string]: string }) => {
     const descriptors = [];
     let capacityFullness: { [key: string]: number } = {};
 
@@ -63,16 +45,4 @@ export const generateDescriptors = (site: TreatmentSite, colorOptions: { [key: s
         );
     }
     return descriptors;
-}
-
-export const getPatientsNames = (site: TreatmentSite, colorOptions: { [key: string]: string }) => {
-    return site.Appointments.map((x, i) => {
-        let treatmentId = x.TreatmentId;
-        let color = colorOptions[+treatmentId];
-        return (
-            <span key={Uuid.uuidv4()} style={{color}}>
-                {x.Patient.Name} {Sex[x.Patient.Sex][0]}
-            </span>
-        );
-    });
 }

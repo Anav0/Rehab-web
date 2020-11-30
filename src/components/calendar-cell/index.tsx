@@ -5,10 +5,12 @@ import {CalendarCellData} from '../../models/calendarCellData';
 import {Uuid} from '../../helpers/uuid';
 import {CellContainer} from "./styled";
 import {changeCellDataStyle, getLeftCapacity, getOriginalCapacity} from "./operations";
+import {Treatment} from "../../models/treatment";
 
 const {Panel} = Collapse;
 
 interface CalendarCellProps {
+    treatmentsDict: { [key: string]: Treatment }
     cellData: CalendarCellData
 }
 
@@ -41,7 +43,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
                     {props.cellData.timeBlock.Sites.map((x) => {
                         return (
                             <Panel key={Uuid.uuidv4()} header={x.Name}>
-                                <SiteDetails site={x}/>
+                                <SiteDetails treatmentsDict={props.treatmentsDict} site={x}/>
                             </Panel>
                         );
                     })}

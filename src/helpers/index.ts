@@ -1,8 +1,6 @@
 import {TimeBlock} from '../models/timeBlock';
 import {SchedulingResult} from '../models/SchedulingResult';
 import {cloneDeep} from 'lodash';
-import mockTreatments from '../mock/treatments';
-import {Treatment} from '../models/treatment';
 
 export const dateToTime = (date: Date, lang: string = 'pl') => {
     return date.toLocaleTimeString(lang, {
@@ -36,14 +34,6 @@ export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
 
 export function getRandomElement(arr: any[]) {
     return arr[Math.floor(Math.random() * arr.length)];
-}
-
-export function getAllTreatmentsAsDict() {
-    let dict: { [key: string]: Treatment } = {};
-    for (let treatment of mockTreatments) {
-        dict[treatment.Id] = treatment;
-    }
-    return dict;
 }
 
 export function getNumberInRange(min: number = 0, max: number = 100) {

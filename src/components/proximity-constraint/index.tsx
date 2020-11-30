@@ -1,7 +1,6 @@
 import React from 'react';
 import {Select, Space} from 'antd';
 import {Uuid} from '../../helpers/uuid';
-import mockTreatments from '../../mock/treatments';
 import {Treatment} from '../../models/treatment';
 import {Proximity} from './proximity';
 
@@ -9,6 +8,7 @@ const {Option} = Select;
 
 interface ProximityConstraintProps {
     onChange: (info?: Proximity) => void;
+    treatments: Treatment[]
 }
 
 export class ProximityConstraintUI extends React.Component<ProximityConstraintProps,
@@ -18,7 +18,7 @@ export class ProximityConstraintUI extends React.Component<ProximityConstraintPr
         this.state = {
             offset: 60,
             sign: -1,
-            treatmentId: mockTreatments[0].Id,
+            treatmentId: props.treatments[0].Id,
             treatmentIndex: 0,
         };
         this.props.onChange({...this.state});
@@ -80,7 +80,7 @@ export class ProximityConstraintUI extends React.Component<ProximityConstraintPr
                     onChange={(event: any) => {
                         this.setState(
                             (state, props) => ({
-                                treatmentId: mockTreatments[event].Id,
+                                treatmentId: props.treatments[event].Id,
                                 treatmentIndex: event,
                             }),
                             () => this.props.onChange(this.state),
@@ -88,7 +88,7 @@ export class ProximityConstraintUI extends React.Component<ProximityConstraintPr
                     }}
                     style={commonSelectStyle}
                 >
-                    {mockTreatments.map((treatment: Treatment, i) => {
+                    {this.props.treatments.map((treatment: Treatment, i) => {
                         return (
                             <Option value={i} key={Uuid.uuidv4()}>
                                 {treatment.Name}

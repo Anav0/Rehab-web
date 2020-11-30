@@ -2,13 +2,11 @@ import * as React from 'react';
 import {CSSProperties, ReactElement, useEffect, useState} from 'react';
 import {Button, Modal, Space, Table} from 'antd';
 import {RawConstraint} from '../../mock/constraints';
-import {Treatment} from '../../models/treatment';
 import {RawProximityConstraint} from '../../models/rawProximityConstraint';
-import treatments, {treatmentsColors} from '../../mock/treatments';
 import {ProfileTwoTone} from '@ant-design/icons';
+import {useTreatments} from "../../store/treatments";
 
 interface TreatmentsListProps {
-    treatments: Treatment[]
     treatmentsConstraints: { [key: string]: RawConstraint[] }
 }
 
@@ -23,26 +21,7 @@ interface TreatmentListUIModel {
 export const TreatmentsList = (props: TreatmentsListProps) => {
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
     const [data, setDate] = useState<TreatmentListUIModel[]>([]);
-
-    const processProps = (props: TreatmentsListProps) => {
-        let processedData: TreatmentListUIModel[] = [];
-
-        let i = 0;
-        for (let treatment of props.treatments) {
-            let treatmentConstraints = props.treatmentsConstraints[treatment.Id];
-
-            processedData.push({
-                duration: treatment.DurationInMinutes,
-                procedure: treatment.Name,
-                id: treatment.Id,
-                constraints: treatmentConstraints ? treatmentConstraints : [],
-                color: treatmentsColors[i],
-            });
-            i++;
-        }
-
-        return processedData;
-    };
+    const [{treatments, treatmentsColors},] = useTreatments()
 
     const constraintUI: { [key: string]: (data: RawConstraint) => ReactElement } = {
         'proximity': (data: RawConstraint) => {
@@ -59,7 +38,22 @@ export const TreatmentsList = (props: TreatmentsListProps) => {
     };
 
     useEffect(() => {
-        setDate(processProps(props));
+        let processedData: TreatmentListUIModel[] = [];
+        let i = 0;
+        for (let treatment of treatments) {
+            let treatmentConstraints = props.treatmentsConstraints[treatment.Id];
+
+            processedData.push({
+                duration: treatment.DurationInMinutes,
+                procedure: treatment.Name,
+                id: treatment.Id,
+                constraints: treatmentConstraints ? treatmentConstraints : [],
+                color: treatmentsColors[i],
+            });
+            i++;
+        }
+
+        setDate(processedData)
     }, [props]);
 
     const columns = [

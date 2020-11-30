@@ -10,17 +10,14 @@ import {defaultBlocksConfig} from './models/timeBlockConfig';
 import {ApiPayload} from './models/apiPayload';
 import {Referral} from './models/referral';
 import {Recommendation} from './models/recommendation';
-import api from './api';
-import {getAllTreatmentsAsDict, getMonday, getRandomElement, parseTimeBlocksFromPayload,} from './helpers';
+import {api} from './api';
+import {getMonday, getRandomElement, parseTimeBlocksFromPayload,} from './helpers';
 import {TreatmentsList} from './components/treatments-list';
-import {treatmentConstraints} from './mock/treatmentConstraints';
 import {BlockPopulator} from './helpers/blockPopulator';
 import {useTimeBlocks} from "./store/timeBlocks";
 import {useSelectedDate} from "./store/selectedDate";
 import {usePatients} from "./store/patients";
 import {MarkBasedOnPatient} from "./components/patient-marker-selector";
-import {useMarkers} from "./store/markers";
-import {MarkCellsContainingBlocks} from "./helpers/calendar-marking/MarkCellsContainingBlocks";
 import {useTreatments} from "./store/treatments";
 import {FrownTwoTone, PlusSquareTwoTone} from '@ant-design/icons';
 import {
@@ -32,17 +29,18 @@ import {
     AppHeaderSelectedDate,
     AppLayout
 } from "./App.styled";
+import {RawConstraint} from "./mock/constraints";
 
 const App = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
     const [isTesting, setIsTesting] = useState<boolean>(false);
     const [unavailableDates, setUnavailableDates] = useState<any>([]);
     const [timeBlocksForSelectedDate, setTimeBlocksForSelectedDate] = useState<TimeBlock[]>([]);
+    const [treatmentsConstraints, setTreatmentConstraints] = useState<{ [key: string]: RawConstraint[] }>({});
     const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
     const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
     const [{patients}, {changeSelectedPatient}] = usePatients()
-    const [, {changeMarker}] = useMarkers()
-    const [{treatments},] = useTreatments()
+    const [{treatments}, {setTreatmentsAndDict}] = useTreatments()
 
     const onWeekChanged = (date: any) => {
         updateSelectedDate(date)
@@ -52,7 +50,18 @@ const App = () => {
         console.log('Populating blocks');
         BlockPopulator.populateRandomly(
             timeBlocks.slice(0, timeBlocks.length / 4), 6, 0.85);
-        //BlockPopulator.populate(props.timeBlocks.slice(0,props.timeBlocks.length/4))
+        (async () => {
+            try {
+                let responseA = await api.treatments.constraints();
+                setTreatmentConstraints(responseA.data)
+                let responseB = await api.treatments.all();
+                let responseC = await api.treatments.asDict();
+                setTreatmentsAndDict(responseB.data, responseC.data)
+            } catch (error) {
+                //TODO: show error
+                console.error(error)
+            }
+        })()
     }, []);
 
     useEffect(() => {
@@ -152,14 +161,10 @@ const App = () => {
                 timeBlocks,
                 preferences,
                 new Referral(patient, recommendations),
-                treatmentConstraints,
-                getAllTreatmentsAsDict(),
-                {},
             );
             changeSelectedPatient(patient);
             let response = await api.find.solution(payload);
             let parsedTimeBlocks = parseTimeBlocksFromPayload(response.data);
-            //changeMarker(new MarkCellsContainingBlocks("Nowe wizyty", parsedTimeBlocks))
             bulkUpdateBlocks(parsedTimeBlocks)
         } catch (error) {
             console.error(error);
@@ -202,8 +207,7 @@ const App = () => {
                     <AppHeaderProcedures size={"large"} direction={"horizontal"}>
                         <MarkBasedOnPatient/>
                         <TreatmentsList
-                            treatments={treatments}
-                            treatmentsConstraints={treatmentConstraints}
+                            treatmentsConstraints={treatmentsConstraints}
                         />
                     </AppHeaderProcedures>
                 </AppHeaderContent>

@@ -4,12 +4,12 @@ import {Patient} from "../../models/patient";
 import mockPatients from "../../mock/patients";
 import {useMarkers} from "../../store/markers";
 import {TreatmentMarker} from "../../helpers/calendar-marking/TreatmentMarker";
-import treatments, {treatmentsColors} from "../../mock/treatments";
 import {MarkerWithPatient} from "../../helpers/calendar-marking/MarkerWithPatient";
 import {PatientMarker} from "../../helpers/calendar-marking/PatientMarker";
 import {usePatients} from "../../store/patients";
 import {filterPatients} from "../../helpers/patient-search";
 import {debounce} from "lodash"
+import {useTreatments} from "../../store/treatments";
 
 const {Option} = Select;
 
@@ -18,6 +18,7 @@ export const MarkBasedOnPatient = () => {
     const [selectedMarkerKey, setSelectedMarkerKey] = useState<string | undefined>();
     const [, {changeMarker}] = useMarkers();
     const [{selectedPatient: globalPatient}, {changeSelectedPatient}] = usePatients();
+    const [{treatments, treatmentsColors},] = useTreatments()
 
     const markers: { [key: string]: { name: string, marker: MarkerWithPatient } } = {
         "treatment": {

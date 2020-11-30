@@ -1,12 +1,14 @@
 import * as React from 'react';
 import {Button, Form, Space, Typography} from 'antd';
 import TreatmentInput from '../treatment-input';
-import mockedTreatments from '../../mock/treatments';
 import {PlusOutlined} from '@ant-design/icons';
+import {useTreatments} from "../../store/treatments";
 
 const {Title} = Typography;
 
 export const ProcedureSection = () => {
+    const [{treatments},] = useTreatments()
+
     return (
         <>
             <Title level={4}>Procedury</Title>
@@ -19,7 +21,7 @@ export const ProcedureSection = () => {
                                     <Space key={field.key} direction={'horizontal'}
                                            align={'baseline'}>
                                         <Form.Item  {...field} fieldKey={field.fieldKey}>
-                                            <TreatmentInput treatments={mockedTreatments}
+                                            <TreatmentInput treatments={treatments}
                                                             onDelete={() => {
                                                                 options.remove(field.name);
                                                             }} onChange={() => {

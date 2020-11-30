@@ -1,20 +1,33 @@
-import {Patient} from "../models/patient";
-import patients from "../mock/patients";
 import {createHook, createStore} from "react-sweet-state";
 import {Treatment} from "../models/treatment";
-import treatments from "../mock/treatments";
 
 type TreatmentsState = {
-    treatments: Treatment[]
+    treatments: Treatment[],
+    treatmentsDict: { [key: string]: Treatment },
+    treatmentsColors: string[]
 }
 
 const initialState: TreatmentsState = {
-    treatments,
+    treatments: [],
+    treatmentsDict: {},
+    treatmentsColors: []
 }
 
 const store = createStore({
     initialState,
-    actions: {}
+    actions: {
+        setTreatments: (treatments: Treatment[]) => (operations: any) => {
+            operations.setState({
+                treatments
+            })
+        },
+        setTreatmentsAndDict: (treatments: Treatment[], treatmentsDict: { [key: string]: Treatment }) => (operations: any) => {
+            operations.setState({
+                treatments,
+                treatmentsDict
+            })
+        },
+    }
 })
 
 export const useTreatments = createHook(store);

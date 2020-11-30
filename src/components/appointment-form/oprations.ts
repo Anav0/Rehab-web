@@ -1,9 +1,7 @@
 import {ApiPayload} from "../../models/apiPayload";
 import {filterTimeBlocksByDates} from "../../mock/timeBlocks";
 import {Referral} from "../../models/referral";
-import {treatmentConstraints} from "../../mock/treatmentConstraints";
-import {getAllTreatmentsAsDict} from "../../helpers";
-import api from "../../api";
+import {api} from "../../api";
 import {TimeBlock} from "../../models/timeBlock";
 import {AppointmentFormData} from "../../models/appointmentFormData";
 
@@ -29,8 +27,6 @@ export const schedule = (formData: AppointmentFormData, timeBlocks: TimeBlock[])
         filterTimeBlocksByDates(timeBlocks, formData.unavailableDates),
         compilePreferences(formData),
         new Referral(formData.patient, formData.recommendations),
-        treatmentConstraints,
-        getAllTreatmentsAsDict(),
     );
     return api.find.solution(payload);
 }
