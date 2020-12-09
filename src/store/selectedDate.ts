@@ -5,7 +5,7 @@ export type SelectedDateState = {
 }
 
 const date = new Date()
-date.setDate(date.getDate() + 1) //TODO: Remove after today's work
+date.setDate(date.getDate())
 export const initialState: SelectedDateState = {
     selectedDate: date
 }

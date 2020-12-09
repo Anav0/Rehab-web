@@ -33,7 +33,7 @@ const store = createStore({
             })
         },
         bulkUpdateBlocks: (blocksToUpdate: TimeBlock[]) => ({setState, getState}) => {
-            let state = getState(); //TODO: is read only
+            let state = getState();
             let existingBlocks = copy(state.timeBlocks);
             for (let timeBlock of blocksToUpdate) {
                 let blockToChangeIndex = existingBlocks.findIndex(
