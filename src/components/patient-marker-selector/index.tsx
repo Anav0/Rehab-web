@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {AutoComplete, Select, Space} from "antd";
 import {Patient} from "../../models/patient";
-import mockPatients from "../../mock/patients";
 import {useMarkers} from "../../store/markers";
 import {TreatmentMarker} from "../../helpers/calendar-marking/TreatmentMarker";
 import {MarkerWithPatient} from "../../helpers/calendar-marking/MarkerWithPatient";
@@ -17,7 +16,7 @@ export const MarkBasedOnPatient = () => {
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
     const [selectedMarkerKey, setSelectedMarkerKey] = useState<string | undefined>();
     const [, {changeMarker}] = useMarkers();
-    const [{selectedPatient: globalPatient}, {changeSelectedPatient}] = usePatients();
+    const [{patients,selectedPatient: globalPatient}, {changeSelectedPatient}] = usePatients();
     const [{treatments, treatmentsColors},] = useTreatments()
 
     const markers: { [key: string]: { name: string, marker: MarkerWithPatient } } = {
@@ -55,7 +54,7 @@ export const MarkBasedOnPatient = () => {
                 value={globalPatient ? globalPatient.Name : undefined}
                 placeholder='Filtruj po pacjencie'
                 onSearch={debounce((searchPhrase) => {
-                        setFilteredPatients(filterPatients(searchPhrase, mockPatients))
+                        setFilteredPatients(filterPatients(searchPhrase, patients))
                     }
                     , 250)}
                 onChange={onPatientChange}

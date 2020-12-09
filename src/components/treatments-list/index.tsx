@@ -1,10 +1,10 @@
 import * as React from 'react';
 import {CSSProperties, ReactElement, useEffect, useState} from 'react';
 import {Button, Modal, Space, Table} from 'antd';
-import {RawConstraint} from '../../mock/constraints';
 import {RawProximityConstraint} from '../../models/rawProximityConstraint';
 import {ProfileTwoTone} from '@ant-design/icons';
 import {useTreatments} from "../../store/treatments";
+import {RawConstraint} from "../../models/RawConstriant";
 
 interface TreatmentsListProps {
     treatmentsConstraints: { [key: string]: RawConstraint[] }

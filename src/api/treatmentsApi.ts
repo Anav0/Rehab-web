@@ -1,6 +1,6 @@
 import {BaseApi} from './baseApi';
-import {RawConstraint} from "../mock/constraints";
 import {Treatment} from "../models/treatment";
+import {RawConstraint} from "../models/RawConstriant";
 
 export class TreatmentsApi extends BaseApi {
     asDict() {

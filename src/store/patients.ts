@@ -1,5 +1,4 @@
 import {Patient} from "../models/patient";
-import patients from "../mock/patients";
 import {createHook, createStore} from "react-sweet-state";
 
 type PatientsState = {
@@ -8,8 +7,8 @@ type PatientsState = {
 }
 
 const initialState: PatientsState = {
-    patients,
-    selectedPatient: patients[0]
+    patients: [],
+    selectedPatient: undefined
 }
 
 const store = createStore({

@@ -23,13 +23,13 @@ import {ApiPayload} from "../models/apiPayload";
 import {Referral} from "../models/referral";
 import {api} from "../api";
 import {TimeBlock} from "../models/timeBlock";
-import {RawConstraint} from "../mock/constraints";
 import {useTimeBlocks} from "../store/timeBlocks";
 import {useSelectedDate} from "../store/selectedDate";
 import {usePatients} from "../store/patients";
 import {useTreatments} from "../store/treatments";
 import {BlockPopulator} from "../helpers/blockPopulator";
 import {useHistory} from "react-router-dom";
+import {RawConstraint} from "../models/RawConstriant";
 
 export const MainPage = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
@@ -40,7 +40,7 @@ export const MainPage = () => {
     const [isFetching, setIsFetching] = useState(true)
     const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
     const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
-    const [{patients}, {changeSelectedPatient}] = usePatients()
+    const [{patients}, {changeSelectedPatient, insertPatients}] = usePatients()
     const [{treatments}, {setTreatmentsAndDict}] = useTreatments()
     let history = useHistory();
 
@@ -53,13 +53,15 @@ export const MainPage = () => {
         (async () => {
             try {
                 setIsFetching(true)
-                let responseA = await api.treatments.constraints();
+                let responseD = await api.patients.all();
                 let responseB = await api.treatments.all();
                 let responseC = await api.treatments.asDict();
-                setTreatmentConstraints(responseA.data)
+                let responseA = await api.treatments.constraints();
+                insertPatients(responseD.data)
                 setTreatmentsAndDict(responseB.data, responseC.data)
+                setTreatmentConstraints(responseA.data)
                 BlockPopulator.populateRandomly(
-                    timeBlocks.slice(0, timeBlocks.length / 4), 6, 0.85);
+                    timeBlocks.slice(0, timeBlocks.length / 4), 6, 0.85, responseD.data);
                 setIsFetching(false)
             } catch (error) {
                 console.error(error)
@@ -69,7 +71,6 @@ export const MainPage = () => {
     }, []);
 
     useEffect(() => {
-        setIsFetching(true)
         console.log('App useEffect called');
         let start = getMonday(selectedDate);
         start.setHours(0, 0, 1);
@@ -86,7 +87,6 @@ export const MainPage = () => {
             }
         }
         setTimeBlocksForSelectedDate(blocks);
-        setIsFetching(false)
     }, [selectedDate, timeBlocks]);
 
 

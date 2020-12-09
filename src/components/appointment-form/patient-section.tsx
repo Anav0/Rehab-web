@@ -2,7 +2,6 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {AutoComplete, Form, Select} from 'antd';
 import {Patient} from '../../models/patient';
-import mockPatients from '../../mock/patients';
 import {usePatients} from "../../store/patients";
 import {filterPatients} from "../../helpers/patient-search";
 import {debounce} from "lodash";
@@ -15,7 +14,7 @@ interface PatientSectionContentProps {
 
 const PatientSectionContent = (props: PatientSectionContentProps) => {
     const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-    const [{selectedPatient: globalPatient}, {changeSelectedPatient}] = usePatients();
+    const [{patients, selectedPatient: globalPatient}, {changeSelectedPatient}] = usePatients();
 
     const onPatientChange = (patientName: string, option: any) => {
         if (option.patient)
@@ -32,7 +31,7 @@ const PatientSectionContent = (props: PatientSectionContentProps) => {
             value={globalPatient ? globalPatient.Name : undefined}
             placeholder='Wyszukaj pacjenta'
             onSearch={debounce((searchPhrase) => {
-                setFilteredPatients(filterPatients(searchPhrase, mockPatients))
+                setFilteredPatients(filterPatients(searchPhrase, patients))
             }, 250)}
             onChange={onPatientChange}
         >

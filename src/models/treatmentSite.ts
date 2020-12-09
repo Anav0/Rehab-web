@@ -34,7 +34,7 @@ export class TreatmentSite {
             this.SexConstraintTreatments.includes(appointment.TreatmentId) &&
             this.Appointments.length > 0
         ) {
-            let sexofFirstPatient = this.Appointments[0].Patient.Sex;
+            let sexofFirstPatient = this.Appointments.length > 0 ? this.Appointments[0].Patient.Sex : appointment.Patient.Sex;
             if (appointment.Patient.Sex !== sexofFirstPatient) return false;
         }
 

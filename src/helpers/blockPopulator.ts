@@ -1,11 +1,11 @@
 import {getNumberInRange, getRandomElement} from '.';
 import {Appointment} from '../models/appointment';
 import {TimeBlock} from '../models/timeBlock';
-import patients from '../mock/patients';
 import {TreatmentSite} from '../models/treatmentSite';
+import {Patient} from "../models/patient";
 
 export class BlockPopulator {
-    static populate(timeBlocks: TimeBlock[]) {
+    static populate(timeBlocks: TimeBlock[], patients: Patient[]) {
         let dates = [
             {
                 start: new Date(2020, 10, 2, 0, 0, 0).getTime(),
@@ -67,6 +67,7 @@ export class BlockPopulator {
         timeBlocks: TimeBlock[],
         maxAppointPerBlock: number = 4,
         chances: number = 0.65,
+        patients: Patient[]
     ) {
         for (let i = 0; i < timeBlocks.length; i++) {
             let block = timeBlocks[i];

@@ -1,4 +1,4 @@
-import {RawConstraint} from '../mock/constraints';
+import {RawConstraint} from "./RawConstriant";
 
 export class RawProximityConstraint implements RawConstraint {
     Type: string;

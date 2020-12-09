@@ -1,5 +1,6 @@
 import {createHook, createStore} from "react-sweet-state";
 import {Treatment} from "../models/treatment";
+import {getRandomHexColor} from "../helpers";
 
 type TreatmentsState = {
     treatments: Treatment[],
@@ -16,15 +17,11 @@ const initialState: TreatmentsState = {
 const store = createStore({
     initialState,
     actions: {
-        setTreatments: (treatments: Treatment[]) => (operations: any) => {
-            operations.setState({
-                treatments
-            })
-        },
         setTreatmentsAndDict: (treatments: Treatment[], treatmentsDict: { [key: string]: Treatment }) => (operations: any) => {
             operations.setState({
                 treatments,
-                treatmentsDict
+                treatmentsDict,
+                treatmentsColors: treatments.map(x => getRandomHexColor())
             })
         },
     }
