@@ -21,7 +21,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
     let left = getLeftCapacity(props.cellData);
     let used = orig - left;
     changeCellDataStyle(orig, left, props.cellData);
-
+    console.log(orig,left,used)
     return (
         <>
             <CellContainer

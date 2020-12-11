@@ -13,6 +13,19 @@ export const copy = (object: any) => {
     return cloneDeep(object);
 };
 
+export function parseTimeBlocks(unparsedBlocks: any[]){
+    let timeBlocksToUpdate: TimeBlock[] = [];
+    for (let block of unparsedBlocks) {
+        let timeBlock = new TimeBlock(
+            new Date(block.StartDate),
+            block.DurationInMinutes,
+            block.Sites,
+        );
+        timeBlocksToUpdate.push(timeBlock);
+    }
+    return timeBlocksToUpdate;
+}
+
 export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
     let timeBlocksToUpdate: TimeBlock[] = [];
     let changedBlocksStartTimes = [];
@@ -50,4 +63,30 @@ export function getMonday(d: Date) {
 export const getRandomHexColor = () => {
     const randomColor = Math.floor(Math.random() * 2 ** 24).toString(16).padStart(6, '0');
     return `#${randomColor}`
+}
+
+export const formatKey = (date: Date) => {
+    return `${date.toDateString()} ${date.toLocaleString('pl', {
+        hour: '2-digit',
+        minute: '2-digit',
+    })}`;
+};
+
+export function filterTimeBlocksByDates(
+    timeBlocks: TimeBlock[],
+    unavailableDates: any,
+): TimeBlock[] {
+    if (!unavailableDates) return timeBlocks;
+    for (let dateRange of unavailableDates) {
+        let start = new Date(dateRange[0]);
+        start.setHours(5, 0, 0, 0);
+        let end = new Date(dateRange[1]);
+        end.setHours(235, 0, 0, 0);
+        timeBlocks = timeBlocks.filter(
+            (x) =>
+                x.StartDate.getTime() < start.getTime() ||
+                x.StartDate.getTime() > end.getTime(),
+        );
+    }
+    return timeBlocks;
 }

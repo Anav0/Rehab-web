@@ -7,7 +7,6 @@ import {ProcedureSection} from './procedure-section';
 import {PatientSection} from './patient-section';
 import {AppointmentFormData} from '../../models/appointmentFormData';
 import {UnableSection} from './unable-section';
-import {useTimeBlocks} from "../../store/timeBlocks";
 import {useSelectedDate} from "../../store/selectedDate";
 import {NewAppointmentForm} from "./styled";
 import {schedule} from "./oprations";
@@ -16,7 +15,6 @@ import {usePatients} from "../../store/patients";
 const {Title} = Typography;
 
 const AppointmentForm = (props: any) => {
-    const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
     const [, {updateSelectedDate}] = useSelectedDate()
     const [, {changeSelectedPatient}] = usePatients()
 
@@ -26,10 +24,10 @@ const AppointmentForm = (props: any) => {
         setIsProcessing(true)
         try {
             changeSelectedPatient(formData.patient);
-            const response = await schedule(formData, timeBlocks)
+            const response = await schedule(formData)
             const schedulingResult = response.data;
             let parsedTimeBlocks = parseTimeBlocksFromPayload(schedulingResult);
-            bulkUpdateBlocks(parsedTimeBlocks);
+            //TODO: display proposition
             let sol = schedulingResult.Solutions[0].Solution;
             let blocks: TimeBlock[] = [];
             if (sol)

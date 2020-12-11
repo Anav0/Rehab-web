@@ -17,19 +17,18 @@ import WeekPlanner from "../components/week-planner";
 import {defaultBlocksConfig} from "../models/timeBlockConfig";
 import AppointmentForm from "../components/appointment-form";
 import {Recommendation} from "../models/recommendation";
-import {getMonday, getRandomElement, parseTimeBlocksFromPayload} from "../helpers";
+import {getMonday, getRandomElement, parseTimeBlocks, parseTimeBlocksFromPayload} from "../helpers";
 import {Sex} from "../models/patient";
 import {ApiPayload} from "../models/apiPayload";
 import {Referral} from "../models/referral";
 import {api} from "../api";
 import {TimeBlock} from "../models/timeBlock";
-import {useTimeBlocks} from "../store/timeBlocks";
 import {useSelectedDate} from "../store/selectedDate";
 import {usePatients} from "../store/patients";
 import {useTreatments} from "../store/treatments";
-import {BlockPopulator} from "../helpers/blockPopulator";
 import {useHistory} from "react-router-dom";
 import {RawConstraint} from "../models/RawConstriant";
+import {BlocksRangePayload} from "../models/BlocksRangePayload";
 
 export const MainPage = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
@@ -38,7 +37,6 @@ export const MainPage = () => {
     const [timeBlocksForSelectedDate, setTimeBlocksForSelectedDate] = useState<TimeBlock[]>([]);
     const [treatmentsConstraints, setTreatmentConstraints] = useState<{ [key: string]: RawConstraint[] }>({});
     const [isFetching, setIsFetching] = useState(true)
-    const [{timeBlocks}, {bulkUpdateBlocks}] = useTimeBlocks()
     const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
     const [{patients}, {changeSelectedPatient, insertPatients}] = usePatients()
     const [{treatments}, {setTreatmentsAndDict}] = useTreatments()
@@ -60,8 +58,6 @@ export const MainPage = () => {
                 insertPatients(responseD.data)
                 setTreatmentsAndDict(responseB.data, responseC.data)
                 setTreatmentConstraints(responseA.data)
-                BlockPopulator.populateRandomly(
-                    timeBlocks.slice(0, timeBlocks.length / 4), 6, 0.85, responseD.data);
                 setIsFetching(false)
             } catch (error) {
                 console.error(error)
@@ -78,16 +74,17 @@ export const MainPage = () => {
         end.setDate(start.getDate() + 6);
         end.setHours(23, 59, 59);
 
-        let blocks: TimeBlock[] = [];
-
-        for (let block of timeBlocks) {
-            let blockDayTime = block.StartDate.getTime();
-            if (blockDayTime >= start.getTime() && blockDayTime <= end.getTime()) {
-                blocks.push(block);
+        //TODO: fetch blocks for selected date
+        (async () => {
+            try {
+                const response = await api.blocks.range(new BlocksRangePayload(start.toISOString(), end.toISOString()))
+                setTimeBlocksForSelectedDate(parseTimeBlocks(response.data));
+            } catch (error) {
+                //TODO: display error
             }
-        }
-        setTimeBlocksForSelectedDate(blocks);
-    }, [selectedDate, timeBlocks]);
+        })()
+
+    }, [selectedDate]);
 
 
     async function sendTestPayload() {
@@ -165,14 +162,13 @@ export const MainPage = () => {
             let patient = getRandomElement(patients);
             console.log(`${patient.Name} ${Sex[patient.Sex]}`);
             let payload = new ApiPayload(
-                timeBlocks,
                 preferences,
                 new Referral(patient, recommendations),
             );
             changeSelectedPatient(patient);
             let response = await api.find.solution(payload);
             let parsedTimeBlocks = parseTimeBlocksFromPayload(response.data);
-            bulkUpdateBlocks(parsedTimeBlocks)
+            //TODO: display proposition
         } catch (error) {
             console.error(error);
         } finally {
@@ -220,12 +216,10 @@ export const MainPage = () => {
                 </AppHeaderContent>
             </AppHeader>
             {!isFetching ? <> <WeekPlanner
-                interval={defaultBlocksConfig.durationInMinutes}
                 startHour={defaultBlocksConfig.startHour}
                 endHour={defaultBlocksConfig.endHour}
                 timeBlocks={timeBlocksForSelectedDate}
                 selectedDate={selectedDate}
-                unavailableDates={unavailableDates}
             />
                 <Modal
                     closable={false}

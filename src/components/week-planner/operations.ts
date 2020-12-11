@@ -1,11 +1,6 @@
-import {formatKey} from "../../mock/timeBlocks";
-import {TimeBlock} from "../../models/timeBlock";
 import {CalendarCellData} from "../../models/calendarCellData";
-import {copy} from "../../helpers";
-import {sitesByDay} from "../../mock/sites";
-import {defaultBlocksConfig} from "../../models/timeBlockConfig";
+import {formatKey} from "../../helpers";
 import {WeekPlannerProps} from "./index";
-import {Uuid} from "../../helpers/uuid";
 
 export const formatDate = (date: Date) => {
     return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -51,20 +46,6 @@ export const getDaysOfWeekForDate = (date: Date) => {
     return days;
 };
 
-export const isTimeBlockAvailable = (
-    timeBlock: TimeBlock, unavailableDates: any): boolean => {
-    if (!unavailableDates) return true;
-    for (let pair of unavailableDates) {
-        let start = new Date(pair[0]);
-        start.setHours(0, 0, 0, 0);
-        let end = new Date(pair[1]);
-        end.setHours(23, 0, 0, 0);
-        if (timeBlock.StartDate.getTime() >= start.getTime() &&
-            timeBlock.StartDate.getTime() <= end.getTime()) return false;
-    }
-    return true;
-};
-
 export const getCalendarCellsData = (
     hours: string[],
     days: Date[],
@@ -88,23 +69,12 @@ export const getCalendarCellsData = (
             let tmpDate = new Date(day);
             tmpDate.setHours(+hours, +minutes, 0, 0);
             let key = formatKey(tmpDate);
-            let sitesForGivenDay = copy(sitesByDay[tmpDate.getDay()]);
             tmpCalendarCellData.push({
-                id: Uuid.uuidv4(),
                 style: {
                     gridRow: `${k + 2}/${k + 3}`,
                     gridColumn: `${i + 2}/${i + 3}`,
                 },
-                timeBlock:
-                    blocksByDay[key] != null
-                        ? blocksByDay[key]
-                        : new TimeBlock(
-                        tmpDate,
-                        defaultBlocksConfig.durationInMinutes,
-                        sitesForGivenDay,
-                        ),
-                day,
-                timeStamp: timeRange,
+                timeBlock: blocksByDay[key]
             });
             k++;
         }

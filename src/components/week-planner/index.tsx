@@ -7,14 +7,13 @@ import {formatDate, getCalendarCellsData, getDaysOfWeekForDate, getHours} from "
 import {useMarkers} from "../../store/markers";
 import {WeekPlannerContainer, WeekPlannerDay, WeekPlannerElement} from "./styled";
 import {useTreatments} from "../../store/treatments";
+import {Result} from "antd";
 
 export interface WeekPlannerProps {
-    interval: number;
     selectedDate: Date;
     endHour: string;
     startHour: string;
     timeBlocks: TimeBlock[];
-    unavailableDates: any;
 }
 
 const WeekPlanner = (props: WeekPlannerProps) => {
@@ -22,64 +21,72 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     const [days, setDays] = useState<any>([]);
     const [hours, setHours] = useState<any>([]);
     const [{marker},] = useMarkers();
-    const [{treatmentsDict, treatmentsColors},] = useTreatments()
+    const [{treatmentsDict},] = useTreatments()
 
     useEffect(() => {
+        if (props.timeBlocks.length <= 0) return;
         console.log("Calendar render")
-        let hours = getHours(props.startHour, props.endHour, props.interval);
+        let hours = getHours(props.startHour, props.endHour, props.timeBlocks[0].DurationInMinutes);
         let days = getDaysOfWeekForDate(props.selectedDate);
-        let calendarCells = getCalendarCellsData(hours, days, props);
         setHours(hours);
         setDays(days);
+        let calendarCells = getCalendarCellsData(hours, days, props);
         if (marker) marker.mark(calendarCells)
         setCalendarCells(calendarCells);
     }, [props, marker]);
 
     return (
-        <WeekPlannerContainer>
-            {days.map((x: any, i: number) => {
-                let isToday = false;
-                if (formatDate(new Date()) === formatDate(x)) isToday = true;
+        <>
+            {props.timeBlocks.length > 0 ?
+                <WeekPlannerContainer>
+                    {days.map((x: any, i: number) => {
+                        let isToday = false;
+                        if (formatDate(new Date()) === formatDate(x)) isToday = true;
 
-                let style = {
-                    gridColumn: `1/2`,
-                    gridRow: `${i + 2}/${i + 3}`,
-                };
+                        let style = {
+                            gridColumn: `1/2`,
+                            gridRow: `${i + 2}/${i + 3}`,
+                        };
 
-                return (
-                    <WeekPlannerDay style={style}
-                                    className={`${isToday ? 'bold' : ''}`}
-                                    key={x.toString()}>{x.toLocaleDateString('pl', {weekday: 'long',})}
-                        <br/>
-                        {x.toLocaleDateString('pl', {
-                            day: '2-digit',
-                            month: 'long',
-                            year: 'numeric',
-                        })}
-                    </WeekPlannerDay>
-                );
-            })}
-            {hours.map((time: any, i: number) => {
-                let style = {
-                    gridColumn: `${i + 2}/${i + 3}`,
-                    gridRow: `1/2`,
-                };
-                return (
-                    <WeekPlannerElement style={style} key={time}>
-                        {time}
-                    </WeekPlannerElement>
-                );
-            })}
-            {calendarCells.map((data: CalendarCellData) => {
-                return (
-                    <CalendarCell
-                        key={Uuid.uuidv4()}
-                        treatmentsDict={treatmentsDict}
-                        cellData={data}
-                    />
-                );
-            })}
-        </WeekPlannerContainer>
+                        return (
+                            <WeekPlannerDay style={style}
+                                            className={`${isToday ? 'bold' : ''}`}
+                                            key={x.toString()}>{x.toLocaleDateString('pl', {weekday: 'long',})}
+                                <br/>
+                                {x.toLocaleDateString('pl', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric',
+                                })}
+                            </WeekPlannerDay>
+                        );
+                    })}
+                    {hours.map((time: any, i: number) => {
+                        let style = {
+                            gridColumn: `${i + 2}/${i + 3}`,
+                            gridRow: `1/2`,
+                        };
+                        return (
+                            <WeekPlannerElement style={style} key={time}>
+                                {time}
+                            </WeekPlannerElement>
+                        );
+                    })}
+                    {calendarCells.map((data: CalendarCellData) => {
+                        return (
+                            <CalendarCell
+                                key={Uuid.uuidv4()}
+                                treatmentsDict={treatmentsDict}
+                                cellData={data}
+                            />
+                        );
+                    })}
+                </WeekPlannerContainer> : <Result
+                    className={'center'}
+                    status="error"
+                    title="Kalendarz nie otrzymał bloków"
+                />}
+        </>
     );
 };
 

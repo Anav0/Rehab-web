@@ -1,8 +1,6 @@
 import {ApiPayload} from "../../models/apiPayload";
-import {filterTimeBlocksByDates} from "../../mock/timeBlocks";
 import {Referral} from "../../models/referral";
 import {api} from "../../api";
-import {TimeBlock} from "../../models/timeBlock";
 import {AppointmentFormData} from "../../models/appointmentFormData";
 
 export const compilePreferences = (values: AppointmentFormData) => {
@@ -21,10 +19,9 @@ export const compilePreferences = (values: AppointmentFormData) => {
     return allPreferences;
 };
 
-export const schedule = (formData: AppointmentFormData, timeBlocks: TimeBlock[]) => {
+export const schedule = (formData: AppointmentFormData) => {
     if (!formData.patient) throw new Error('Nie wybrano pacjenta');
     let payload = new ApiPayload(
-        filterTimeBlocksByDates(timeBlocks, formData.unavailableDates),
         compilePreferences(formData),
         new Referral(formData.patient, formData.recommendations),
     );
