@@ -133,28 +133,12 @@ export const MainPage = () => {
 
         let recommendations: Recommendation[] = [
             {
-                Repeat: 4,
-                Treatment: treatments[2],
+                Repeat: 1,
+                TreatmentId: treatments[2].Id,
             },
             {
-                Repeat: 4,
-                Treatment: treatments[5],
-            },
-            {
-                Repeat: 4,
-                Treatment: treatments[1],
-            },
-            {
-                Repeat: 4,
-                Treatment: treatments[8],
-            },
-            {
-                Repeat: 4,
-                Treatment: treatments[9],
-            },
-            {
-                Repeat: 4,
-                Treatment: treatments[6],
+                Repeat: 1,
+                TreatmentId: treatments[5].Id,
             },
         ];
         try {

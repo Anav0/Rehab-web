@@ -1,6 +1,4 @@
-import {Treatment} from './treatment';
-
 export interface Recommendation {
-    Treatment: Treatment,
+    TreatmentId: string,
     Repeat: number,
 }

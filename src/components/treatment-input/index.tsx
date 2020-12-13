@@ -16,12 +16,11 @@ interface TreatmentInputProps {
 
 const TreatmentInput = (props: TreatmentInputProps) => {
     const [repeat, setRepeat] = useState(props.value ? props.value.Repeat : 1);
-    const [treatment, setTreatment] = useState(
-        props.value ? props.value.Treatment : props.treatments[0]);
+    const [treatmentId, setTreatmentId] = useState(
+        props.value ? props.value.TreatmentId : props.treatments[0].Id);
 
     const onTreatmentChange = (treatmentId: string) => {
-        let treatment = props.treatments.find(x => x.Id === treatmentId);
-        if (treatment) setTreatment(treatment);
+        setTreatmentId(treatmentId);
     };
 
     const onNumberChanged = (howMany: string | number | undefined) => {
@@ -31,9 +30,9 @@ const TreatmentInput = (props: TreatmentInputProps) => {
     useEffect(() => {
         props.onChange({
             Repeat: repeat,
-            Treatment: {...treatment},
+            TreatmentId: treatmentId,
         });
-    }, [repeat, treatment]);
+    }, [repeat, treatmentId]);
 
     return (
         <Space direction={'vertical'} size={'large'}>
@@ -41,7 +40,7 @@ const TreatmentInput = (props: TreatmentInputProps) => {
                 <Select
                     style={{width: '150px'}}
                     placeholder='Wyszukaj procedurę'
-                    defaultValue={treatment.Id}
+                    defaultValue={treatmentId}
                     onChange={onTreatmentChange}>
                     {props.treatments.map((treatment) => {
                         return (
