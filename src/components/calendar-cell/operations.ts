@@ -1,12 +1,14 @@
 import {CalendarCellData} from "../../models/calendarCellData";
 
 export const getOriginalCapacity = (cellData: CalendarCellData) => {
+    if (!cellData.timeBlock) return 0;
     return cellData.timeBlock.Sites.reduce((prev, curr, i, arr) => {
         return prev + curr.OriginalCapacitySum;
     }, 0);
 };
 
 export const getLeftCapacity = (cellData: CalendarCellData) => {
+    if (!cellData.timeBlock) return 0;
     return cellData.timeBlock.Sites.reduce((prev, curr, i, arr) => {
         let value = 0;
         for (let property in curr.Capacity) {
@@ -17,7 +19,7 @@ export const getLeftCapacity = (cellData: CalendarCellData) => {
 
 };
 //TODO: Change to marker
-export const changeCellDataStyle = (orig: number, left: number, cellData: CalendarCellData)=>{
+export const changeCellDataStyle = (orig: number, left: number, cellData: CalendarCellData) => {
     const emptyColor = 'transparent';
     const freeColor = 'hsl(120,95%,80%)';
     const mediumColor = 'hsl(45,95%,80%)';

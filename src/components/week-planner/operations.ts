@@ -69,6 +69,8 @@ export const getCalendarCellsData = (
             let tmpDate = new Date(day);
             tmpDate.setHours(+hours, +minutes, 0, 0);
             let key = formatKey(tmpDate);
+            let block = blocksByDay[key];
+            if (!block) throw new Error("No block found")
             tmpCalendarCellData.push({
                 style: {
                     gridRow: `${k + 2}/${k + 3}`,

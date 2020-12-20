@@ -33,7 +33,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
         let calendarCells = getCalendarCellsData(hours, days, props);
         if (marker) marker.mark(calendarCells)
         setCalendarCells(calendarCells);
-    }, [props, marker]);
+    }, [props.timeBlocks, marker]);
 
     return (
         <>
@@ -84,7 +84,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
                 </WeekPlannerContainer> : <Result
                     className={'center'}
                     status="error"
-                    title="Kalendarz nie otrzymał bloków"
+                    title="Brak bloków czasowych dla wybranych dat"
                 />}
         </>
     );

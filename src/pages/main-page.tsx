@@ -47,7 +47,7 @@ export const MainPage = () => {
     };
 
     useEffect(() => {
-        console.log('Populating blocks');
+        console.log('Fetching basic info...');
         (async () => {
             try {
                 setIsFetching(true)
@@ -58,29 +58,34 @@ export const MainPage = () => {
                 insertPatients(responseD.data)
                 setTreatmentsAndDict(responseB.data, responseC.data)
                 setTreatmentConstraints(responseA.data)
-                setIsFetching(false)
             } catch (error) {
                 console.error(error)
                 history.push('/error/500/Nie-udało-sie-połączyć-z-serwerem')
+            }finally{
+                setIsFetching(false)
             }
         })()
     }, []);
 
     useEffect(() => {
-        console.log('App useEffect called');
+        setIsFetching(true)
         let start = getMonday(selectedDate);
         start.setHours(0, 0, 1);
         let end = new Date(start);
         end.setDate(start.getDate() + 6);
         end.setHours(23, 59, 59);
+        console.log(`Fetching blocks for: ${start.toLocaleString()} - ${end.toLocaleString()}`);
 
-        //TODO: fetch blocks for selected date
         (async () => {
             try {
+                console.log("Fetching blocks...")
                 const response = await api.blocks.range(new BlocksRangePayload(start.toISOString(), end.toISOString()))
                 setTimeBlocksForSelectedDate(parseTimeBlocks(response.data));
             } catch (error) {
-                //TODO: display error
+                console.error(error)
+                history.push('/error/500/Nie-udało-sie-pobrać-informacji-o-blokach-czasowych')
+            } finally {
+                setIsFetching(false)
             }
         })()
 
@@ -200,10 +205,10 @@ export const MainPage = () => {
                 </AppHeaderContent>
             </AppHeader>
             {!isFetching ? <> <WeekPlanner
+                selectedDate={selectedDate}
                 startHour={defaultBlocksConfig.startHour}
                 endHour={defaultBlocksConfig.endHour}
                 timeBlocks={timeBlocksForSelectedDate}
-                selectedDate={selectedDate}
             />
                 <Modal
                     closable={false}

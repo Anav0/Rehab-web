@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Collapse, Modal} from 'antd';
 import {SiteDetails} from '../timeblock-details';
 import {CalendarCellData} from '../../models/calendarCellData';
@@ -21,7 +21,7 @@ export const CalendarCell = (props: CalendarCellProps) => {
     let left = getLeftCapacity(props.cellData);
     let used = orig - left;
     changeCellDataStyle(orig, left, props.cellData);
-    console.log(orig,left,used)
+
     return (
         <>
             <CellContainer
@@ -40,13 +40,14 @@ export const CalendarCell = (props: CalendarCellProps) => {
                 onCancel={() => setVisible(false)}
             >
                 <Collapse ghost defaultActiveKey={['1']}>
-                    {props.cellData.timeBlock.Sites.map((x) => {
+                    {props.cellData.timeBlock ? (props.cellData.timeBlock.Sites.map((x) => {
                         return (
                             <Panel key={Uuid.uuidv4()} header={x.Name}>
                                 <SiteDetails treatmentsDict={props.treatmentsDict} site={x}/>
                             </Panel>
                         );
-                    })}
+                    })) : (<></>)}
+
                 </Collapse>
             </Modal>
         </>
