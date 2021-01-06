@@ -4,7 +4,7 @@ import { ICalendarCellDataMarker } from "./index";
 import { TimeBlock } from "../../models/timeBlock";
 
 export class MarkCellsContainingBlocks implements ICalendarCellDataMarker {
-  blocks: TimeBlock[] | undefined; //TODO: change to simple "Set"
+  blocksId: Set<string> = new Set();
   style: CSSProperties = {};
   name: string;
 
@@ -15,22 +15,21 @@ export class MarkCellsContainingBlocks implements ICalendarCellDataMarker {
   ) {
     this.name = name;
     this.style = style;
-    this.blocks = blocks;
+
+    for (let i = 0; i < blocks.length; i++) {
+      this.blocksId.add(blocks[i].Id);
+    }
   }
 
   getMarkerName(): string {
     return this.name;
   }
-  //TODO: change this to Set and id not date you peasent
   mark(calendarCellData: CalendarCellData[]): void {
-    if (this.blocks === undefined) return;
+    console.log(this.blocksId);
+
+    if (this.blocksId === undefined) return;
     for (let cellData of calendarCellData) {
-      if (
-        this.blocks.find(
-          (x) =>
-            x.StartDate.getTime() === cellData.timeBlock.StartDate.getTime()
-        )
-      ) {
+      if (this.blocksId.has(cellData.timeBlock.Id)) {
         Object.assign(cellData.style, this.style);
       }
     }

@@ -14,11 +14,13 @@ import {
   WeekPlannerContainer,
   WeekPlannerDay,
   WeekPlannerElement,
+  WeekPlannerElement as WeekPlannerHour,
 } from "./styled";
 import { useTreatments } from "../../store/treatments";
-import { Result } from "antd";
+import { Affix, Button, Result } from "antd";
 import { MarkCellsContainingBlocks } from "../../merkers/calendar-marking/MarkCellsContainingBlocks";
 import { usePropositions } from "../../store/propositions";
+import { PlusSquareOutlined } from "@ant-design/icons";
 
 export interface WeekPlannerProps {
   selectedDate: Date;
@@ -49,7 +51,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     let calendarCells = getCalendarCellsData(hours, days, props);
     if (marker) marker.mark(calendarCells);
     new MarkCellsContainingBlocks("Mark propositions", blocksWithPropositions, {
-      border: "#44f8da solid 4px",
+      border: "#44f8da dashed 4px",
     }).mark(calendarCells);
     setCalendarCells(calendarCells);
   }, [props.timeBlocks, marker, blocksWithPropositions]);
@@ -98,6 +100,11 @@ const WeekPlanner = (props: WeekPlannerProps) => {
             return (
               <CalendarCell
                 key={Uuid.uuidv4()}
+                isProposed={
+                  blocksWithPropositions.find(
+                    (x) => x.Id === data.timeBlock.Id
+                  ) !== undefined
+                }
                 treatmentsDict={treatmentsDict}
                 cellData={data}
               />

@@ -1,7 +1,7 @@
-import {CSSProperties} from 'react';
-import {TimeBlock} from './timeBlock';
+import { CSSProperties } from "react";
+import { TimeBlock } from "./timeBlock";
 
 export interface CalendarCellData {
-    style: CSSProperties;
-    timeBlock: TimeBlock;
+  style: CSSProperties;
+  timeBlock: TimeBlock;
 }
