@@ -1,5 +1,5 @@
 import {createHook, createStore} from "react-sweet-state";
-import {ICalendarCellDataMarker} from "../helpers/calendar-marking";
+import {ICalendarCellDataMarker} from "../merkers/calendar-marking";
 
 type MarkersState = {
     marker: ICalendarCellDataMarker | undefined

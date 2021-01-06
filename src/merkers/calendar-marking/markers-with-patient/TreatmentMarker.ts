@@ -1,6 +1,6 @@
-import {CalendarCellData} from "../../models/calendarCellData";
-import {Treatment} from "../../models/treatment";
-import {Patient} from "../../models/patient";
+import {CalendarCellData} from "../../../models/calendarCellData";
+import {Treatment} from "../../../models/treatment";
+import {Patient} from "../../../models/patient";
 import {MarkerWithPatient} from "./MarkerWithPatient";
 
 export class TreatmentMarker extends MarkerWithPatient {

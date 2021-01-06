@@ -1,7 +1,7 @@
 import {CSSProperties} from "react";
-import {CalendarCellData} from "../../models/calendarCellData";
-import {ICalendarCellDataMarker} from "./index";
-import {Patient} from "../../models/patient";
+import {CalendarCellData} from "../../../models/calendarCellData";
+import {ICalendarCellDataMarker} from "../index";
+import {Patient} from "../../../models/patient";
 
 export abstract class MarkerWithPatient implements ICalendarCellDataMarker {
     patient: Patient | undefined

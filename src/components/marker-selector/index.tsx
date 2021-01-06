@@ -1,6 +1,6 @@
 import React from "react";
 import {Select} from "antd";
-import {ICalendarCellDataMarker} from "../../helpers/calendar-marking";
+import {ICalendarCellDataMarker} from "../../merkers/calendar-marking";
 import {useMarkers} from "../../store/markers";
 
 const {Option} = Select;

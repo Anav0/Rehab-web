@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import {AutoComplete, Select, Space} from "antd";
 import {Patient} from "../../models/patient";
 import {useMarkers} from "../../store/markers";
-import {TreatmentMarker} from "../../helpers/calendar-marking/TreatmentMarker";
-import {MarkerWithPatient} from "../../helpers/calendar-marking/MarkerWithPatient";
-import {PatientMarker} from "../../helpers/calendar-marking/PatientMarker";
+import {TreatmentMarker} from "../../merkers/calendar-marking/markers-with-patient/TreatmentMarker";
+import {MarkerWithPatient} from "../../merkers/calendar-marking/markers-with-patient/MarkerWithPatient";
+import {PatientMarker} from "../../merkers/calendar-marking/markers-with-patient/PatientMarker";
 import {usePatients} from "../../store/patients";
 import {filterPatients} from "../../helpers/patient-search";
 import {debounce} from "lodash"

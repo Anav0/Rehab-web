@@ -1,7 +1,7 @@
 import {CSSProperties} from "react";
-import {CalendarCellData} from "../../models/calendarCellData";
+import {CalendarCellData} from "../../../models/calendarCellData";
 import {MarkerWithPatient} from "./MarkerWithPatient";
-import {Patient} from "../../models/patient";
+import {Patient} from "../../../models/patient";
 
 export class PatientMarker extends MarkerWithPatient {
 

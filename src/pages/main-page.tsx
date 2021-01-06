@@ -29,6 +29,7 @@ import {useTreatments} from "../store/treatments";
 import {useHistory} from "react-router-dom";
 import {RawConstraint} from "../models/RawConstriant";
 import {BlocksRangePayload} from "../models/BlocksRangePayload";
+import { usePropositions } from "../store/propositions";
 
 export const MainPage = () => {
     const [isModalVisible, setModalVisibility] = useState<boolean>(false);
@@ -40,6 +41,7 @@ export const MainPage = () => {
     const [{selectedDate}, {updateSelectedDate}] = useSelectedDate()
     const [{patients}, {changeSelectedPatient, insertPatients}] = usePatients()
     const [{treatments}, {setTreatmentsAndDict}] = useTreatments()
+    const [_, {fillPropositions}] = usePropositions()
     let history = useHistory();
 
     const onWeekChanged = (date: any) => {
@@ -157,7 +159,7 @@ export const MainPage = () => {
             changeSelectedPatient(patient);
             let response = await api.find.solution(payload);
             let parsedTimeBlocks = parseTimeBlocksFromPayload(response.data);
-            //TODO: display proposition
+            fillPropositions(parsedTimeBlocks);
         } catch (error) {
             console.error(error);
         } finally {
