@@ -1,11 +1,5 @@
-import {Solution} from './solution';
-
 export class RecommendationSolution {
-    TreatmentId: string
-    Solution: Solution
-
-    constructor(TreatmentId: string, Solution: Solution) {
-        this.TreatmentId = TreatmentId;
-        this.Solution = Solution;
-    }
+  TreatmentId: string = "";
+  PickedSitePos: number = 0;
+  BlockIds: string[] = [];
 }

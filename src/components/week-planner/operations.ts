@@ -1,6 +1,7 @@
 import { CalendarCellData } from "../../models/calendarCellData";
 import { formatKey } from "../../helpers";
 import { WeekPlannerProps } from "./index";
+import { TimeBlock } from "../../models/timeBlock";
 
 export const formatDate = (date: Date) => {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;

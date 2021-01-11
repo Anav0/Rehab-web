@@ -27,26 +27,6 @@ export function parseTimeBlocks(unparsedBlocks: any[]) {
   return timeBlocksToUpdate;
 }
 
-export function parseTimeBlocksFromPayload(schedulingResult: SchedulingResult) {
-  let timeBlocksToUpdate: TimeBlock[] = [];
-  let changedBlocksStartTimes = [];
-  console.log(schedulingResult.Solutions.length);
-  for (let solution of schedulingResult.Solutions) {
-    for (let block of solution.Solution.Blocks) {
-      let timeBlock = new TimeBlock(
-        block.Id,
-        new Date(block.StartDate),
-        block.DurationInMinutes,
-        block.Sites
-      );
-      changedBlocksStartTimes.push(timeBlock.StartDate);
-      timeBlocksToUpdate.push(timeBlock);
-    }
-  }
-  console.log(changedBlocksStartTimes);
-  return timeBlocksToUpdate;
-}
-
 export function getRandomElement(arr: any[]) {
   return arr[Math.floor(Math.random() * arr.length)];
 }

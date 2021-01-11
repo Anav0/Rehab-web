@@ -19,8 +19,9 @@ import {
 import { useTreatments } from "../../store/treatments";
 import { Affix, Button, Result } from "antd";
 import { MarkCellsContainingBlocks } from "../../merkers/calendar-marking/MarkCellsContainingBlocks";
-import { usePropositions } from "../../store/propositions";
+import { useSchedulingResult } from "../../store/schedulingResult";
 import { PlusSquareOutlined } from "@ant-design/icons";
+import { SchedulingResult } from "../../models/SchedulingResult";
 
 export interface WeekPlannerProps {
   selectedDate: Date;
@@ -29,13 +30,23 @@ export interface WeekPlannerProps {
   timeBlocks: TimeBlock[];
 }
 
+const isCalendarCellInSchedulingResults = (
+  data: CalendarCellData,
+  result: SchedulingResult
+) => {
+  for (var sol of result.Solutions) {
+    if (sol.BlockIds.find((x) => x === data.timeBlock.Id)) return true;
+  }
+  return false;
+};
+
 const WeekPlanner = (props: WeekPlannerProps) => {
   const [calendarCells, setCalendarCells] = useState<CalendarCellData[]>([]);
   const [days, setDays] = useState<any>([]);
   const [hours, setHours] = useState<any>([]);
   const [{ marker }] = useMarkers();
   const [{ treatmentsDict }] = useTreatments();
-  const [{ blocksWithPropositions }] = usePropositions();
+  const [{ schedulingResult }, {}] = useSchedulingResult();
 
   useEffect(() => {
     if (props.timeBlocks.length <= 0) return;
@@ -50,11 +61,8 @@ const WeekPlanner = (props: WeekPlannerProps) => {
     setDays(days);
     let calendarCells = getCalendarCellsData(hours, days, props);
     if (marker) marker.mark(calendarCells);
-    new MarkCellsContainingBlocks("Mark propositions", blocksWithPropositions, {
-      border: "#44f8da dashed 4px",
-    }).mark(calendarCells);
     setCalendarCells(calendarCells);
-  }, [props.timeBlocks, marker, blocksWithPropositions]);
+  }, [props.timeBlocks, marker, schedulingResult]);
 
   return (
     <>
@@ -100,11 +108,10 @@ const WeekPlanner = (props: WeekPlannerProps) => {
             return (
               <CalendarCell
                 key={Uuid.uuidv4()}
-                isProposed={
-                  blocksWithPropositions.find(
-                    (x) => x.Id === data.timeBlock.Id
-                  ) !== undefined
-                }
+                isProposed={isCalendarCellInSchedulingResults(
+                  data,
+                  schedulingResult
+                )}
                 treatmentsDict={treatmentsDict}
                 cellData={data}
               />

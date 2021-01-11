@@ -15,7 +15,7 @@ import {
 } from "./operations";
 import { Treatment } from "../../models/treatment";
 import { MinusOutlined, CheckOutlined } from "@ant-design/icons";
-import { usePropositions } from "../../store/propositions";
+import { useSchedulingResult } from "../../store/schedulingResult";
 
 const { Panel } = Collapse;
 
@@ -30,19 +30,20 @@ export const CalendarCell = (props: CalendarCellProps) => {
   const [isAccepted, setIsAccepted] = useState(false);
 
   const [
-    { acceptedPropositions },
+    { acceptedBlocks },
     { addAcceptedProposition, removeAcceptedProposition },
-  ] = usePropositions();
+  ] = useSchedulingResult();
 
   let orig = getOriginalCapacity(props.cellData);
   let left = getLeftCapacity(props.cellData);
   let used = orig - left;
+
   changeCellDataStyle(orig, left, props.cellData);
 
   useEffect(() => {
-    setIsAccepted(acceptedPropositions.has(props.cellData.timeBlock.Id));
-    console.log(isAccepted);
-  }, [acceptedPropositions, props.cellData, props.isProposed]);
+    console.log("Setting acceptence");
+    setIsAccepted(acceptedBlocks.has(props.cellData.timeBlock.Id));
+  }, [props.cellData, props.isProposed]);
 
   return (
     <>
