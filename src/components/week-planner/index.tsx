@@ -34,6 +34,8 @@ const isCalendarCellInSchedulingResults = (
   data: CalendarCellData,
   result: SchedulingResult
 ) => {
+  if (!result) return false;
+
   for (var sol of result.Solutions) {
     if (sol.BlockIds.find((x) => x === data.timeBlock.Id)) return true;
   }

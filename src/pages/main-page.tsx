@@ -30,6 +30,7 @@ import { useHistory } from "react-router-dom";
 import { RawConstraint } from "../models/RawConstriant";
 import { BlocksRangePayload } from "../models/BlocksRangePayload";
 import { useSchedulingResult } from "../store/schedulingResult";
+import { PropositionsTracker } from "../components/propositions-tracker";
 
 export const MainPage = () => {
   const [isModalVisible, setModalVisibility] = useState<boolean>(false);
@@ -48,7 +49,7 @@ export const MainPage = () => {
     { changeSelectedPatient, insertPatients },
   ] = usePatients();
   const [{ treatments }, { setTreatmentsAndDict }] = useTreatments();
-  const [_, { setSchedulingResult }] = useSchedulingResult();
+  const [{ schedulingResult }, { setSchedulingResult }] = useSchedulingResult();
   let history = useHistory();
 
   const onWeekChanged = (date: any) => {
@@ -216,6 +217,11 @@ export const MainPage = () => {
             <TreatmentsList treatmentsConstraints={treatmentsConstraints} />
           </AppHeaderProcedures>
         </AppHeaderContent>
+        {schedulingResult && schedulingResult.Solutions.length > 0 ? (
+          <PropositionsTracker />
+        ) : (
+          <></>
+        )}
       </AppHeader>
       {!isFetching ? (
         <>
