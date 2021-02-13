@@ -48,7 +48,7 @@ const WeekPlanner = (props: WeekPlannerProps) => {
   const [hours, setHours] = useState<any>([]);
   const [{ marker }] = useMarkers();
   const [{ treatmentsDict }] = useTreatments();
-  const [{ schedulingResult }, {}] = useSchedulingResult();
+  const [{ schedulingResult }] = useSchedulingResult();
 
   useEffect(() => {
     if (props.timeBlocks.length <= 0) return;

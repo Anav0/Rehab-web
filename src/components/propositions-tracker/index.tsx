@@ -8,53 +8,155 @@ import {
 import { Button, Typography } from "antd";
 import { useSchedulingResult } from "../../store/schedulingResult";
 import { RecommendationSolution } from "../../models/RecommendationSolution";
+import { api } from "../../api";
+import { Checkbox } from "antd";
+import { TimeBlock } from "../../models/timeBlock";
 
 const { Title } = Typography;
 
 export const PropositionsTracker = () => {
-  const [total, setTotal] = useState(10);
-  const [selected, setSelected] = useState(2);
+  const [blocks] = useState<Map<string, TimeBlock[]>>(new Map());
+  const [selected, setSelected] = useState<number>(0);
+  const [checkBoxOptions, setCheckBoxOptions] = useState<
+    { ids: string[]; checked: boolean; label: string; value: number }[]
+  >([]);
 
   const [
     { acceptedBlocks, schedulingResult },
-    { acceptAll, removeAll, clear },
+    { acceptAll, removeAll, acceptBlocksWithIds, removeBlocksWithIds, clear },
   ] = useSchedulingResult();
+
+  const getTimeBlocks = async (ids: string[]) => {
+    try {
+      const { data: timeBlocks } = await api.blocks.byIds(ids);
+      return timeBlocks;
+    } catch (err) {
+      console.error(err);
+      //TODO: add error handling
+    }
+    return [];
+  };
+
+  const getLabel = (blocks: TimeBlock[]) => {
+    let label = ``;
+    let lang = "de";
+    blocks.sort((a, b) => (a.StartDate < b.StartDate ? -1 : 1));
+
+    let prevBlock: TimeBlock | undefined = undefined;
+
+    for (let block of blocks) {
+      let date = new Date(block.StartDate).toLocaleDateString(lang, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+
+      let prevDate = !prevBlock
+        ? ""
+        : new Date(prevBlock.StartDate).toLocaleDateString(lang, {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
+
+      if (date === prevDate)
+        label += `, ${new Date(block.StartDate).toLocaleTimeString(lang, {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`;
+      else
+        label += ` ${new Date(block.StartDate).toLocaleDateString(lang, {
+          year: "numeric",
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`.replace(",", ": ");
+      prevBlock = block;
+    }
+
+    return label;
+  };
 
   useEffect(() => {
     if (!schedulingResult) return;
-
-    setTotal(schedulingResult.Solutions.length);
+    console.log("propositon-tracker called");
+    console.log(acceptedBlocks);
 
     let selected = 0;
-    let selectedSolution = new Set<RecommendationSolution>();
+    let selectedSolutions = new Set<RecommendationSolution>();
+    let checkBoxOptionsTmp: {
+      checked: boolean;
+      label: string;
+      value: number;
+      ids: string[];
+    }[] = [];
 
-    for (let i = 0; i < schedulingResult.Solutions.length; i++) {
-      const solution = schedulingResult.Solutions[i];
-      const ids = solution.BlockIds;
+    const fetch = async () => {
+      for (let i = 0; i < schedulingResult.Solutions.length; i++) {
+        const solution = schedulingResult.Solutions[i];
+        const ids = solution.BlockIds;
 
-      for (let j = 0; j < ids.length; j++) {
-        if (acceptedBlocks.has(ids[j]) && !selectedSolution.has(solution)) {
-          selectedSolution.add(solution);
-          selected++;
+        //Check if blocks where fetchd before.
+        let tmpBlocks: TimeBlock[] = [];
+        if (!blocks.has(ids[0])) {
+          tmpBlocks = await getTimeBlocks(ids);
+          blocks.set(ids[0], tmpBlocks);
+        } else tmpBlocks = blocks.get(ids[0]) as TimeBlock[];
+
+        let checkBoxModel = {
+          label: getLabel(tmpBlocks),
+          value: i,
+          checked: false,
+          ids,
+        };
+
+        for (let j = 0; j < ids.length; j++) {
+          if (acceptedBlocks.has(ids[j]) && !selectedSolutions.has(solution)) {
+            checkBoxModel.checked = true;
+            selectedSolutions.add(solution);
+            selected++;
+          }
         }
-      }
-    }
-    setSelected(selected);
-  }, [schedulingResult, acceptedBlocks]);
 
-  const confirm = async () => {};
+        checkBoxOptionsTmp.push(checkBoxModel);
+      }
+      setCheckBoxOptions(checkBoxOptionsTmp);
+    };
+    // eslint-disable-next-line no-loop-func
+    fetch().then(() => setSelected(selected));
+  }, [acceptedBlocks, blocks, schedulingResult]);
+
+  const confirm = async () => {
+    let filteredSchedulingResult = schedulingResult;
+
+    // for (let id of acceptedBlocks.values()) {
+    //   console.log(id);
+    // }
+
+    acceptedBlocks.forEach((id) => {});
+  };
 
   return (
     <TrackerContainer>
       <Title style={{ color: "inherit" }} level={4}>
-        Zaznaczono {selected} z {total}
+        Zaznaczono {selected} z {schedulingResult.Solutions.length}
       </Title>
-      <Button
-        onClick={() => {}}
-        type={"text"}
-        style={{ right: 5, top: 5, position: "absolute" }}
-        icon={<CloseOutlined />}
-      />
+      <div>
+        {checkBoxOptions.map((data) => (
+          <Checkbox
+            checked={data.checked}
+            key={data.value + data.label}
+            value={data.value}
+            onChange={({ target }) => {
+              if (!target.checked) removeBlocksWithIds(data.ids);
+              else acceptBlocksWithIds(data.ids);
+            }}
+          >
+            {data.label}
+          </Checkbox>
+        ))}
+      </div>
       <TrackerBtnContainer>
         <Button
           type={"dashed"}
@@ -75,15 +177,16 @@ export const PropositionsTracker = () => {
       </TrackerBtnContainer>
       <TrackerBtnContainer>
         <Button
+          disabled={acceptedBlocks.size <= 0}
           onClick={() => confirm()}
-          style={{ background: "transparent", marginTop: "2rem" }}
+          style={{ background: "transparent" }}
           icon={<CarryOutOutlined />}
         >
           Zatwierdź
         </Button>
         <Button
           onClick={() => clear()}
-          style={{ background: "transparent", marginTop: "2rem" }}
+          style={{ background: "transparent" }}
           icon={<CarryOutOutlined />}
         >
           Anuluj

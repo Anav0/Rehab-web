@@ -8,15 +8,17 @@ export const TrackerContainer = styled.div`
   }
   font-weight: bold;
   padding: 3.5rem 3rem;
-  position: fixed;
-  bottom: 10rem;
-  right: 8rem;
-  z-index: 15;
+  height: 100%;
+  width: 100%;
 `;
 
 export const TrackerBtnContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-top: 2rem;
   width: 100%;
+
+  & > .ant-btn {
+    margin-right: 2rem;
+  }
 `;

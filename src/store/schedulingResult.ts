@@ -1,4 +1,5 @@
 import { createHook, createStore } from "react-sweet-state";
+import { BlocksApi } from "../api/blocksApi";
 import { SchedulingResult } from "../models/SchedulingResult";
 
 type PropositionsStore = {
@@ -28,6 +29,32 @@ const store = createStore({
         acceptedBlocks: new Set(tmp),
       });
     },
+    acceptBlocksWithIds: (ids: string[]) => ({ setState, getState }) => {
+      let tmp = getState().acceptedBlocks;
+
+      for (let i = 0; i < ids.length; i++) {
+        const id = ids[i];
+
+        if (tmp.has(id)) continue;
+        tmp.add(id);
+      }
+
+      setState({
+        acceptedBlocks: new Set(tmp),
+      });
+    },
+    removeBlocksWithIds: (ids: string[]) => ({ setState, getState }) => {
+      let tmp = getState().acceptedBlocks;
+
+      for (let i = 0; i < ids.length; i++) {
+        tmp.delete(ids[i]);
+      }
+
+      setState({
+        acceptedBlocks: new Set(tmp),
+      });
+    },
+
     acceptAll: () => ({ setState, getState }) => {
       const allIds = new Set<string>();
       const schedulingResult = getState().schedulingResult;

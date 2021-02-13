@@ -50,7 +50,6 @@ const AppointmentForm = (props: any) => {
       //   });
       setIsProcessing(false);
     } catch (error) {
-      console.log("C");
       console.error(error);
       let errMsg =
         error.response && error.response.data.error

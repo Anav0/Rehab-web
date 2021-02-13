@@ -1,11 +1,11 @@
-import {FindApi} from './findApi';
-import axios from 'axios';
-import {TreatmentsApi} from "./treatmentsApi";
-import {PatientsApi} from "./patientsApi";
-import {BlocksApi} from "./BlocksApi";
+import { FindApi } from "./findApi";
+import axios from "axios";
+import { TreatmentsApi } from "./treatmentsApi";
+import { PatientsApi } from "./patientsApi";
+import { BlocksApi } from "./blocksApi";
 
 export const instance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 const find = new FindApi(instance);
@@ -14,8 +14,8 @@ const patients = new PatientsApi(instance);
 const blocks = new BlocksApi(instance);
 
 export const api = {
-    find,
-    treatments,
-    patients,
-    blocks
+  find,
+  treatments,
+  patients,
+  blocks,
 };

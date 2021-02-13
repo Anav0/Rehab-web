@@ -39,10 +39,10 @@ export const MainPage = () => {
   const [timeBlocksForSelectedDate, setTimeBlocksForSelectedDate] = useState<
     TimeBlock[]
   >([]);
-  const [treatmentsConstraints, setTreatmentConstraints] = useState<{
-    [key: string]: RawConstraint[];
-  }>({});
-  const [isFetching, setIsFetching] = useState(true);
+  const [treatmentsConstraints, setTreatmentConstraints] = useState<
+    Map<string, RawConstraint[]>
+  >(new Map());
+  const [hideCalendar, setHideCalendar] = useState(true);
   const [{ selectedDate }, { updateSelectedDate }] = useSelectedDate();
   const [
     { patients },
@@ -60,7 +60,6 @@ export const MainPage = () => {
     console.log("Fetching basic info...");
     (async () => {
       try {
-        setIsFetching(true);
         let responseD = await api.patients.all();
         let responseB = await api.treatments.all();
         let responseC = await api.treatments.asDict();
@@ -71,14 +70,20 @@ export const MainPage = () => {
       } catch (error) {
         console.error(error);
         history.push("/error/500/Nie-udało-sie-połączyć-z-serwerem");
-      } finally {
-        setIsFetching(false);
       }
     })();
   }, []);
 
   useEffect(() => {
-    setIsFetching(true);
+    setHideCalendar(
+      treatments.length <= 0 ||
+        treatmentsConstraints.size <= 0 ||
+        timeBlocksForSelectedDate.length <= 0
+    );
+  }, [treatments, treatmentsConstraints, timeBlocksForSelectedDate]);
+
+  useEffect(() => {
+    setHideCalendar(true);
     let start = getMonday(selectedDate);
     start.setHours(0, 0, 1);
     let end = new Date(start);
@@ -97,8 +102,6 @@ export const MainPage = () => {
         setTimeBlocksForSelectedDate(parseTimeBlocks(response.data));
       } catch (error) {
         console.error(error);
-      } finally {
-        setIsFetching(false);
       }
     })();
   }, [selectedDate]);
@@ -217,21 +220,20 @@ export const MainPage = () => {
             <TreatmentsList treatmentsConstraints={treatmentsConstraints} />
           </AppHeaderProcedures>
         </AppHeaderContent>
-        {schedulingResult && schedulingResult.Solutions.length > 0 ? (
-          <PropositionsTracker />
-        ) : (
-          <></>
-        )}
       </AppHeader>
-      {!isFetching ? (
+      {!hideCalendar ? (
         <>
-          {" "}
           <WeekPlanner
             selectedDate={selectedDate}
             startHour={defaultBlocksConfig.startHour}
             endHour={defaultBlocksConfig.endHour}
             timeBlocks={timeBlocksForSelectedDate}
           />
+          {schedulingResult && schedulingResult.Solutions.length > 0 ? (
+            <PropositionsTracker />
+          ) : (
+            <></>
+          )}
           <Modal
             closable={false}
             onOk={() => {

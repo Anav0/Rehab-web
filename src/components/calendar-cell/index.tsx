@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Affix, Button, Collapse, Modal } from "antd";
+import { Collapse, Modal } from "antd";
 import { SiteDetails } from "../timeblock-details";
 import { CalendarCellData } from "../../models/calendarCellData";
 import { Uuid } from "../../helpers/uuid";
@@ -41,9 +41,9 @@ export const CalendarCell = (props: CalendarCellProps) => {
   changeCellDataStyle(orig, left, props.cellData);
 
   useEffect(() => {
-    console.log("Setting acceptence");
+    console.log("Calendar cell called...");
     setIsAccepted(acceptedBlocks.has(props.cellData.timeBlock.Id));
-  }, [props.cellData, props.isProposed]);
+  }, [props.cellData, props.isProposed, acceptedBlocks]);
 
   return (
     <>
