@@ -1,54 +1,33 @@
-import {Appointment} from './appointment';
+import {Appointment} from "./appointment";
+import {Sex} from "./patient";
 
 export class TreatmentSite {
     Id: string;
     Name: string;
-    BlocageLookup: { [treatmentId: string]: { [treatmentId: string]: number } };
     Capacity: { [treatmentId: string]: number };
-    readonly OriginalCapacitySum: number;
-    Appointments: Appointment[];
+    VisitsScheduled: { [patientId: string]: Appointment };
     SexConstraintTreatments: string[];
+    VisitesSpaceUsage: {
+        [treatmentId: string]: { [treatmentId: string]: number };
+    };
+    readonly OriginalCapacitySum: number;
+    SexOfFirstPaitent: Sex | undefined;
 
     constructor(
         id: string,
         name: string,
         blocageLookup: { [treatmentId: string]: { [treatmentId: string]: number } },
         capacity: { [treatmentId: string]: number },
-        appointments: Appointment[],
-        SexConstraintTreatments: string[] = [],
+        SexConstraintTreatments: string[],
+        visitsScheduled: { [patientId: string]: Appointment },
     ) {
         this.Id = id;
         this.Name = name;
-        this.BlocageLookup = blocageLookup;
+        this.VisitesSpaceUsage = blocageLookup;
         this.Capacity = capacity;
         this.OriginalCapacitySum = this.sumCapacity(capacity);
-        this.Appointments = appointments;
         this.SexConstraintTreatments = SexConstraintTreatments;
-    }
-
-    tryAddingAppointment(appointment: Appointment): boolean {
-        if (!(appointment.TreatmentId in this.Capacity)) return false;
-        if (this.Capacity[appointment.TreatmentId] <= 0) return false;
-
-        if (
-            this.SexConstraintTreatments.includes(appointment.TreatmentId) &&
-            this.Appointments.length > 0
-        ) {
-            let sexofFirstPatient = this.Appointments.length > 0 ? this.Appointments[0].Patient.Sex : appointment.Patient.Sex;
-            if (appointment.Patient.Sex !== sexofFirstPatient) return false;
-        }
-
-        this.Capacity[appointment.TreatmentId]--;
-        this.Appointments.push(appointment);
-
-        if (appointment.TreatmentId in this.BlocageLookup) {
-            let treatmentBlocage = this.BlocageLookup[appointment.TreatmentId];
-            for (let key in treatmentBlocage) {
-                this.Capacity[key] -= treatmentBlocage[key];
-            }
-        }
-
-        return true;
+        this.VisitsScheduled = visitsScheduled;
     }
 
     private sumCapacity(capacity: any) {

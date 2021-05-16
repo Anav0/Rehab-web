@@ -18,7 +18,7 @@ export const getLeftCapacity = (cellData: CalendarCellData) => {
   }, 0);
 };
 //TODO: Change to marker
-export const changeCellDataStyle = (
+export const markCellBasedOnCapacity = (
   orig: number,
   left: number,
   cellData: CalendarCellData

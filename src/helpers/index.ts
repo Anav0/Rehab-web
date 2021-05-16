@@ -1,5 +1,5 @@
 import { TimeBlock } from "../models/timeBlock";
-import { SchedulingResult } from "../models/SchedulingResult";
+import { Proposition } from "../models/Proposition";
 import { cloneDeep } from "lodash";
 
 export const dateToTime = (date: Date, lang: string = "pl") => {

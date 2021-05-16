@@ -1,14 +1,16 @@
-import {Uuid} from '../helpers/uuid';
-import {Patient} from './patient';
+import { Uuid } from "../helpers/uuid";
+import { Sex } from "./patient";
 
 export class Appointment {
-    Id: string;
-    Patient: Patient;
-    TreatmentId: string;
+  Id: string;
+  PatientId: string;
+  PatientSex: Sex;
+  TreatmentId: string;
 
-    constructor(treatmentId: string, patient: Patient) {
-        this.Id = Uuid.uuidv4();
-        this.Patient = patient;
-        this.TreatmentId = treatmentId;
-    }
+  constructor(treatmentId: string, patientId: string, paitentSex: Sex) {
+    this.Id = Uuid.uuidv4();
+    this.PatientId = patientId;
+    this.TreatmentId = treatmentId;
+    this.PatientSex = paitentSex;
+  }
 }

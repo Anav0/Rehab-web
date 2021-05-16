@@ -1,9 +1,9 @@
 import {CSSProperties} from "react";
-import {CalendarCellData} from "../../../models/calendarCellData";
-import {ICalendarCellDataMarker} from "../index";
-import {Patient} from "../../../models/patient";
+import {CalendarCellData} from "../../models/calendarCellData";
+import {ICalendarCellMarker} from "../index";
+import {Patient} from "../../models/patient";
 
-export abstract class MarkerWithPatient implements ICalendarCellDataMarker {
+export abstract class PatientMarker implements ICalendarCellMarker {
     patient: Patient | undefined
     style: CSSProperties = {}
     name: string

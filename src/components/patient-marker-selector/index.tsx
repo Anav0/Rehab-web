@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { AutoComplete, Select, Space } from "antd";
 import { Patient } from "../../models/patient";
 import { useMarkers } from "../../store/markers";
-import { TreatmentMarker } from "../../merkers/calendar-marking/markers-with-patient/TreatmentMarker";
-import { MarkerWithPatient } from "../../merkers/calendar-marking/markers-with-patient/MarkerWithPatient";
-import { PatientMarker } from "../../merkers/calendar-marking/markers-with-patient/PatientMarker";
+import { MarkTreatments } from "../../markers/patient-markers/MarkTreatments";
+import { MarkAllVisits } from "../../markers/patient-markers/MarkAllVisits";
 import { usePatients } from "../../store/patients";
 import { filterPatients } from "../../helpers/patient-search";
 import { debounce } from "lodash";
@@ -14,31 +13,25 @@ const { Option } = Select;
 
 export const MarkBasedOnPatient = () => {
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-  const [selectedMarkerKey, setSelectedMarkerKey] = useState<
-    string | undefined
-  >();
+  const [selectedMarkerKey, setSelectedMarkerKey] =
+    useState<string | undefined>();
   const [, { changeMarker }] = useMarkers();
   const [
     { patients, selectedPatient: globalPatient },
     { changeSelectedPatient },
   ] = usePatients();
-  const [{ treatments, treatmentsColors }] = useTreatments();
+  const [{ coloringInfo }] = useTreatments();
 
   const markers: {
-    [key: string]: { name: string; marker: MarkerWithPatient };
+    [key: string]: { name: string; marker: MarkAllVisits };
   } = {
     treatment: {
       name: "Zabiegi",
-      marker: new TreatmentMarker(
-        "zabiegi",
-        globalPatient,
-        treatments,
-        treatmentsColors
-      ),
+      marker: new MarkTreatments("zabiegi", globalPatient, coloringInfo),
     },
     patient: {
       name: "Wszystko",
-      marker: new PatientMarker("wszystko"),
+      marker: new MarkAllVisits("wszystko"),
     },
   };
 

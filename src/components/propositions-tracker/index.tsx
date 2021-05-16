@@ -1,197 +1,142 @@
-import React, { useEffect, useState } from "react";
-import { TrackerBtnContainer, TrackerContainer } from "./styled";
-import {
-  CarryOutOutlined,
-  CloseOutlined,
-  CheckOutlined,
-} from "@ant-design/icons";
-import { Button, Typography } from "antd";
-import { useSchedulingResult } from "../../store/schedulingResult";
-import { RecommendationSolution } from "../../models/RecommendationSolution";
-import { api } from "../../api";
-import { Checkbox } from "antd";
-import { TimeBlock } from "../../models/timeBlock";
+import {CarryOutOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons";
+import {Button, Checkbox, Typography} from "antd";
+import React, {useEffect, useState} from "react";
+import {useProposition} from "../../store/proposition";
+import {TrackerBtnContainer, TrackerContainer} from "./styled";
 
-const { Title } = Typography;
+const {Title} = Typography;
+
+class CheckBoxModel {
+    dates: number[] = [];
+    checked: boolean = false;
+    label: string = "";
+    value: number = 0;
+}
 
 export const PropositionsTracker = () => {
-  const [blocks] = useState<Map<string, TimeBlock[]>>(new Map());
-  const [selected, setSelected] = useState<number>(0);
-  const [checkBoxOptions, setCheckBoxOptions] = useState<
-    { ids: string[]; checked: boolean; label: string; value: number }[]
-  >([]);
+        const [howManyAreSelected, setHowManyAreAccepted] = useState<number>(0);
+        const [checkBoxOptions, setCheckBoxOptions] = useState<CheckBoxModel[]>([]);
+        const [
+            {acceptedDates, proposition},
+            {acceptAll, removeAll, acceptBlocksWithDate, removeBlocksWithDate, clear},
+        ] = useProposition();
 
-  const [
-    { acceptedBlocks, schedulingResult },
-    { acceptAll, removeAll, acceptBlocksWithIds, removeBlocksWithIds, clear },
-  ] = useSchedulingResult();
+        const genLabelForDates = (dates: number[]) => {
+            let label = ``;
+            let lang = "de";
+            dates.sort((a, b) => (a < b ? -1 : 1));
 
-  const getTimeBlocks = async (ids: string[]) => {
-    try {
-      const { data: timeBlocks } = await api.blocks.byIds(ids);
-      return timeBlocks;
-    } catch (err) {
-      console.error(err);
-      //TODO: add error handling
-    }
-    return [];
-  };
+            label += ` ${new Date(dates[0]).toLocaleDateString(lang, {
+                year: "numeric",
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+            })}`.replace(",", ": ");
 
-  const getLabel = (blocks: TimeBlock[]) => {
-    let label = ``;
-    let lang = "de";
-    blocks.sort((a, b) => (a.StartDate < b.StartDate ? -1 : 1));
+            for (let date of dates.slice(1)) {
+                label += ` ${new Date(date).toLocaleDateString(lang, {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                })}`.replace(",", ": ");
+            }
 
-    let prevBlock: TimeBlock | undefined = undefined;
-
-    for (let block of blocks) {
-      let date = new Date(block.StartDate).toLocaleDateString(lang, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-
-      let prevDate = !prevBlock
-        ? ""
-        : new Date(prevBlock.StartDate).toLocaleDateString(lang, {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          });
-
-      if (date === prevDate)
-        label += `, ${new Date(block.StartDate).toLocaleTimeString(lang, {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}`;
-      else
-        label += ` ${new Date(block.StartDate).toLocaleDateString(lang, {
-          year: "numeric",
-          day: "2-digit",
-          month: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        })}`.replace(",", ": ");
-      prevBlock = block;
-    }
-
-    return label;
-  };
-
-  useEffect(() => {
-    if (!schedulingResult) return;
-    console.log("propositon-tracker called");
-    console.log(acceptedBlocks);
-
-    let selected = 0;
-    let selectedSolutions = new Set<RecommendationSolution>();
-    let checkBoxOptionsTmp: {
-      checked: boolean;
-      label: string;
-      value: number;
-      ids: string[];
-    }[] = [];
-
-    const fetch = async () => {
-      for (let i = 0; i < schedulingResult.Solutions.length; i++) {
-        const solution = schedulingResult.Solutions[i];
-        const ids = solution.BlockIds;
-
-        //Check if blocks where fetchd before.
-        let tmpBlocks: TimeBlock[] = [];
-        if (!blocks.has(ids[0])) {
-          tmpBlocks = await getTimeBlocks(ids);
-          blocks.set(ids[0], tmpBlocks);
-        } else tmpBlocks = blocks.get(ids[0]) as TimeBlock[];
-
-        let checkBoxModel = {
-          label: getLabel(tmpBlocks),
-          value: i,
-          checked: false,
-          ids,
+            return label;
         };
 
-        for (let j = 0; j < ids.length; j++) {
-          if (acceptedBlocks.has(ids[j]) && !selectedSolutions.has(solution)) {
-            checkBoxModel.checked = true;
-            selectedSolutions.add(solution);
-            selected++;
-          }
-        }
+        useEffect(() => {
+                if (!proposition) return;
+                console.log("proposition-tracker called");
 
-        checkBoxOptionsTmp.push(checkBoxModel);
-      }
-      setCheckBoxOptions(checkBoxOptionsTmp);
-    };
-    // eslint-disable-next-line no-loop-func
-    fetch().then(() => setSelected(selected));
-  }, [acceptedBlocks, blocks, schedulingResult]);
+                let howManyAreAccepted = 0;
+                let checkBoxOptionsTmp: CheckBoxModel[] = [];
+                for (let i = 0; i < proposition.ScheduledDates.length; i++) {
+                    const dates = proposition.ScheduledDates[i];
 
-  const confirm = async () => {
-    let filteredSchedulingResult = schedulingResult;
+                    let checkBoxModel = {
+                        label: genLabelForDates(dates),
+                        value: i,
+                        checked: false,
+                        dates,
+                    };
 
-    // for (let id of acceptedBlocks.values()) {
-    //   console.log(id);
-    // }
+                    acceptedDates.forEach(value => {
+                        if (value[0] == dates[0]) {
+                            console.log("TAK")
+                            checkBoxModel.checked = true;
+                            howManyAreAccepted++;
+                            return;
+                        }
+                    });
 
-    acceptedBlocks.forEach((id) => {});
-  };
+                    checkBoxOptionsTmp.push(checkBoxModel);
+                }
+                setCheckBoxOptions(checkBoxOptionsTmp);
+                setHowManyAreAccepted(howManyAreAccepted);
+            }, [acceptedDates, proposition],
+        );
 
-  return (
-    <TrackerContainer>
-      <Title style={{ color: "inherit" }} level={4}>
-        Zaznaczono {selected} z {schedulingResult.Solutions.length}
-      </Title>
-      <div>
-        {checkBoxOptions.map((data) => (
-          <Checkbox
-            checked={data.checked}
-            key={data.value + data.label}
-            value={data.value}
-            onChange={({ target }) => {
-              if (!target.checked) removeBlocksWithIds(data.ids);
-              else acceptBlocksWithIds(data.ids);
-            }}
-          >
-            {data.label}
-          </Checkbox>
-        ))}
-      </div>
-      <TrackerBtnContainer>
-        <Button
-          type={"dashed"}
-          onClick={() => acceptAll()}
-          style={{ marginRight: "1rem", background: "transparent" }}
-          icon={<CheckOutlined />}
-        >
-          Zaznacz wszystkie
-        </Button>
-        <Button
-          onClick={() => removeAll()}
-          type={"dashed"}
-          style={{ background: "transparent" }}
-          icon={<CloseOutlined />}
-        >
-          Odznacz wszystkie
-        </Button>
-      </TrackerBtnContainer>
-      <TrackerBtnContainer>
-        <Button
-          disabled={acceptedBlocks.size <= 0}
-          onClick={() => confirm()}
-          style={{ background: "transparent" }}
-          icon={<CarryOutOutlined />}
-        >
-          Zatwierdź
-        </Button>
-        <Button
-          onClick={() => clear()}
-          style={{ background: "transparent" }}
-          icon={<CarryOutOutlined />}
-        >
-          Anuluj
-        </Button>
-      </TrackerBtnContainer>
-    </TrackerContainer>
-  );
-};
+        const confirmProposition = async () => {
+            alert("TODO")
+        };
+        const clearProposition = () => clear();
+
+        return (
+            <TrackerContainer>
+                <Title style={{color: "inherit"}} level={4}>
+                    Zaznaczono {howManyAreSelected} z {proposition.ScheduledDates.length}
+                </Title>
+                <div>
+                    {checkBoxOptions.map((checkBoxModel) => (
+                        <Checkbox
+                            checked={checkBoxModel.checked}
+                            key={checkBoxModel.value + checkBoxModel.label}
+                            value={checkBoxModel.value}
+                            onChange={({target}) => {
+                                if (!target.checked) removeBlocksWithDate(checkBoxModel.dates[0]);
+                                else acceptBlocksWithDate(checkBoxModel.dates[0]);
+                            }}
+                        >
+                            {checkBoxModel.label}
+                        </Checkbox>
+                    ))}
+                </div>
+                <TrackerBtnContainer>
+                    <Button
+                        type={"dashed"}
+                        onClick={() => acceptAll()}
+                        style={{marginRight: "1rem", background: "transparent"}}
+                        icon={<CheckOutlined/>}
+                    >
+                        Zaznacz wszystkie
+                    </Button>
+                    <Button
+                        onClick={() => removeAll()}
+                        type={"dashed"}
+                        style={{background: "transparent"}}
+                        icon={<CloseOutlined/>}
+                    >
+                        Odznacz wszystkie
+                    </Button>
+                </TrackerBtnContainer>
+                <TrackerBtnContainer>
+                    <Button
+                        disabled={acceptedDates.size <= 0}
+                        onClick={() => confirmProposition()}
+                        style={{background: "transparent"}}
+                        icon={<CarryOutOutlined/>}
+                    >
+                        Zatwierdź
+                    </Button>
+                    <Button
+                        onClick={() => clearProposition()}
+                        style={{background: "transparent"}}
+                        icon={<CarryOutOutlined/>}
+                    >
+                        Anuluj
+                    </Button>
+                </TrackerBtnContainer>
+            </TrackerContainer>
+        );
+    }
+;

@@ -1,8 +1,8 @@
 import {createHook, createStore} from "react-sweet-state";
-import {ICalendarCellDataMarker} from "../merkers/calendar-marking";
+import {ICalendarCellMarker} from "../markers";
 
 type MarkersState = {
-    marker: ICalendarCellDataMarker | undefined
+    marker: ICalendarCellMarker | undefined
 }
 
 const initialState: MarkersState = {
@@ -12,7 +12,7 @@ const initialState: MarkersState = {
 const store = createStore({
     initialState,
     actions: {
-        changeMarker: (marker: ICalendarCellDataMarker | undefined) => ({setState}) => {
+        changeMarker: (marker: ICalendarCellMarker | undefined) => ({setState}) => {
             setState({
                 marker
             });

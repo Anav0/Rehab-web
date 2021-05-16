@@ -10,7 +10,7 @@ import { useSelectedDate } from "../../store/selectedDate";
 import { NewAppointmentForm } from "./styled";
 import { schedule } from "./oprations";
 import { usePatients } from "../../store/patients";
-import { useSchedulingResult } from "../../store/schedulingResult";
+import { useProposition } from "../../store/proposition";
 
 const { Title } = Typography;
 
@@ -19,14 +19,14 @@ const AppointmentForm = (props: any) => {
   const [, { changeSelectedPatient }] = usePatients();
 
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [_, { setSchedulingResult }] = useSchedulingResult();
+  const [_, { setProposition }] = useProposition();
 
   const send = async (formData: AppointmentFormData) => {
     setIsProcessing(true);
     try {
       changeSelectedPatient(formData.patient);
-      const response = await schedule(formData);
-      setSchedulingResult(response.data);
+      const data = await schedule(formData);
+      setProposition(data);
       //TODO: display proposition
       //   notification.success({
       //     message: "Sukces",

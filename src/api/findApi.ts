@@ -1,13 +1,17 @@
-import { ApiPayload } from "../models/apiPayload";
-import { BaseApi } from "./baseApi";
-import { SchedulingResult } from "../models/SchedulingResult";
+import {Proposition} from "../models/Proposition";
+import {PropositionPayload} from "../models/propositionPayload";
+import {BaseApi} from "./baseApi";
 
 export class FindApi extends BaseApi {
-  solution(payload: ApiPayload) {
-    return this.instance.post<SchedulingResult>("/", payload);
-  }
+    solution(payload: PropositionPayload) {
+        return this.instance.post<Proposition>("/proposition", payload).then(response => {
+            let data = response.data;
+            data.ScheduledDates = data.ScheduledDates.map(dates => dates.map(date => +new Date(date)));
+            return data;
+        });
+    }
 
-  confirm(payload: SchedulingResult) {
-    return this.instance.post<SchedulingResult>("/confirm", payload);
-  }
+    confirm(payload: Proposition) {
+        return this.instance.post<Proposition>("/confirm", payload);
+    }
 }

@@ -21,7 +21,7 @@ interface TreatmentListUIModel {
 export const TreatmentsList = (props: TreatmentsListProps) => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [data, setDate] = useState<TreatmentListUIModel[]>([]);
-  const [{ treatments, treatmentsColors }] = useTreatments();
+  const [{ treatments, coloringInfo }] = useTreatments();
 
   const constraintUI: {
     [key: string]: (data: RawConstraint) => ReactElement;
@@ -61,13 +61,13 @@ export const TreatmentsList = (props: TreatmentsListProps) => {
         procedure: treatment.Name,
         id: treatment.Id,
         constraints: treatmentConstraints as RawConstraint[],
-        color: treatmentsColors[i],
+        color: coloringInfo.get(treatment.Id) as string,
       });
       i++;
     }
 
     setDate(processedData);
-  }, [props, treatments, treatmentsColors]);
+  }, [props, treatments, coloringInfo]);
 
   const columns = [
     {
