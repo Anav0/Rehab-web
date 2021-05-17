@@ -62,7 +62,6 @@ export const PropositionsTracker = () => {
 
                     acceptedDates.forEach(value => {
                         if (value[0] == dates[0]) {
-                            console.log("TAK")
                             checkBoxModel.checked = true;
                             howManyAreAccepted++;
                             return;

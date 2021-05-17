@@ -54,7 +54,6 @@ const WeekPlanner = (props: WeekPlannerProps) => {
             console.log(`${onStart.name} | Calendar render`);
 
             props.timeBlocks.sort((a,b)=>a.StartDate < b.StartDate ? -1 : 1)
-            console.log(props.timeBlocks);
             let cells = genCalendarCellsData(
                 hours,
                 days,
@@ -68,11 +67,9 @@ const WeekPlanner = (props: WeekPlannerProps) => {
             let tmp = new Set<number>();
             for (let dates of proposition.ScheduledDates) {
                 for (let date of dates) {
-                    console.log(date)
-                    tmp.add(+date);
+                    tmp.add(date);
                 }
             }
-            console.log(tmp)
             setSetOfPropositionDates(tmp);
         }
 

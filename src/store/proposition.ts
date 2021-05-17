@@ -18,12 +18,10 @@ const store = createStore({
             let acceptedDates = getState().acceptedDates;
             let proposition = getState().proposition;
 
-            console.log(date)
             proposition.ScheduledDates.forEach(dates => {
                 if (dates.includes(date))
                     acceptedDates.add(dates);
             });
-            console.log(acceptedDates)
             setState({
                 acceptedDates: new Set(acceptedDates),
             });
@@ -31,12 +29,10 @@ const store = createStore({
         removeBlocksWithDate: (date: number) => ({setState, getState}) => {
             let acceptedDates = getState().acceptedDates;
             let proposition = getState().proposition;
-            console.log(date)
             proposition.ScheduledDates.forEach(dates => {
                 if (dates.includes(date))
                     acceptedDates.delete(dates);
             });
-            console.log(acceptedDates)
             setState({
                 acceptedDates: new Set(acceptedDates),
             });
