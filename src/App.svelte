@@ -12,7 +12,10 @@
     SelectItem,
   } from "carbon-components-svelte";
   import Navigation from "./components/Navigation.svelte";
+  import SideMenu from "./components/SideMenu.svelte";
+  import MainPanel from "./components/MainPanel.svelte";
   import Theme from "./components/Theme.svelte";
+  import "./css/main.css";
 
   let theme: "g10" = "g10";
 </script>
@@ -20,6 +23,13 @@
 <Theme persist bind:theme>
   <Navigation />
   <Content>
-    <span>Hello</span>
+    <SideMenu />
+    <MainPanel />
   </Content>
 </Theme>
+
+<style>
+  body :global(bx--content) {
+
+  }
+</style>
