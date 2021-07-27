@@ -4,7 +4,7 @@
 
 <div class="sideMenu">
   <Tile>
-    <slot name="content">No content was provided</slot>
+    <slot>No content was provided</slot>
   </Tile>
 </div>
 
