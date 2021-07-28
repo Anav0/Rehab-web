@@ -1,25 +1,13 @@
 <script lang="ts">
-  import { Tabs, Tab, TabContent } from "carbon-components-svelte";
-  import { onMount } from "svelte";
   import Referrals from "./Referral.svelte";
-  import { PossibleTabs } from "../models/tabs";
-
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
-
-  onMount(() => {
-    dispatch("tabChanged", PossibleTabs.Referral);
-  });
+  import { displayOnMain } from "../stores/mainPanel";
 </script>
 
 <div class="mainPanel">
-  <Tabs type="container">
-    <Tab label="Zlecenia" />
-    <div slot="content">
-      <TabContent><Referrals /></TabContent>
-    </div>
-  </Tabs>
+  {#if $displayOnMain == "referral"}
+    <Referrals />
+  {:else}<span>No content</span>
+  {/if}
 </div>
 
 <style>

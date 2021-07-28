@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Content } from "carbon-components-svelte";
   import Navigation from "./components/Navigation.svelte";
-  import SideMenu from "./components/SideMenu.svelte";
+  import SidePanel from "./components/SidePanel.svelte";
   import MainPanel from "./components/MainPanel.svelte";
   import ReferralPanel from "./components/side-panels/ReferralPanel.svelte";
   import Theme from "./components/Theme.svelte";
@@ -10,9 +10,9 @@
   import { onMount } from "svelte";
   import { api } from "./api";
   import { statuses } from "./stores/status";
+  import { displayOnMain } from "./stores/mainPanel";
 
   let theme: "g10" = "g10";
-  let requiredTab: PossibleTabs = PossibleTabs.Referral;
 
   onMount(async () => {
     try {
@@ -27,13 +27,11 @@
 <Theme persist bind:theme>
   <Navigation />
   <Content>
-    <SideMenu>
-      {#if requiredTab === PossibleTabs.Referral}
+    <SidePanel>
+      {#if $displayOnMain === "referral"}
         <ReferralPanel />
       {/if}
-    </SideMenu>
-    <MainPanel
-      on:tabChanged={({ detail: tabName }) => (requiredTab = tabName)}
-    />
+    </SidePanel>
+    <MainPanel />
   </Content>
 </Theme>
