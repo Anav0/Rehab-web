@@ -1,7 +1,16 @@
 <script lang="ts">
-  import { ComboBox, SelectSkeleton } from "carbon-components-svelte";
+  import {
+    Select,
+    ComboBox,
+    DatePicker,
+    DatePickerInput,
+    Button,
+    SelectItem,
+    SelectSkeleton,
+  } from "carbon-components-svelte";
   import { statuses } from "../../stores/status";
   import { referralFilter } from "../../stores/referralFilters";
+  import { schedulingRequest } from "../../stores/scheduling";
 
   let items = [];
   statuses.subscribe((values) => {
@@ -11,6 +20,11 @@
     }
     items = [...items];
   });
+  let dateFormat: any = {
+    year: "numeric",
+    day: "2-digit",
+    month: "2-digit",
+  };
 </script>
 
 <div class="referral-panel">
@@ -42,11 +56,44 @@
       }}
     />
   {/if}
+
+  <Select
+    selected={$schedulingRequest.Algorithm}
+    labelText="Algorytm użyty do wyznaczania"
+    on:change={({ detail }) => {
+      $schedulingRequest.Algorithm = detail;
+    }}
+  >
+    <SelectItem value="SA" text="Wyżarzanie" />
+    <SelectItem value="D" text="Deterministyczny" />
+  </Select>
+
+  <DatePicker
+    datePickerType="range"
+    valueTo={$schedulingRequest.EndDate.toLocaleDateString("pl", dateFormat)}
+    valueFrom={$schedulingRequest.StartDate.toLocaleDateString(
+      "pl",
+      dateFormat
+    )}
+    dateFormat="d.m.Y"
+    locale="pl"
+    on:change={({ detail }) => {
+      $schedulingRequest.StartDate = new Date(detail.selectedDates[0]);
+      $schedulingRequest.EndDate = new Date(detail.selectedDates[1]);
+    }}
+  >
+    <DatePickerInput labelText="Od" />
+    <DatePickerInput labelText="Do" />
+  </DatePicker>
 </div>
 
 <style>
   .referral-panel {
     height: 100%;
     width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(12, 1fr);
+    grid-gap: 2rem;
   }
 </style>
