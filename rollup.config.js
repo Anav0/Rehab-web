@@ -39,6 +39,7 @@ function serve() {
 
 export default {
   input: "src/index.ts",
+  inlineDynamicImports: true,
   output: {
     sourcemap: true,
     format: "iife",
