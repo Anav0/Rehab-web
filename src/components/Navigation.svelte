@@ -1,8 +1,22 @@
 <script lang="ts">
-  import { SkipToContent, Header } from "carbon-components-svelte";
+  import {
+    HeaderUtilities,
+    HeaderGlobalAction,
+    SkipToContent,
+    Header,
+  } from "carbon-components-svelte";
   import { getContext } from "svelte";
-
+  import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
+  import { displayOnMain } from "../stores/mainPanel";
   const ctx: { dark: any; light: any; updateVar: any } = getContext("Theme");
+
+  let prevPage = "";
+  let currentPage = $displayOnMain;
+
+  $: {
+    prevPage = currentPage;
+    currentPage = $displayOnMain;
+  }
 
   $: if (ctx) {
     ctx.dark.subscribe((value) => {
@@ -13,11 +27,19 @@
     });
     ctx.updateVar("--cds-productive-heading-06-font-size", "4rem");
   }
-  export let isSideNavOpen = true;
 </script>
 
-<Header bind:isSideNavOpen company="Rehab scheduler" platformName="" href="/">
+<Header company="Rehab scheduler" platformName="" href="/">
   <div slot="skip-to-content">
     <SkipToContent />
   </div>
+  <HeaderUtilities>
+    <HeaderGlobalAction
+      aria-label="Settings"
+      icon={SettingsAdjust20}
+      on:click={() => {
+        $displayOnMain = $displayOnMain === "settings" ? prevPage : "settings";
+      }}
+    />
+  </HeaderUtilities>
 </Header>

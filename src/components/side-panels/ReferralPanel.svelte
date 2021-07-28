@@ -36,50 +36,27 @@
       placeholder="Wszyskie"
       {items}
       on:clear={() => {
-        if (!$referralFilter) {
-          $referralFilter = {
-            status: null,
-          };
-        } else {
-          $referralFilter.status = null;
-        }
+        $referralFilter.status = null;
       }}
       on:select={({ detail }) => {
         let index = detail.selectedIndex;
-        if (!$referralFilter) {
-          $referralFilter = {
-            status: $statuses[index],
-          };
-        } else {
-          $referralFilter.status = $statuses[index];
-        }
+        $referralFilter.status = $statuses[index];
       }}
     />
   {/if}
 
-  <Select
-    selected={$schedulingRequest.Algorithm}
-    labelText="Algorytm użyty do wyznaczania"
-    on:change={({ detail }) => {
-      $schedulingRequest.Algorithm = detail;
-    }}
-  >
-    <SelectItem value="SA" text="Wyżarzanie" />
-    <SelectItem value="D" text="Deterministyczny" />
-  </Select>
-
   <DatePicker
     datePickerType="range"
-    valueTo={$schedulingRequest.End.toLocaleDateString("pl", dateFormat)}
-    valueFrom={$schedulingRequest.Start.toLocaleDateString("pl", dateFormat)}
+    valueTo={$referralFilter.endDate.toLocaleDateString("pl", dateFormat)}
+    valueFrom={$referralFilter.startDate.toLocaleDateString("pl", dateFormat)}
     dateFormat="d.m.Y"
     locale="pl"
     on:change={({ detail }) => {
-      $schedulingRequest.Start = new Date(detail.selectedDates[0]);
-      $schedulingRequest.End = new Date(detail.selectedDates[1]);
+      $referralFilter.startDate = new Date(detail.selectedDates[0]);
+      $referralFilter.endDate = new Date(detail.selectedDates[1]);
     }}
   >
-    <DatePickerInput labelText="Od" />
+    <DatePickerInput labelText="od" />
     <DatePickerInput labelText="Do" />
   </DatePicker>
 </div>

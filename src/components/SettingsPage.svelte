@@ -1,0 +1,83 @@
+<script lang="ts">
+  import { ButtonSet, Button } from "carbon-components-svelte";
+  import {
+    SelectItem,
+    Select,
+    DatePicker,
+    DatePickerInput,
+  } from "carbon-components-svelte";
+  import { displayOnMain } from "../stores/mainPanel";
+  import { schedulingRequest } from "../stores/scheduling";
+
+  let showSettings = false;
+  let shadowSettings = { ...$schedulingRequest };
+  //TODO: move date format to store
+  let dateFormat: any = {
+    year: "numeric",
+    day: "2-digit",
+    month: "2-digit",
+  };
+  const redirect = () => {
+    $displayOnMain = "referral";
+  };
+  const close = () => {
+    showSettings = false;
+    shadowSettings = { ...$schedulingRequest };
+    redirect();
+  };
+  const accept = () => {
+    showSettings = false;
+    $schedulingRequest = { ...shadowSettings };
+    redirect();
+  };
+</script>
+
+<div class="settings-page">
+  <div class="settings">
+    <Select
+      selected={shadowSettings.Algorithm}
+      labelText="Algorytm użyty do wyznaczania"
+      on:change={({ detail }) => {
+        shadowSettings.Algorithm = detail;
+      }}
+    >
+      <SelectItem value="SA" text="Wyżarzanie" />
+      <SelectItem value="D" text="Deterministyczny" />
+    </Select>
+
+    <DatePicker
+      datePickerType="range"
+      valueTo={shadowSettings.End.toLocaleDateString("pl", dateFormat)}
+      valueFrom={shadowSettings.Start.toLocaleDateString("pl", dateFormat)}
+      dateFormat="d.m.Y"
+      locale="pl"
+      on:change={({ detail }) => {
+        console.log(detail);
+        shadowSettings.Start = new Date(detail.selectedDates[0]);
+        shadowSettings.End = new Date(detail.selectedDates[1]);
+      }}
+    >
+      <DatePickerInput labelText="Od" />
+      <DatePickerInput labelText="Do" />
+    </DatePicker>
+  </div>
+  <ButtonSet>
+    <Button kind="danger" on:click={close}>Anuluj</Button>
+    <Button on:click={accept}>Zatwierdź</Button>
+  </ButtonSet>
+</div>
+
+<style>
+  .settings-page {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-gap: 2rem 0rem;
+  }
+  .settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2rem;
+  }
+</style>

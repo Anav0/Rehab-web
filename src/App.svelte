@@ -27,11 +27,11 @@
 <Theme persist bind:theme>
   <Navigation />
   <Content>
-    <SidePanel>
-      {#if $displayOnMain === "referral"}
+    {#if $displayOnMain === "referral"}
+      <SidePanel>
         <ReferralPanel />
-      {/if}
-    </SidePanel>
+      </SidePanel>
+    {/if}
     <MainPanel />
   </Content>
 </Theme>
