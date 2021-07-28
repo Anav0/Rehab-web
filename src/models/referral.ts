@@ -1,15 +1,10 @@
 import type { Patient } from "./patient";
-
-export enum ReferralStatus {
-  Done,
-  ToDo,
-  Deleted,
-}
+import type { Status } from "./status";
 
 export class Referral {
   id: string;
   patient: Patient;
   date: Date;
-  status: ReferralStatus;
+  status: Status;
   priority: string;
 }

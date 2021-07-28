@@ -14,6 +14,7 @@
     height: 100%;
   }
   .sideMenu :global(.bx--tile) {
+    padding: 2rem 1.5rem;
     width: 100%;
     height: 100%;
   }
