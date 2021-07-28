@@ -90,7 +90,14 @@
   {#if isLoading}
     <Loading description="Trwa wyznaczanie terminów..." />
   {/if}
-  <DataTable zebra sortable {headers} rows={filteredRows}>
+  <DataTable
+    title="Lista zleceń"
+    description="Z poziomu tableki, można rozpocząć proces wyznaczania terminów"
+    zebra
+    sortable
+    {headers}
+    rows={filteredRows}
+  >
     <span slot="cell" let:cell let:row>
       {#if cell.key === "action"}
         <Button on:click={() => askForProposition(row)} kind="tertiary"
