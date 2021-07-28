@@ -8,7 +8,7 @@ baseDate.setDate(baseDate.getDate() + 14);
 let endDate = baseDate;
 export const schedulingRequest = writable<SchedulingRequest>({
   Algorithm: "SA",
-  EndDate: endDate,
+  End: endDate,
   ReferralId: null,
-  StartDate: startDate,
+  Start: startDate,
 });

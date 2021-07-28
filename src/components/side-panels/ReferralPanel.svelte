@@ -70,16 +70,13 @@
 
   <DatePicker
     datePickerType="range"
-    valueTo={$schedulingRequest.EndDate.toLocaleDateString("pl", dateFormat)}
-    valueFrom={$schedulingRequest.StartDate.toLocaleDateString(
-      "pl",
-      dateFormat
-    )}
+    valueTo={$schedulingRequest.End.toLocaleDateString("pl", dateFormat)}
+    valueFrom={$schedulingRequest.Start.toLocaleDateString("pl", dateFormat)}
     dateFormat="d.m.Y"
     locale="pl"
     on:change={({ detail }) => {
-      $schedulingRequest.StartDate = new Date(detail.selectedDates[0]);
-      $schedulingRequest.EndDate = new Date(detail.selectedDates[1]);
+      $schedulingRequest.Start = new Date(detail.selectedDates[0]);
+      $schedulingRequest.End = new Date(detail.selectedDates[1]);
     }}
   >
     <DatePickerInput labelText="Od" />

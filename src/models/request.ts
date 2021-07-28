@@ -1,6 +1,6 @@
 export class SchedulingRequest {
-  StartDate: Date;
-  EndDate: Date;
+  Start: Date;
+  End: Date;
   Algorithm: string;
   ReferralId: string;
 }

@@ -1,8 +1,10 @@
 <script lang="ts">
   import { DataTable, Button, Loading } from "carbon-components-svelte";
   import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
+  import { api } from "../api";
   import type { Referral } from "../models/referral";
   import { referralFilter } from "../stores/referralFilters";
+  import { schedulingRequest } from "../stores/scheduling";
   import { statuses } from "../stores/status";
   let allRows: Referral[] = [];
   let filteredRows: Referral[] = [];
@@ -55,12 +57,21 @@
     { key: "action", empty: true },
   ];
 
-  let startScheduling = (detail: any) => {
+  let askForProposition = async (detail: any) => {
     isLoading = true;
     let referral = detail as Referral;
-    setTimeout(() => {
+    $schedulingRequest.ReferralId = referral.id;
+    console.log($schedulingRequest);
+    try {
+      const { data: result } = await api.scheduling.proposition(
+        $schedulingRequest
+      );
+      console.log(result);
+    } catch (err) {
+      //TODO: display error
+    } finally {
       isLoading = false;
-    }, 1000);
+    }
   };
   let isLoading = false;
 
@@ -82,7 +93,7 @@
   <DataTable zebra sortable {headers} rows={filteredRows}>
     <span slot="cell" let:cell let:row>
       {#if cell.key === "action"}
-        <Button on:click={() => startScheduling(row)} kind="tertiary"
+        <Button on:click={() => askForProposition(row)} kind="tertiary"
           >Wyznacz</Button
         >
       {:else if cell.key == "date"}{cell.display(cell.value)}
