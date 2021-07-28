@@ -1,16 +1,12 @@
 <script lang="ts">
   import {
-    Select,
     ComboBox,
     DatePicker,
     DatePickerInput,
-    Button,
-    SelectItem,
     SelectSkeleton,
   } from "carbon-components-svelte";
-  import { statuses } from "../../stores/status";
-  import { referralFilter } from "../../stores/referralFilters";
-  import { schedulingRequest } from "../../stores/scheduling";
+  import { statuses } from "../../../stores/status";
+  import { referralFilter } from "../../../stores/referralFilters";
 
   let items = [];
   statuses.subscribe((values) => {

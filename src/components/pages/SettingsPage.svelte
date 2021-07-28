@@ -6,8 +6,8 @@
     DatePicker,
     DatePickerInput,
   } from "carbon-components-svelte";
-  import { displayOnMain } from "../stores/mainPanel";
-  import { schedulingRequest } from "../stores/scheduling";
+  import { displayOnMain } from "../../stores/mainPanel";
+  import { schedulingRequest } from "../../stores/scheduling";
 
   let showSettings = false;
   let shadowSettings = { ...$schedulingRequest };

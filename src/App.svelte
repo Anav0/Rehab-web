@@ -1,11 +1,10 @@
 <script lang="ts">
   import { Content } from "carbon-components-svelte";
   import Navigation from "./components/Navigation.svelte";
-  import SidePanel from "./components/SidePanel.svelte";
-  import MainPanel from "./components/MainPanel.svelte";
-  import ReferralPanel from "./components/side-panels/ReferralPanel.svelte";
+  import SidePanel from "./components/panels/side-panel/SidePanel.svelte";
+  import MainPanel from "./components/panels/MainPanel.svelte";
+  import ReferralPanel from "./components/panels/side-panel/ReferralPanelContent.svelte";
   import Theme from "./components/Theme.svelte";
-  import { PossibleTabs } from "./models/tabs";
   import "./css/main.css";
   import { onMount } from "svelte";
   import { api } from "./api";

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import Referrals from "./Referral.svelte";
-  import { displayOnMain } from "../stores/mainPanel";
-  import SettingsPage from "./SettingsPage.svelte";
+  import { displayOnMain } from "../../stores/mainPanel";
+  import SettingsPage from "../pages/SettingsPage.svelte";
+  import ReferralPage from "../pages/ReferralPage.svelte";
 </script>
 
 <div class="mainPanel">
   {#if $displayOnMain == "referral"}
-    <Referrals />
+    <ReferralPage />
   {:else if $displayOnMain == "settings"}<SettingsPage />
   {:else}
     <span>No page</span>

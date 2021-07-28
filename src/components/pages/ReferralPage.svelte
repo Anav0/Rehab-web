@@ -1,11 +1,11 @@
 <script lang="ts">
   import { DataTable, Button, Loading } from "carbon-components-svelte";
   import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
-  import { api } from "../api";
-  import type { Referral } from "../models/referral";
-  import { referralFilter } from "../stores/referralFilters";
-  import { schedulingRequest } from "../stores/scheduling";
-  import { statuses } from "../stores/status";
+  import { api } from "../../api";
+  import type { Referral } from "../../models/referral";
+  import { referralFilter } from "../../stores/referralFilters";
+  import { schedulingRequest } from "../../stores/scheduling";
+  import { statuses } from "../../stores/status";
   let allRows: Referral[] = [];
   let filteredRows: Referral[] = [];
 
