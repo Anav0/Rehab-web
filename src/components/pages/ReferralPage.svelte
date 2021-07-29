@@ -10,6 +10,7 @@
   import { onMount } from "svelte";
   import { api } from "../../api";
   import type { Referral } from "../../models/referral";
+  import { displayOnMain } from "../../stores/mainPanel";
   import { referralFilter } from "../../stores/referralFilters";
   import { schedulingRequest } from "../../stores/scheduling";
   import { statuses } from "../../stores/status";
@@ -56,16 +57,18 @@
     isLoading = true;
     let referral = detail as Referral;
     $schedulingRequest.ReferralId = referral.Id.toString();
-    console.log($schedulingRequest);
     try {
       const { data: result } = await api.scheduling.proposition(
         $schedulingRequest
       );
-      console.log(result);
+      $displayOnMain = "result";
     } catch (err) {
-      //TODO: display error
-      console.error(err.response);
-      errMsg = err.response.data.error;
+      if (err.response) {
+        errMsg = err.response.data.error;
+        console.error(err.response);
+      } else {
+        errMsg = "Wystąpił błąd przy wyznaczaniu";
+      }
     } finally {
       isLoading = false;
     }
