@@ -1,4 +1,5 @@
 export class Referral {
+  id: string;
   Id: string;
   Surname: string;
   FirstName: string;
