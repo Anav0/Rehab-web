@@ -6,10 +6,9 @@
     DatePicker,
     DatePickerInput,
   } from "carbon-components-svelte";
-  import { displayOnMain } from "../../stores/mainPanel";
+  import { displayOnMain, prevPage } from "../../stores/mainPanel";
   import { schedulingRequest } from "../../stores/scheduling";
 
-  let showSettings = false;
   let shadowSettings = { ...$schedulingRequest };
   //TODO: move date format to store
   let dateFormat: any = {
@@ -17,16 +16,15 @@
     day: "2-digit",
     month: "2-digit",
   };
+
   const redirect = () => {
-    $displayOnMain = "referral";
+    $displayOnMain = $prevPage;
   };
   const close = () => {
-    showSettings = false;
     shadowSettings = { ...$schedulingRequest };
     redirect();
   };
   const accept = () => {
-    showSettings = false;
     $schedulingRequest = { ...shadowSettings };
     redirect();
   };

@@ -7,14 +7,13 @@
   } from "carbon-components-svelte";
   import { getContext } from "svelte";
   import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
-  import { displayOnMain } from "../stores/mainPanel";
+  import { displayOnMain, prevPage } from "../stores/mainPanel";
   const ctx: { dark: any; light: any; updateVar: any } = getContext("Theme");
 
-  let prevPage = "";
   let currentPage = $displayOnMain;
 
   $: {
-    prevPage = currentPage;
+    $prevPage = currentPage;
     currentPage = $displayOnMain;
   }
 
@@ -38,7 +37,7 @@
       aria-label="Settings"
       icon={SettingsAdjust20}
       on:click={() => {
-        $displayOnMain = $displayOnMain === "settings" ? prevPage : "settings";
+        $displayOnMain = $displayOnMain === "settings" ? $prevPage : "settings";
       }}
     />
   </HeaderUtilities>
