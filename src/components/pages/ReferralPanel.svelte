@@ -63,7 +63,7 @@
     height: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto 1fr;
     grid-template-rows: auto;
     grid-gap: 2rem;
   }

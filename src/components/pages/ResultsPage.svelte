@@ -2,9 +2,6 @@
   import {
     DataTable,
     Button,
-    Loading,
-    DataTableSkeleton,
-    ToastNotification,
   } from "carbon-components-svelte";
   import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
   import type { Term } from "../../models/term";
