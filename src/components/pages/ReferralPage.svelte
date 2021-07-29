@@ -12,7 +12,7 @@
   import type { Referral } from "../../models/referral";
   import { displayOnMain } from "../../stores/mainPanel";
   import { referralFilter } from "../../stores/referralFilters";
-  import { schedulingRequest } from "../../stores/scheduling";
+  import { proposition, schedulingRequest } from "../../stores/scheduling";
   import { statuses } from "../../stores/status";
   let rows: Referral[] = [];
 
@@ -61,6 +61,7 @@
       const { data: result } = await api.scheduling.proposition(
         $schedulingRequest
       );
+      $proposition = result;
       $displayOnMain = "result";
     } catch (err) {
       if (err.response) {
