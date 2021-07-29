@@ -36,20 +36,20 @@
       }}
       on:select={({ detail }) => {
         let index = detail.selectedIndex;
-        $referralFilter.status = $statuses[index];
+        $referralFilter.status = $statuses[index].Code;
       }}
     />
   {/if}
 
   <DatePicker
     datePickerType="range"
-    valueTo={$referralFilter.endDate.toLocaleDateString("pl", dateFormat)}
-    valueFrom={$referralFilter.startDate.toLocaleDateString("pl", dateFormat)}
+    valueTo={$referralFilter.to.toLocaleDateString("pl", dateFormat)}
+    valueFrom={$referralFilter.from.toLocaleDateString("pl", dateFormat)}
     dateFormat="d.m.Y"
     locale="pl"
     on:change={({ detail }) => {
-      $referralFilter.startDate = new Date(detail.selectedDates[0]);
-      $referralFilter.endDate = new Date(detail.selectedDates[1]);
+      $referralFilter.from = new Date(detail.selectedDates[0]);
+      $referralFilter.to = new Date(detail.selectedDates[1]);
     }}
   >
     <DatePickerInput labelText="od" />
@@ -63,7 +63,7 @@
     width: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 100px);
     grid-gap: 2rem;
   }
 </style>

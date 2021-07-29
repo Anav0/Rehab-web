@@ -1,12 +1,11 @@
 import { writable } from "svelte/store";
 import type { ReferralFilter } from "../models/referralFilter";
 
-let baseDate = new Date();
-baseDate.setDate(baseDate.getDate() - 30);
-let startDate = baseDate;
-let endDate = new Date();
+let startDate = new Date(2018, 9, 1, 6, 0, 0);
+let endDate = new Date(2018, 9, 2, 18, 0, 0);
 export const referralFilter = writable<ReferralFilter>({
-  endDate,
-  startDate,
+  to: endDate,
+  from: startDate,
   status: null,
+  type: 101,
 });

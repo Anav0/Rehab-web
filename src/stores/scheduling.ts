@@ -1,11 +1,9 @@
 import { writable } from "svelte/store";
 import type { SchedulingRequest } from "../models/request";
 
-let startDate = new Date();
+let startDate = new Date(2018, 6, 1, 6, 0, 0, 0);
+let endDate = new Date(2018, 9, 1, 18, 0, 0, 0);
 
-let baseDate = new Date();
-baseDate.setDate(baseDate.getDate() + 14);
-let endDate = baseDate;
 export const schedulingRequest = writable<SchedulingRequest>({
   Algorithm: "SA",
   End: endDate,

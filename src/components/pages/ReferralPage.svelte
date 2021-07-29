@@ -1,66 +1,61 @@
 <script lang="ts">
-  import { DataTable, Button, Loading } from "carbon-components-svelte";
+  import {
+    DataTable,
+    Button,
+    Loading,
+    DataTableSkeleton,
+    ToastNotification,
+  } from "carbon-components-svelte";
   import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
+  import { onMount } from "svelte";
   import { api } from "../../api";
   import type { Referral } from "../../models/referral";
   import { referralFilter } from "../../stores/referralFilters";
   import { schedulingRequest } from "../../stores/scheduling";
   import { statuses } from "../../stores/status";
-  let allRows: Referral[] = [];
-  let filteredRows: Referral[] = [];
+  let rows: Referral[] = [];
 
-  statuses.subscribe((value) => {
-    allRows = [
-      {
-        id: "0",
-        date: new Date(2019, 10, 10, 14, 25, 12),
-        patient: { id: "10", name: "Jacek", surname: "Placek" },
-        status: value[0],
-        priority: "Pilne",
-      },
-      {
-        id: "1",
-        date: new Date(),
-        patient: { id: "10", name: "Tomek", surname: "Placek" },
-        status: value[1],
-        priority: "Pilne",
-      },
-      {
-        id: "2",
-        date: new Date(),
-        patient: { id: "10", name: "Jacek", surname: "Placek" },
-        status: value[2],
-        priority: "Pilne",
-      },
-      {
-        id: "3",
-        date: new Date(),
-        patient: { id: "10", name: "Jacek", surname: "Placek" },
-        status: value[2],
-        priority: "Pilne",
-      },
-    ];
-    filteredRows = allRows;
-  });
+  let fetchingReferrals = true;
+
+  const fetchReferrals = async () => {
+    fetchingReferrals = true;
+    try {
+      const { data: result } = await api.referral.referrals($referralFilter);
+
+      for (let i = 0; i < result.length; i++) {
+        const element = result[i];
+        element["id"] = element.Id;
+      }
+      rows = result;
+    } catch (err) {
+      console.error(err.reponse);
+      errMsg = err.response.error;
+    } finally {
+      fetchingReferrals = false;
+    }
+  };
 
   let headers: DataTableHeader[] = [
     {
-      key: "date",
+      key: "Date",
       value: "Data wyk.",
       display: (date) => new Date(date).toLocaleString(),
       sort: (a, b) => (new Date(a) < new Date(b) ? -1 : 1),
     },
-    { key: "priority", value: "Priorytet" },
-    { key: "status.Name", value: "Status" },
-    { key: "patient.surname", value: "Nazwisko" },
-    { key: "patient.name", value: "Imię" },
+    {
+      key: "Status",
+      value: "Status",
+      display: (statusCode) => $statuses.find((x) => x.Code == statusCode).Name,
+    },
+    { key: "Surname", value: "Nazwisko" },
+    { key: "FirstName", value: "Imię" },
     { key: "action", empty: true },
   ];
 
   let askForProposition = async (detail: any) => {
     isLoading = true;
     let referral = detail as Referral;
-    $schedulingRequest.ReferralId = referral.id;
+    $schedulingRequest.ReferralId = referral.Id.toString();
     console.log($schedulingRequest);
     try {
       const { data: result } = await api.scheduling.proposition(
@@ -69,20 +64,18 @@
       console.log(result);
     } catch (err) {
       //TODO: display error
+      console.error(err.response);
+      errMsg = err.response.data.error;
     } finally {
       isLoading = false;
     }
   };
   let isLoading = false;
+  let errMsg = "";
 
   referralFilter.subscribe((value) => {
-    filteredRows = allRows;
     if (value == null) return;
-
-    if (value.status)
-      filteredRows = allRows.filter(
-        (referral) => referral.status.Code == value.status.Code
-      );
+    fetchReferrals();
   });
 </script>
 
@@ -90,24 +83,38 @@
   {#if isLoading}
     <Loading description="Trwa wyznaczanie terminów..." />
   {/if}
-  <DataTable
-    title="Lista zleceń"
-    description="Z poziomu tableki, można rozpocząć proces wyznaczania terminów"
-    zebra
-    sortable
-    {headers}
-    rows={filteredRows}
-  >
-    <span slot="cell" let:cell let:row>
-      {#if cell.key === "action"}
-        <Button on:click={() => askForProposition(row)} kind="tertiary"
-          >Wyznacz</Button
-        >
-      {:else if cell.key == "date"}{cell.display(cell.value)}
-      {:else}{cell.value}
-      {/if}
-    </span>
-  </DataTable>
+  {#if errMsg != ""}
+    <ToastNotification
+      lowContrast
+      style="position: absolute; top: 1rem; right: 4rem;"
+      on:close={() => (errMsg = "")}
+      timeout={5000}
+      title="Błąd przy wyznaczaniu"
+      subtitle={errMsg}
+    />
+  {/if}
+  {#if !fetchingReferrals && $statuses.length > 0}
+    <DataTable
+      title="Lista zleceń"
+      description="Z poziomu tableki, można rozpocząć proces wyznaczania terminów"
+      zebra
+      sortable
+      {headers}
+      {rows}
+    >
+      <span slot="cell" let:cell let:row>
+        {#if cell.key === "action"}
+          <Button on:click={() => askForProposition(row)} kind="tertiary"
+            >Wyznacz</Button
+          >
+        {:else if cell.key == "Date"}{cell.display(cell.value)}
+        {:else if cell.key == "Status"}{cell.display(cell.value)}
+        {:else}{cell.value}
+        {/if}
+      </span>
+    </DataTable>
+  {:else}<DataTableSkeleton />
+  {/if}
 </div>
 
 <style>

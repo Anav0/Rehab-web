@@ -1,7 +1,8 @@
 import type { Status } from "./status";
 
 export class ReferralFilter {
-  status: Status;
-  startDate: Date;
-  endDate: Date;
+  status: number;
+  type: number = 101;
+  from: Date;
+  to: Date;
 }
