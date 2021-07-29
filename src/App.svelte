@@ -1,10 +1,11 @@
 <script lang="ts">
   import { Content } from "carbon-components-svelte";
   import Navigation from "./components/Navigation.svelte";
-  import SidePanel from "./components/panels/side-panel/SidePanel.svelte";
-  import MainPanel from "./components/panels/MainPanel.svelte";
-  import ReferralPanel from "./components/panels/side-panel/ReferralPanelContent.svelte";
   import Theme from "./components/Theme.svelte";
+  import ReferralPage from "./components/pages/ReferralPage.svelte";
+  import SettingsPage from "./components/pages/SettingsPage.svelte";
+  import ResultsPage from "./components/pages/ResultsPage.svelte";
+
   import "./css/main.css";
   import { onMount } from "svelte";
   import { api } from "./api";
@@ -26,11 +27,12 @@
 <Theme persist bind:theme>
   <Navigation />
   <Content>
-    {#if $displayOnMain === "referral"}
-      <SidePanel>
-        <ReferralPanel />
-      </SidePanel>
+    {#if $displayOnMain == "referral"}
+      <ReferralPage />
+    {:else if $displayOnMain == "settings"}<SettingsPage />
+    {:else if $displayOnMain == "result"}<ResultsPage />
+    {:else}
+      <span>No page</span>
     {/if}
-    <MainPanel />
   </Content>
 </Theme>

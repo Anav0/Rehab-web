@@ -30,7 +30,7 @@
   };
 </script>
 
-<div class="settings-page">
+<div class="settings-page page">
   <div class="settings">
     <Select
       selected={shadowSettings.Algorithm}
@@ -59,7 +59,7 @@
       <DatePickerInput labelText="Do" />
     </DatePicker>
   </div>
-  <ButtonSet>
+  <ButtonSet style="margin-top: 3rem">
     <Button kind="danger" on:click={close}>Anuluj</Button>
     <Button on:click={accept}>Zatwierdź</Button>
   </ButtonSet>
@@ -68,14 +68,12 @@
 <style>
   .settings-page {
     padding: 2rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-gap: 2rem 0rem;
+    display: flex;
+    flex-direction: column;
   }
   .settings {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 250px auto;
     grid-gap: 2rem;
   }
 </style>

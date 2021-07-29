@@ -41,9 +41,8 @@
   });
 </script>
 
-<div class="result">
+<div class="result page">
   <DataTable
-    style="grid-column: 1/2"
     title="Proponowane terminy dla zlecenia"
     description="Terminy proponowane przez program mogą zostać ręcznie dostosowane i autmatycznie sprawdzone"
     zebra
@@ -65,8 +64,6 @@
   .result {
     width: 100%;
     height: 100%;
-    display: grid;
-    grid-template-columns: minmax(150px, 1fr) 4fr minmax(150px, 1fr);
-    grid-template-rows: 1fr;
+    overflow: auto;
   }
 </style>

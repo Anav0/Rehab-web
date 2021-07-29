@@ -1,12 +1,13 @@
 <script lang="ts">
   import {
     ComboBox,
+    Tile,
     DatePicker,
     DatePickerInput,
     SelectSkeleton,
   } from "carbon-components-svelte";
-  import { statuses } from "../../../stores/status";
-  import { referralFilter } from "../../../stores/referralFilters";
+  import { statuses } from "../../stores/status";
+  import { referralFilter } from "../../stores/referralFilters";
 
   let items = [];
   statuses.subscribe((values) => {
@@ -62,8 +63,8 @@
     height: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(12, 100px);
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
     grid-gap: 2rem;
   }
 </style>

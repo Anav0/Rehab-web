@@ -12,6 +12,8 @@
   import type { Referral } from "../../models/referral";
   import { displayOnMain } from "../../stores/mainPanel";
   import { referralFilter } from "../../stores/referralFilters";
+  import ReferralPanel from "../pages/ReferralPanel.svelte";
+
   import { proposition, schedulingRequest } from "../../stores/scheduling";
   import { statuses } from "../../stores/status";
   let rows: Referral[] = [];
@@ -83,7 +85,8 @@
   });
 </script>
 
-<div class="referral">
+<div class="referral page">
+  <ReferralPanel />
   {#if isLoading}
     <Loading description="Trwa wyznaczanie terminów..." />
   {/if}
@@ -125,5 +128,10 @@
   .referral {
     width: 100%;
     height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    grid-gap: 2rem;
+    overflow: auto;
   }
 </style>
