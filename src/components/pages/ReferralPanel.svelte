@@ -1,11 +1,5 @@
 <script lang="ts">
-  import {
-    ComboBox,
-    Tile,
-    DatePicker,
-    DatePickerInput,
-    SelectSkeleton,
-  } from "carbon-components-svelte";
+  import { ComboBox, Tile, DatePicker, DatePickerInput, SelectSkeleton } from "carbon-components-svelte";
   import { statuses } from "../../stores/status";
   import { referralFilter } from "../../stores/referralFilters";
 
@@ -27,6 +21,7 @@
 <div class="referral-panel">
   {#if items.length === 0}
     <SelectSkeleton />
+    <SelectSkeleton />
   {:else}
     <ComboBox
       titleText="Status"
@@ -40,22 +35,21 @@
         $referralFilter.status = $statuses[index].Code;
       }}
     />
+    <DatePicker
+      datePickerType="range"
+      valueTo={$referralFilter.to.toLocaleDateString("pl", dateFormat)}
+      valueFrom={$referralFilter.from.toLocaleDateString("pl", dateFormat)}
+      dateFormat="d.m.Y"
+      locale="pl"
+      on:change={({ detail }) => {
+        $referralFilter.from = new Date(detail.selectedDates[0]);
+        $referralFilter.to = new Date(detail.selectedDates[1]);
+      }}
+    >
+      <DatePickerInput labelText="od" />
+      <DatePickerInput labelText="Do" />
+    </DatePicker>
   {/if}
-
-  <DatePicker
-    datePickerType="range"
-    valueTo={$referralFilter.to.toLocaleDateString("pl", dateFormat)}
-    valueFrom={$referralFilter.from.toLocaleDateString("pl", dateFormat)}
-    dateFormat="d.m.Y"
-    locale="pl"
-    on:change={({ detail }) => {
-      $referralFilter.from = new Date(detail.selectedDates[0]);
-      $referralFilter.to = new Date(detail.selectedDates[1]);
-    }}
-  >
-    <DatePickerInput labelText="od" />
-    <DatePickerInput labelText="Do" />
-  </DatePicker>
 </div>
 
 <style>
