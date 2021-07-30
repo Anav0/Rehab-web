@@ -5,6 +5,7 @@
   import ReferralPage from "./components/pages/ReferralPage.svelte";
   import SettingsPage from "./components/pages/SettingsPage.svelte";
   import ResultsPage from "./components/pages/ResultsPage.svelte";
+  import DetailsPage from "./components/pages/DetailsPage.svelte";
 
   import "./css/main.css";
   import { onMount } from "svelte";
@@ -31,6 +32,7 @@
       <ReferralPage />
     {:else if $displayOnMain == "settings"}<SettingsPage />
     {:else if $displayOnMain == "result"}<ResultsPage />
+    {:else if $displayOnMain == "details"}<DetailsPage />
     {:else}
       <span>No page</span>
     {/if}
