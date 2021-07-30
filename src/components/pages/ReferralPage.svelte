@@ -1,11 +1,5 @@
 <script lang="ts">
-  import {
-    DataTable,
-    Button,
-    Loading,
-    DataTableSkeleton,
-    ToastNotification,
-  } from "carbon-components-svelte";
+  import { DataTable, Button, Loading, DataTableSkeleton, ToastNotification } from "carbon-components-svelte";
   import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
   import { onMount } from "svelte";
   import { api } from "../../api";
@@ -42,7 +36,7 @@
     {
       key: "Date",
       value: "Data wyk.",
-      display: (date) => new Date(date).toLocaleString(),
+      display: (date) => new Date(date).toLocaleDateString(),
       sort: (a, b) => (new Date(a) < new Date(b) ? -1 : 1),
     },
     {
@@ -60,9 +54,7 @@
     let referral = detail as Referral;
     $schedulingRequest.ReferralId = referral.Id.toString();
     try {
-      const { data: result } = await api.scheduling.proposition(
-        $schedulingRequest
-      );
+      const { data: result } = await api.scheduling.proposition($schedulingRequest);
       $proposition = result;
       $displayOnMain = "result";
     } catch (err) {
@@ -111,9 +103,7 @@
     >
       <span slot="cell" let:cell let:row>
         {#if cell.key === "action"}
-          <Button on:click={() => askForProposition(row)} kind="tertiary"
-            >Wyznacz</Button
-          >
+          <Button on:click={() => askForProposition(row)} kind="tertiary">Wyznacz</Button>
         {:else if cell.key == "Date"}{cell.display(cell.value)}
         {:else if cell.key == "Status"}{cell.display(cell.value)}
         {:else}{cell.value}
