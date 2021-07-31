@@ -2,6 +2,7 @@
   import { ComboBox, Tile, DatePicker, DatePickerInput, SelectSkeleton } from "carbon-components-svelte";
   import { statuses } from "../../stores/status";
   import { referralFilter } from "../../stores/referralFilters";
+  import { dateFormat } from "../../stores/date";
 
   let items = [];
   statuses.subscribe((values) => {
@@ -11,11 +12,6 @@
     }
     items = [...items];
   });
-  let dateFormat: any = {
-    year: "numeric",
-    day: "2-digit",
-    month: "2-digit",
-  };
 </script>
 
 <div class="referral-panel">
@@ -37,8 +33,8 @@
     />
     <DatePicker
       datePickerType="range"
-      valueTo={$referralFilter.to.toLocaleDateString("pl", dateFormat)}
-      valueFrom={$referralFilter.from.toLocaleDateString("pl", dateFormat)}
+      valueTo={$referralFilter.to.toLocaleDateString("pl", $dateFormat)}
+      valueFrom={$referralFilter.from.toLocaleDateString("pl", $dateFormat)}
       dateFormat="d.m.Y"
       locale="pl"
       on:change={({ detail }) => {

@@ -1,21 +1,11 @@
 <script lang="ts">
   import { ButtonSet, Button } from "carbon-components-svelte";
-  import {
-    SelectItem,
-    Select,
-    DatePicker,
-    DatePickerInput,
-  } from "carbon-components-svelte";
+  import { SelectItem, Select, DatePicker, DatePickerInput } from "carbon-components-svelte";
+  import { dateFormat } from "../../stores/date";
   import { displayOnMain, prevPage } from "../../stores/mainPanel";
   import { schedulingRequest } from "../../stores/scheduling";
 
   let shadowSettings = { ...$schedulingRequest };
-  //TODO: move date format to store
-  let dateFormat: any = {
-    year: "numeric",
-    day: "2-digit",
-    month: "2-digit",
-  };
 
   const redirect = () => {
     $displayOnMain = $prevPage;
@@ -45,8 +35,8 @@
 
     <DatePicker
       datePickerType="range"
-      valueTo={shadowSettings.End.toLocaleDateString("pl", dateFormat)}
-      valueFrom={shadowSettings.Start.toLocaleDateString("pl", dateFormat)}
+      valueTo={shadowSettings.End.toLocaleDateString("pl", $dateFormat)}
+      valueFrom={shadowSettings.Start.toLocaleDateString("pl", $dateFormat)}
       dateFormat="d.m.Y"
       locale="pl"
       on:change={({ detail }) => {

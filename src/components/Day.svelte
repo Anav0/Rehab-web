@@ -22,7 +22,8 @@
 
 <style>
   .day {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
   }
   .day-date {
     background-color: var(--cds-ui-05);
@@ -38,7 +39,7 @@
     grid-auto-columns: 1fr;
     grid-template-columns: auto;
     grid-gap: 1px;
-    background-color: var(--cds-ui-05);
+    background-color: var(--cds-ui-04);
   }
   .day-place {
     background-color: var(--cds-ui-03);
