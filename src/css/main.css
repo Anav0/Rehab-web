@@ -1,0 +1,16 @@
+html {
+  width: 100%;
+  height: 100%;
+}
+body {
+  height: calc(100% - 3rem);
+}
+main {
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 200px) 1fr minmax(0, 200px);
+  grid-template-rows: 1fr;
+}
+.page {
+  grid-column: 2/3;
+}

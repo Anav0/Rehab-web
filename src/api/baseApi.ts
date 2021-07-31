@@ -1,9 +1,9 @@
-import {AxiosInstance} from 'axios';
+import type { AxiosInstance } from "axios";
 
 export class BaseApi {
-    instance: AxiosInstance;
+  instance: AxiosInstance;
 
-    constructor(instance: AxiosInstance) {
-        this.instance = instance;
-    }
+  constructor(instance: AxiosInstance) {
+    this.instance = instance;
+  }
 }
