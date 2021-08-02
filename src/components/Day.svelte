@@ -38,8 +38,7 @@
     display: grid;
     grid-auto-columns: 1fr;
     grid-template-columns: auto;
-    grid-gap: 1px;
-    background-color: var(--cds-ui-04);
+    grid-gap: var(--details-gap);
   }
   .day-place {
     background-color: var(--cds-ui-03);
