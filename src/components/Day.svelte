@@ -1,12 +1,14 @@
 <script lang="ts">
-  export let date: Date;
-  export let places: string[];
+  import App from "../App.svelte";
+  import type { DayModel } from "../models/calendar";
+
+  export let dayModel: DayModel;
 </script>
 
 <div class="day">
   <div class="day-date">
     <span
-      >{date.toLocaleString("pl", {
+      >{dayModel.date.toLocaleString("pl", {
         month: "2-digit",
         weekday: "short",
         day: "2-digit",
@@ -14,8 +16,15 @@
     >
   </div>
   <div class="day-places">
-    {#each places as place, i}
-      <div class="day-place"><span>{place}</span></div>
+    {#each [...dayModel.placeModelsByPlaceName] as [placeName, placeModel], i}
+      <div class="day-place-wrapper">
+        <div class="day-place"><span>{placeName}</span></div>
+        <div class="day-terms" style="grid-template-columns: repeat({placeModel.terms.length},1fr);">
+          {#each placeModel.terms as term, k}
+            <div class="day-term" />
+          {/each}
+        </div>
+      </div>
     {/each}
   </div>
 </div>
@@ -23,12 +32,11 @@
 <style>
   .day {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 14ch auto;
   }
   .day-date {
     background-color: var(--cds-ui-05);
-    padding: 1rem 2rem;
-    display: flex;
+    display: grid;
     place-items: center;
   }
   .day-date span {
@@ -42,8 +50,40 @@
   }
   .day-place {
     background-color: var(--cds-ui-03);
-    padding: 0.5rem 1rem;
-    display: flex;
+    padding: 0.25rem;
+    display: grid;
     place-items: center;
+  }
+  .day-terms {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-gap: 1px;
+    width: 100%;
+    height: 100%;
+  }
+  .day-place-wrapper {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+  }
+
+  .day-term:hover::after {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+
+  .day-term::after {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: "";
+    background-color: var(--cds-ui-01);
+    transition: opacity 0.2s;
+  }
+  .day-term {
+    position: relative;
+    transition: opacity 0.2s;
+    padding: 0.2rem;
   }
 </style>

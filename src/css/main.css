@@ -10,7 +10,9 @@ main {
   display: grid;
   grid-template-columns: minmax(0, 200px) 1fr minmax(0, 200px);
   grid-template-rows: 1fr;
+  overflow: auto;
 }
 .page {
   grid-column: 2/3;
+  overflow: auto;
 }

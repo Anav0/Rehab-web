@@ -8,54 +8,105 @@
   import { api } from "../../api";
   import { getWorkdaysFromMondayOf } from "../../services/dates";
   import type { Term } from "../../models/term";
+  import { DayModel, PlaceModel } from "../../models/calendar";
 
   let treatments: Treatment[] = [];
   let dates: Date[] = [];
   let startingPoint: Date = new Date(2021, 1, 1, 6, 0, 0);
   let isLoading = true;
-  let terms: Term[] = [];
-  let byDate: Map<string, Set<string>>;
+  let dayModelByDayStr: Map<string, DayModel>;
+  let hours: string[] = [];
 
+  const buildHours = () => {
+    const endTime = new Date(2000, 1, 1, 18, 0, 0);
+    const currentTime = new Date(2000, 1, 1, 7, 40, 0);
+    const interval = 20;
+    const mult = 60000;
+    let buildHours = [];
+
+    let j = 0;
+    do {
+      currentTime.setTime(currentTime.getTime() + interval * mult);
+      buildHours.push(
+        currentTime.toLocaleString("pl", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      );
+      j++;
+    } while (currentTime < endTime);
+
+    return buildHours;
+  };
   onMount(async () => {
     //$schedulingRequest.ReferralId = "1"; //"101715";
     //$schedulingRequest.Algorithm = "D";
     //const { data: result } = await api.scheduling.proposition($schedulingRequest);
     //$proposition = result;
     dates = getWorkdaysFromMondayOf(startingPoint, 10);
+    hours = buildHours();
+    let buildingMap = new Map();
 
-    byDate = new Map();
-
-    let termId = 0;
+    let termId = 1;
     let mult = 60000;
     for (let i = 0; i < dates.length; i++) {
       const dt = dates[i];
-      for (let j = 0; j < 20; j++) {
-        let clonedDate = new Date(dt);
-        clonedDate.setTime(clonedDate.getTime() + j * 20 * mult);
-        let startDate = new Date(clonedDate);
-        clonedDate.setTime(clonedDate.getTime() + 20 * mult);
-        let endDate = clonedDate;
-        let term = {
-          Id: termId,
-          Capacity: 1,
-          Used: 0,
-          Duration: 20,
-          StartDate: startDate,
-          EndDate: endDate,
-          TreatmentId: "0",
-          PlaceId: j % 2 ? 10 : 11,
-          PlaceName: `Place ${j % 2 ? 10 : 11}`,
-          TreatmentDuration: 20,
-        };
-        termId++;
-        terms.push(term);
-        if (byDate.has(startDate.toDateString())) {
-          var set = byDate.get(startDate.toDateString());
-          if (!set.has(term.PlaceName)) set.add(term.PlaceName);
-        } else byDate.set(startDate.toDateString(), new Set([term.PlaceName]));
+      dt.setHours(8, 0, 0);
+      let endDate: Date;
+      let endTime = new Date(dt);
+      endTime.setHours(18, 0, 0);
+      let places = ["Sala A", "MGS", "Komora"];
+      let placesDur = [5, 10, 15];
+      let buildHours: string[] = [];
+      for (let p = 0; p < places.length; p++) {
+        let blockDur = placesDur[p];
+        let j = 0;
+        do {
+          let clonedDate = new Date(dt);
+          clonedDate.setTime(clonedDate.getTime() + j * blockDur * mult);
+          let startDate = new Date(clonedDate);
+          clonedDate.setTime(clonedDate.getTime() + blockDur * mult);
+          endDate = clonedDate;
+          let term = {
+            Id: termId,
+            Capacity: 1,
+            Used: 0,
+            Duration: blockDur,
+            StartDate: startDate,
+            EndDate: endDate,
+            TreatmentId: "0",
+            PlaceId: null,
+            PlaceName: places[p],
+            TreatmentDuration: blockDur,
+          };
+          termId++;
+          if (buildingMap.has(startDate.toDateString())) {
+            let dayModel = buildingMap.get(startDate.toDateString());
+            if (dayModel.placeModelsByPlaceName.has(term.PlaceName)) {
+              let placeModel = dayModel.placeModelsByPlaceName.get(term.PlaceName);
+              placeModel.terms.push(term);
+            } else {
+              let placeModel = new PlaceModel();
+              placeModel.name = term.PlaceName;
+              placeModel.terms.push(term);
+              dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
+            }
+          } else {
+            let dayModel = new DayModel();
+            dayModel.date = term.StartDate;
+
+            let placeModel = new PlaceModel();
+            placeModel.name = term.PlaceName;
+            placeModel.terms.push(term);
+
+            dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
+            buildingMap.set(startDate.toDateString(), dayModel);
+          }
+          j++;
+        } while (endDate == null || endDate.getTime() < endTime.getTime());
       }
     }
-    console.log(byDate);
+    dayModelByDayStr = buildingMap;
     isLoading = false;
   });
 
@@ -82,24 +133,15 @@
         <DatePickerInput labelText="Data" placeholder="dd.mm.yyy" />
       </DatePicker>
     </div>
-    <div class="details-hours" />
-    <div class="details-days">
-      {#each [...byDate] as [dateStr, places]}
-        <Day date={new Date(dateStr)} places={[...places]} />
+    <div class="details-hours" style="grid-template-columns: repeat({hours.length},1fr);">
+      {#each hours as hour}
+        <div>{hour}</div>
       {/each}
     </div>
-    <div class="details-timetable-wrapper">
-      <div
-        class="details-timetable"
-        style="grid-template-columns: repeat(10,1fr); grid-template-rows: repeat({byDate.keys.length *
-          byDate.values.length},1fr);"
-      >
-        {#each terms as term, i}
-          <div class="{i % 2 ? 'full' : 'half'} details-timetable-item" on:click={() => console.log(term)}>
-            {term.Id}/{term.PlaceId}
-          </div>
-        {/each}
-      </div>
+    <div class="details-days">
+      {#each [...dayModelByDayStr] as [dayStr, dayModel]}
+        <Day {dayModel} />
+      {/each}
     </div>
   {/if}
 </div>
@@ -110,17 +152,18 @@
   }
   .details-page {
     --details-gap: 2px;
-    --details-bg: var(--cds-ui-02);
+    --details-bg: var(--cds-ui-03);
     width: 100%;
     height: 100%;
     display: grid;
     grid-template-columns: auto 1fr 1fr;
     grid-template-rows: auto auto 1fr 1fr;
+    grid-column: 1/4;
     grid-template-areas:
       "toolbar toolbar ."
       ". hours hours"
-      "days timetable timetable"
-      "days timetable timetable";
+      "days days days"
+      "days days days";
   }
   .details-panel {
     margin-bottom: 2rem;
@@ -135,52 +178,18 @@
     grid-template-columns: 1fr;
     grid-area: days;
     background-color: var(--details-bg);
+    overflow: auto;
   }
   .details-hours {
     grid-area: hours;
-  }
-
-  .details-timetable-wrapper {
-    background-color: var(--details-bg);
+    display: grid;
     width: 100%;
     height: 100%;
-    grid-area: timetable;
-  }
-
-  .details-timetable-item:hover {
-    opacity: 0.3;
-    cursor: pointer;
+    grid-template-rows: 1fr;
   }
 
   .details-days {
     grid-gap: var(--details-gap);
     padding: var(--details-gap) 0 var(--details-gap) var(--details-gap);
-  }
-
-  .details-timetable {
-    height: 100%;
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(20, 1fr);
-    grid-gap: var(--details-gap);
-    padding: var(--details-gap);
-  }
-  .details-timetable-item {
-    padding: 0.2rem;
-    background-color: var(--cds-ui-01);
-    width: 100%;
-    height: 100%;
-  }
-
-  .full {
-    border: 1px solid var(--cds-danger);
-  }
-
-  .half {
-    border: 1px solid var(--cds-support-03);
-  }
-  .picked {
-    border: 1px dotted var(--cds-active-primary);
   }
 </style>
