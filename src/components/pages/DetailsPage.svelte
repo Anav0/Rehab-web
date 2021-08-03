@@ -16,11 +16,12 @@
   let isLoading = true;
   let dayModelByDayStr: Map<string, DayModel>;
   let hours: string[] = [];
+  let hoveredTerm: Term = null;
 
   const buildHours = () => {
     const endTime = new Date(2000, 1, 1, 18, 0, 0);
-    const currentTime = new Date(2000, 1, 1, 7, 40, 0);
-    const interval = 20;
+    const currentTime = new Date(2000, 1, 1, 7, 0, 0);
+    const interval = 60;
     const mult = 60000;
     let buildHours = [];
 
@@ -117,6 +118,19 @@
     //dates = getWorkdaysFromMondayOf(date, 10);
     //console.log(date);
   });
+
+  const printInfoAboutHovered = () => {
+    var dateStr = hoveredTerm.StartDate.toLocaleDateString("pl");
+    var startTime = hoveredTerm.StartDate.toLocaleTimeString("pl", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    var endTime = hoveredTerm.EndDate.toLocaleTimeString("pl", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `${dateStr}, ${startTime} - ${endTime}, ${hoveredTerm.PlaceName}`;
+  };
 </script>
 
 <div class="details-page page">
@@ -132,6 +146,7 @@
       <DatePicker value={startingPoint.toLocaleString("pl", $dateFormat)}>
         <DatePickerInput labelText="Data" placeholder="dd.mm.yyy" />
       </DatePicker>
+      <span>{hoveredTerm ? printInfoAboutHovered() : "Nic"}</span>
     </div>
     <div class="details-hours" style="grid-template-columns: repeat({hours.length},1fr);">
       {#each hours as hour}
@@ -140,7 +155,7 @@
     </div>
     <div class="details-days">
       {#each [...dayModelByDayStr] as [dayStr, dayModel]}
-        <Day {dayModel} />
+        <Day {dayModel} on:termOver={({ detail: term }) => (hoveredTerm = term)} />
       {/each}
     </div>
   {/if}

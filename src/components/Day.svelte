@@ -1,8 +1,15 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
+
   import App from "../App.svelte";
   import type { DayModel } from "../models/calendar";
+  import type { Term } from "../models/term";
+  const dispatch = createEventDispatcher();
 
   export let dayModel: DayModel;
+  const onMouseOver = (term: Term) => {
+    dispatch("termOver", term);
+  };
 </script>
 
 <div class="day">
@@ -21,7 +28,7 @@
         <div class="day-place"><span>{placeName}</span></div>
         <div class="day-terms" style="grid-template-columns: repeat({placeModel.terms.length},1fr);">
           {#each placeModel.terms as term, k}
-            <div class="day-term" />
+            <div class="day-term" on:mouseover={() => onMouseOver(term)} />
           {/each}
         </div>
       </div>
