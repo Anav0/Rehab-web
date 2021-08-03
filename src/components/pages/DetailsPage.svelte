@@ -148,11 +148,11 @@
       </DatePicker>
       <span>{hoveredTerm ? printInfoAboutHovered() : "Nic"}</span>
     </div>
-    <div class="details-hours" style="grid-template-columns: repeat({hours.length},1fr);">
+    <!-- <div class="details-hours" style="grid-template-columns: repeat({hours.length},1fr);">
       {#each hours as hour}
         <div>{hour}</div>
       {/each}
-    </div>
+    </div> -->
     <div class="details-days">
       {#each [...dayModelByDayStr] as [dayStr, dayModel]}
         <Day {dayModel} on:termOver={({ detail: term }) => (hoveredTerm = term)} />
