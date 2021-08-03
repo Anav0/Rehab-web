@@ -184,6 +184,7 @@
     margin-bottom: 2rem;
     display: grid;
     grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
     grid-gap: 2rem;
     grid-area: toolbar;
   }
