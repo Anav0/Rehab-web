@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { ReferralFilter } from "../models/referralFilter";
+import type { ReferralFilter } from "../models/referral-filterr";
 
 let startDate = new Date(2018, 9, 1, 6, 0, 0);
 let endDate = new Date(2018, 9, 2, 18, 0, 0);

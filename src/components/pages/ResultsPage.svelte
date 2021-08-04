@@ -5,6 +5,7 @@
   import { proposition } from "../../stores/scheduling";
   import TrashCan16 from "carbon-icons-svelte/lib/TrashCan16";
   import Reset16 from "carbon-icons-svelte/lib/Reset16";
+  import Calibrate16 from "carbon-icons-svelte/lib/Calibrate16";
   import { displayOnMain } from "../../stores/mainPanel";
   import { schedulingRequest } from "../../stores/scheduling";
   import { api } from "../../api";
@@ -25,7 +26,6 @@
       value: "Miejsce wykonania",
     },
     { key: "TreatmentName", value: "Procedura" },
-    { key: "action", empty: true },
   ];
 
   let rows: Term[] = [];
@@ -63,6 +63,9 @@
       isLoading = false;
     }
   };
+  let tweak = () => {
+    $displayOnMain = "details";
+  };
 </script>
 
 <div class="result page">
@@ -87,13 +90,6 @@
     {headers}
     {rows}
   >
-    <span slot="cell" let:cell let:row>
-      {#if cell.key === "action"}
-        <Button kind="ghost">Dostosuj</Button>
-      {:else if cell.key == "StartDate"}{cell.display(cell.value)}
-      {:else}{cell.value}
-      {/if}
-    </span>
     <div class="result-toolbar">
       <Button
         on:click={() => {
@@ -105,6 +101,7 @@
         icon={TrashCan16}
       />
       <Button kind="ghost" on:click={askForProposition} iconDescription="Wyznacz ponownie" icon={Reset16} />
+      <Button kind="ghost" on:click={tweak} iconDescription="Dostosuj ręcznie" icon={Calibrate16} />
       <Button kind="primary">Akceptuj</Button>
     </div>
   </DataTable>
@@ -119,6 +116,6 @@
   .result-toolbar {
     display: flex;
     align-items: flex-end;
-    justify-content: end;
+    justify-content: flex-end;
   }
 </style>

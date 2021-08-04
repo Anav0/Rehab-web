@@ -1,14 +1,19 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
 
   import type { DayModel } from "../models/calendar";
   import type { Term } from "../models/term";
   const dispatch = createEventDispatcher();
 
   export let dayModel: DayModel;
+  export let propositionTermsByTermId: Map<number, number>;
+
   const onMouseOver = (term: Term) => {
     dispatch("termOver", term);
   };
+  onMount(() => {
+    console.log(propositionTermsByTermId);
+  });
 </script>
 
 <div class="day">
@@ -24,10 +29,17 @@
   <div class="day-places">
     {#each [...dayModel.placeModelsByPlaceName] as [placeName, placeModel], i}
       <div class="day-place-wrapper">
-        <div class="day-place"><span>{placeName}</span></div>
+        <p class="day-place">{placeName}</p>
         <div class="day-terms" style="grid-template-columns: repeat({placeModel.terms.length},1fr);">
           {#each placeModel.terms as term, k}
-            <div class="day-term" on:mouseover={() => onMouseOver(term)} />
+            <!-- svelte-ignore a11y-mouse-events-have-key-events -->
+            <div
+              class:proposed={propositionTermsByTermId.has(term.Id)}
+              class:some={term.Capacity / 2 <= term.Used}
+              class:full={term.Capacity < term.Used}
+              class="day-term"
+              on:mouseover={() => onMouseOver(term)}
+            />
           {/each}
         </div>
       </div>
@@ -56,9 +68,10 @@
   }
   .day-place {
     background-color: var(--cds-ui-03);
-    padding: 0.25rem;
-    display: grid;
-    place-items: center;
+    padding: 0.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .day-terms {
     display: grid;
@@ -69,7 +82,7 @@
   }
   .day-place-wrapper {
     display: grid;
-    grid-template-columns: 5rem 1fr;
+    grid-template-columns: 7rem 1fr;
   }
 
   .day-term:hover::after {
@@ -90,6 +103,14 @@
   .day-term {
     position: relative;
     transition: opacity 0.2s;
-    padding: 0.2rem;
+  }
+  .full::after {
+    background-color: var(--cds-support-01) !important;
+  }
+  .some::after {
+    background-color: var(--cds-support-03);
+  }
+  .proposed::after {
+    background-color: var(--cds-inverse-link) !important;
   }
 </style>

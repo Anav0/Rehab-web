@@ -9,114 +9,82 @@
   import { getWorkdaysFromMondayOf } from "../../services/dates";
   import type { Term } from "../../models/term";
   import { DayModel, PlaceModel } from "../../models/calendar";
+  import type { SchedulingProposition } from "../../models/proposition";
 
   let treatments: Treatment[] = [];
-  let dates: Date[] = [];
   let startingPoint: Date = new Date(2021, 1, 1, 6, 0, 0);
   let isLoading = true;
   let dayModelByDayStr: Map<string, DayModel>;
-  let hours: string[] = [];
   let hoveredTerm: Term = null;
+  let propositionTermsByTermId: Map<number, number> = new Map();
 
-  const buildHours = () => {
-    const endTime = new Date(2000, 1, 1, 18, 0, 0);
-    const currentTime = new Date(2000, 1, 1, 7, 0, 0);
-    const interval = 60;
-    const mult = 60000;
-    let buildHours = [];
+  onMount(() => {
+    $proposition = {
+      ProposedTrms: [],
+      ReferralIds: [],
+    };
+  });
 
-    let j = 0;
-    do {
-      currentTime.setTime(currentTime.getTime() + interval * mult);
-      buildHours.push(
-        currentTime.toLocaleString("pl", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      );
-      j++;
-    } while (currentTime < endTime);
-
-    return buildHours;
+  const buildTermsById = (proposition: SchedulingProposition) => {
+    for (let i = 0; i < proposition.ProposedTrms.length; i++) {
+      const terms = proposition.ProposedTrms[i];
+      for (let j = 0; j < terms.length; j++) {
+        const term = terms[j];
+        propositionTermsByTermId.set(term.Id, terms.length);
+      }
+    }
   };
-  onMount(async () => {
-    //$schedulingRequest.ReferralId = "1"; //"101715";
-    //$schedulingRequest.Algorithm = "D";
-    //const { data: result } = await api.scheduling.proposition($schedulingRequest);
-    //$proposition = result;
-    dates = getWorkdaysFromMondayOf(startingPoint, 10);
-    hours = buildHours();
-    let buildingMap = new Map();
 
-    let termId = 1;
-    let mult = 60000;
-    for (let i = 0; i < dates.length; i++) {
-      const dt = dates[i];
-      dt.setHours(8, 0, 0);
-      let endDate: Date;
-      let endTime = new Date(dt);
-      endTime.setHours(18, 0, 0);
-      let places = ["Sala A", "MGS", "Komora"];
-      let placesDur = [5, 10, 15];
-      let buildHours: string[] = [];
-      for (let p = 0; p < places.length; p++) {
-        let blockDur = placesDur[p];
-        let j = 0;
-        do {
-          let clonedDate = new Date(dt);
-          clonedDate.setTime(clonedDate.getTime() + j * blockDur * mult);
-          let startDate = new Date(clonedDate);
-          clonedDate.setTime(clonedDate.getTime() + blockDur * mult);
-          endDate = clonedDate;
-          let term = {
-            Id: termId,
-            Capacity: 1,
-            Used: 0,
-            Duration: blockDur,
-            StartDate: startDate,
-            EndDate: endDate,
-            TreatmentId: "0",
-            PlaceId: null,
-            PlaceName: places[p],
-            TreatmentDuration: blockDur,
-          };
-          termId++;
-          if (buildingMap.has(startDate.toDateString())) {
-            let dayModel = buildingMap.get(startDate.toDateString());
-            if (dayModel.placeModelsByPlaceName.has(term.PlaceName)) {
-              let placeModel = dayModel.placeModelsByPlaceName.get(term.PlaceName);
-              placeModel.terms.push(term);
-            } else {
-              let placeModel = new PlaceModel();
-              placeModel.name = term.PlaceName;
-              placeModel.terms.push(term);
-              dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
-            }
+  proposition.subscribe(async (value) => {
+    if (value == null) {
+      return;
+    }
+    try {
+      buildTermsById(value);
+      let buildingMap = new Map();
+      //startingPoint = new Date(value.ProposedTrms[0][0].StartDate);
+      startingPoint = new Date(2018, 8, 1, 0, 0, 0);
+
+      let { data: terms } = await api.terms.range({
+        From: startingPoint,
+        To: new Date(2018, 8, 14, 23, 59, 59, 0),
+        TreatmentId: "2159",
+      });
+      for (let i = 0; i < terms.length; i++) {
+        const term = terms[i];
+        term.StartDate = new Date(term.StartDate);
+        term.EndDate = new Date(term.EndDate);
+        if (buildingMap.has(term.StartDate.toDateString())) {
+          let dayModel = buildingMap.get(term.StartDate.toDateString());
+          if (dayModel.placeModelsByPlaceName.has(term.PlaceName)) {
+            let placeModel = dayModel.placeModelsByPlaceName.get(term.PlaceName);
+            placeModel.terms.push(term);
           } else {
-            let dayModel = new DayModel();
-            dayModel.date = term.StartDate;
-
             let placeModel = new PlaceModel();
             placeModel.name = term.PlaceName;
             placeModel.terms.push(term);
-
             dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
-            buildingMap.set(startDate.toDateString(), dayModel);
           }
-          j++;
-        } while (endDate == null || endDate.getTime() < endTime.getTime());
+        } else {
+          let dayModel = new DayModel();
+          dayModel.date = term.StartDate;
+
+          let placeModel = new PlaceModel();
+          placeModel.name = term.PlaceName;
+          placeModel.terms.push(term);
+
+          dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
+          buildingMap.set(term.StartDate.toDateString(), dayModel);
+        }
       }
+      dayModelByDayStr = buildingMap;
+      console.log(dayModelByDayStr);
+    } catch (err) {
+      //TODO: show error
+      console.error(err);
+    } finally {
+      isLoading = false;
     }
-    dayModelByDayStr = buildingMap;
-    isLoading = false;
-  });
-
-  proposition.subscribe((value) => {
-    if (value == null) return;
-
-    //date = new Date(value.ProposedTrms[0][0].StartDate);
-    //dates = getWorkdaysFromMondayOf(date, 10);
-    //console.log(date);
   });
 
   const printInfoAboutHovered = () => {
@@ -129,7 +97,7 @@
       hour: "2-digit",
       minute: "2-digit",
     });
-    return `${dateStr}, ${startTime} - ${endTime}, ${hoveredTerm.PlaceName}`;
+    return `${dateStr}, ${startTime} - ${endTime}, ${hoveredTerm.PlaceName}, ${hoveredTerm.Id}, ${hoveredTerm.Used}/${hoveredTerm.Capacity}`;
   };
 </script>
 
@@ -138,14 +106,16 @@
     <span>Loading</span>
   {:else}
     <div class="details-panel">
-      <Select labelText="Zabieg" on:change={({ detail }) => {}}>
-        {#each treatments as item}
-          <SelectItem value={item.Id} text={item.Name} />
-        {/each}
-      </Select>
-      <DatePicker value={startingPoint.toLocaleString("pl", $dateFormat)}>
-        <DatePickerInput labelText="Data" placeholder="dd.mm.yyy" />
-      </DatePicker>
+      <div style="display:grid; grid-template-columns: auto 1fr;">
+        <Select labelText="Zabieg" on:change={({ detail }) => {}}>
+          {#each treatments as item}
+            <SelectItem value={item.Id} text={item.Name} />
+          {/each}
+        </Select>
+        <DatePicker style="margin-left: 2rem" value={startingPoint.toLocaleString("pl", $dateFormat)}>
+          <DatePickerInput labelText="Data" placeholder="dd.mm.yyy" />
+        </DatePicker>
+      </div>
       <span>{hoveredTerm ? printInfoAboutHovered() : "Nic"}</span>
     </div>
     <!-- <div class="details-hours" style="grid-template-columns: repeat({hours.length},1fr);">
@@ -155,7 +125,7 @@
     </div> -->
     <div class="details-days">
       {#each [...dayModelByDayStr] as [dayStr, dayModel]}
-        <Day {dayModel} on:termOver={({ detail: term }) => (hoveredTerm = term)} />
+        <Day {propositionTermsByTermId} {dayModel} on:termOver={({ detail: term }) => (hoveredTerm = term)} />
       {/each}
     </div>
   {/if}
@@ -183,8 +153,8 @@
   .details-panel {
     margin-bottom: 2rem;
     display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: 1fr auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
     grid-gap: 2rem;
     grid-area: toolbar;
   }

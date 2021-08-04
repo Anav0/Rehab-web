@@ -1,5 +1,5 @@
 import type { Referral } from "../models/referral";
-import type { ReferralFilter } from "../models/referralFilter";
+import type { ReferralFilter } from "../models/referral-filterr";
 import type { Status } from "../models/status";
 import { BaseApi } from "./baseApi";
 
