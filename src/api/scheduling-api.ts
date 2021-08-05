@@ -1,10 +1,10 @@
-import type { SchedulingProposition } from "../models/proposition";
-import type { SchedulingRequest } from "../models/request";
+import type { PropositionPayload } from "../models/proposition";
 import { BaseApi } from "./baseApi";
+import type { SchedulingPayload } from "./payload-models";
 
 export class SchedulingApi extends BaseApi {
-  proposition(request: SchedulingRequest) {
-    return this.instance.post<SchedulingProposition>(
+  proposition(request: SchedulingPayload) {
+    return this.instance.post<PropositionPayload>(
       `/proposition`,
       request
     );

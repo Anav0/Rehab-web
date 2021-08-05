@@ -1,10 +1,10 @@
 import type { Referral } from "../models/referral";
-import type { ReferralFilter } from "../models/referral-filterr";
 import type { Status } from "../models/status";
 import { BaseApi } from "./baseApi";
+import type { ReferralsRangePayload } from "./payload-models";
 
 export class ReferralApi extends BaseApi {
-  referrals(data: ReferralFilter) {
+  referrals(data: ReferralsRangePayload) {
     return this.instance.post<Referral[]>(`/referral/range`, data);
   }
 }
