@@ -65,7 +65,6 @@
   }
   .day-place {
     background-color: var(--cds-ui-03);
-    padding: 0.5rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -73,9 +72,9 @@
   .day-terms {
     display: grid;
     grid-template-rows: 1fr;
-    grid-gap: 1px;
     width: 100%;
     height: 100%;
+    grid-gap: var(--details-gap);
   }
   .day-place-wrapper {
     display: grid;
@@ -107,8 +106,5 @@
   }
   .some::after {
     background-color: var(--cds-support-03);
-  }
-  .proposed::after {
-    background-color: var(--cds-inverse-link) !important;
   }
 </style>
