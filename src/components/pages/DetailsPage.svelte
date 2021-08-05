@@ -11,6 +11,8 @@
   import { getMonday } from "../../services/dates";
   import { displayOnMain } from "../../stores/mainPanel";
   import Reset16 from "carbon-icons-svelte/lib/Reset16";
+  import { errMsg, errTitle } from "../../stores/error";
+  import { dataset_dev } from "svelte/internal";
 
   let treatments: Treatment[] = [];
   let selectedDate: number;
@@ -91,6 +93,11 @@
       dayModelByDayStr = buildingMap;
     } catch (err) {
       console.error(err);
+      $errTitle = "Błąd przy pobieraniu terminów";
+      $errMsg = err.message;
+      if (err.response) {
+        $errMsg = err.response.data.error;
+      }
     } finally {
       calendarLoading = false;
     }
@@ -116,7 +123,11 @@
       selectedTreatmentId = treatments[0].Id;
       selectedDate = new Date(value.ProposedTrms[0][0].StartDate).getTime();
     } catch (err) {
-      //TODO: show error
+      $errTitle = "Błąd przy wyświetlaniu terminów";
+      $errMsg = err.message;
+      if (!err.response) {
+        $errMsg = err.response.data.error;
+      }
       console.error(err);
     } finally {
       isLoading = false;
@@ -132,10 +143,12 @@
       $proposition = result;
     } catch (err) {
       if (err.response) {
-        //TODO: display error msg
-        console.error(err.response);
-      } else {
-        console.error(err.response);
+        $errTitle = "Błąd przy wyznaczaniu terminów";
+        $errMsg = err.message;
+        if (!err.response) {
+          $errMsg = err.response.data.error;
+        }
+        console.error(err);
       }
     } finally {
       isLoading = false;

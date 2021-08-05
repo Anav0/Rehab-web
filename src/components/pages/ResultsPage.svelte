@@ -10,6 +10,7 @@
   import { schedulingRequest } from "../../stores/scheduling";
   import { api } from "../../api";
   import { dateFormat } from "../../stores/date";
+  import { errMsg, errTitle } from "../../stores/error";
 
   let headers: DataTableHeader[] = [
     {
@@ -46,18 +47,16 @@
     rows = [...rows];
   });
   let isLoading = false;
-  let errMsg = "";
   let askForProposition = async () => {
     isLoading = true;
     try {
       const { data: result } = await api.scheduling.proposition($schedulingRequest);
       $proposition = result;
     } catch (err) {
+      console.error(err);
+      $errTitle = "Błąd przy wyznaczaniu terminów";
       if (err.response) {
-        errMsg = err.response.data.error;
-        console.error(err.response);
-      } else {
-        errMsg = "Wystąpił błąd przy wyznaczaniu";
+        $errMsg = err.response.data.error;
       }
     } finally {
       isLoading = false;
@@ -68,20 +67,13 @@
   };
 </script>
 
+<!-- svelte-ignore missing-declaration -->
+<!-- svelte-ignore missing-declaration -->
 <div class="result page">
   {#if isLoading}
     <Loading description="Trwa wyznaczanie terminów..." />
   {/if}
-  {#if errMsg != ""}
-    <ToastNotification
-      lowContrast
-      style="position: absolute; top: 1rem; right: 4rem;"
-      on:close={() => (errMsg = "")}
-      timeout={5000}
-      title="Błąd przy wyznaczaniu"
-      subtitle={errMsg}
-    />
-  {/if}
+  {#if $errTitle != ""}<div/>{/if}
   <DataTable
     title="Proponowane terminy dla zlecenia"
     description="Terminy proponowane przez program mogą zostać ręcznie dostosowane i autmatycznie sprawdzone"

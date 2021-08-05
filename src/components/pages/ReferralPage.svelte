@@ -11,6 +11,7 @@
   import { proposition, schedulingRequest } from "../../stores/scheduling";
   import { statuses } from "../../stores/status";
   import { dateFormat } from "../../stores/date";
+  import { errMsg, errTitle } from "../../stores/error";
   let rows: Referral[] = [];
 
   let fetchingReferrals = true;
@@ -27,7 +28,11 @@
       rows = result;
     } catch (err) {
       console.error(err.reponse);
-      errMsg = err.response.error;
+      $errTitle = "Błąd przy pobieraniu zleceń";
+      $errMsg = "Możliwy brak połączenia z serwerem";
+      if (err.response) {
+        $errMsg = err.Response.data.error;
+      }
     } finally {
       fetchingReferrals = false;
     }
@@ -60,17 +65,18 @@
       $displayOnMain = "result";
     } catch (err) {
       if (err.response) {
-        errMsg = err.response.data.error;
-        console.error(err.response);
-      } else {
-        errMsg = "Wystąpił błąd przy wyznaczaniu";
+        console.error(err.reponse);
+        $errTitle = "Błąd przy wyznaczaniu termminów";
+        $errMsg = "";
+        if (err.response) {
+          $errMsg = err.Response.data.error;
+        }
       }
     } finally {
       isLoading = false;
     }
   };
   let isLoading = false;
-  let errMsg = "";
 
   referralFilter.subscribe((value) => {
     if (value == null) return;
@@ -83,14 +89,14 @@
   {#if isLoading}
     <Loading description="Trwa wyznaczanie terminów..." />
   {/if}
-  {#if errMsg != ""}
+  {#if $errMsg != ""}
     <ToastNotification
       lowContrast
       style="position: absolute; top: 1rem; right: 4rem;"
-      on:close={() => (errMsg = "")}
+      on:close={() => ($errMsg = "")}
       timeout={5000}
-      title="Błąd przy wyznaczaniu"
-      subtitle={errMsg}
+      title="$errTitle"
+      subtitle={$errMsg}
     />
   {/if}
   {#if !fetchingReferrals && $statuses.length > 0}
