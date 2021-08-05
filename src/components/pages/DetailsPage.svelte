@@ -1,18 +1,16 @@
 <script lang="ts">
   import Day from "../Day.svelte";
-  import { SelectItem, Select, DatePicker, DatePickerInput, DataTableSkeleton } from "carbon-components-svelte";
+  import { SelectItem, Select, Button, DatePicker, DatePickerInput, DataTableSkeleton } from "carbon-components-svelte";
   import type { Treatment } from "../../models/treatment";
-  import { proposition } from "../../stores/scheduling";
-  import { dateFormat } from "../../stores/date";
+  import { proposition, schedulingRequest } from "../../stores/scheduling";
   import { api } from "../../api";
   import type { Term } from "../../models/term";
   import { DayModel, PlaceModel } from "../../models/calendar";
   import type { SchedulingProposition } from "../../models/proposition";
   import "flatpickr/dist/l10n/pl.js";
   import { getMonday } from "../../services/dates";
-  import { onMount } from "svelte";
-  import type { Referral } from "../../models/referral";
-  import { get_all_dirty_from_scope } from "svelte/internal";
+  import { displayOnMain } from "../../stores/mainPanel";
+  import Reset16 from "carbon-icons-svelte/lib/Reset16";
 
   let treatments: Treatment[] = [];
   let selectedDate: number;
@@ -27,6 +25,7 @@
 
   const buildTreatments = (proposition: SchedulingProposition) => {
     let seenById: Set<string> = new Set();
+    treatments = [];
     for (let i = 0; i < proposition.Referrals.length; i++) {
       const referral = proposition.Referrals[i];
       if (seenById.has(referral.TreatmentId)) continue;
@@ -123,6 +122,25 @@
       isLoading = false;
     }
   });
+  const goBackToResults = () => {
+    $displayOnMain = "result";
+  };
+  let askForProposition = async () => {
+    isLoading = true;
+    try {
+      const { data: result } = await api.scheduling.proposition($schedulingRequest);
+      $proposition = result;
+    } catch (err) {
+      if (err.response) {
+        //TODO: display error msg
+        console.error(err.response);
+      } else {
+        console.error(err.response);
+      }
+    } finally {
+      isLoading = false;
+    }
+  };
 </script>
 
 <div class="details-page page">
@@ -148,6 +166,10 @@
         </DatePicker>
       </div>
       <span>{hoveredTerm ? printInfoAboutHovered() : ""}</span>
+    </div>
+    <div class="details-action">
+      <Button kind="ghost" on:click={askForProposition} iconDescription="Wyznacz ponownie" icon={Reset16} />
+      <Button kind="primary" on:click={goBackToResults}>Akceptuj</Button>
     </div>
     {#if calendarLoading}
       <DataTableSkeleton style="grid-row: 3/4; grid-column: 1/4; width:100%; height:100%;" />
@@ -175,7 +197,7 @@
     grid-template-rows: auto auto 1fr 1fr;
     grid-column: 1/4;
     grid-template-areas:
-      "toolbar toolbar ."
+      "toolbar toolbar action"
       ". hours hours"
       "days days days"
       "days days days";
@@ -196,5 +218,9 @@
     overflow: auto;
     grid-gap: var(--details-gap);
     padding: var(--details-gap);
+  }
+  .details-action {
+    grid-area: action;
+    place-self: end;
   }
 </style>

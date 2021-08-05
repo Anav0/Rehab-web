@@ -121,6 +121,6 @@
     background-color: var(--cds-support-03);
   }
   .proposed {
-    border-color: purple;
+    border-color: var(--cds-active-primary);
   }
 </style>
