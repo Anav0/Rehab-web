@@ -9,12 +9,13 @@
   import { displayOnMain } from "../../stores/mainPanel";
   import { schedulingRequest } from "../../stores/scheduling";
   import { api } from "../../api";
+  import { dateFormat } from "../../stores/date";
 
   let headers: DataTableHeader[] = [
     {
       key: "StartDate",
       value: "Data",
-      display: (date) => new Date(date).toLocaleDateString(),
+      display: (date) => new Date(date).toLocaleDateString("pl", $dateFormat),
       sort: (a, b) => (new Date(a) < new Date(b) ? -1 : 1),
     },
     {
@@ -27,7 +28,6 @@
     },
     { key: "TreatmentName", value: "Procedura" },
   ];
-
   let rows: Term[] = [];
 
   proposition.subscribe((value) => {
@@ -37,9 +37,9 @@
       const terms: Term[] = value.ProposedTrms[i];
       const term = terms[0];
       term["id"] = term.Id;
-      term["hours"] = `${new Date(terms[0].StartDate).toLocaleTimeString()} - ${new Date(
+      term["hours"] = `${new Date(terms[0].StartDate).toLocaleTimeString("pl")} - ${new Date(
         terms[terms.length - 1].EndDate
-      ).toLocaleTimeString()}`;
+      ).toLocaleTimeString("pl")}`;
 
       rows.push(term);
     }
@@ -63,7 +63,7 @@
       isLoading = false;
     }
   };
-  let tweak = () => {
+  let goToDetails = () => {
     $displayOnMain = "details";
   };
 </script>
@@ -101,7 +101,7 @@
         icon={TrashCan16}
       />
       <Button kind="ghost" on:click={askForProposition} iconDescription="Wyznacz ponownie" icon={Reset16} />
-      <Button kind="ghost" on:click={tweak} iconDescription="Dostosuj ręcznie" icon={Calibrate16} />
+      <Button kind="ghost" on:click={goToDetails} iconDescription="Dostosuj ręcznie" icon={Calibrate16} />
       <Button kind="primary">Akceptuj</Button>
     </div>
   </DataTable>

@@ -1,6 +1,7 @@
+import type { Referral } from "./referral";
 import type { Term } from "./term";
 
 export class SchedulingProposition {
-  ReferralIds: string[];
+  Referrals: Referral[];
   ProposedTrms: Term[][];
 }

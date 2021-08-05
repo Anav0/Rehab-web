@@ -10,6 +10,7 @@
 
   import { proposition, schedulingRequest } from "../../stores/scheduling";
   import { statuses } from "../../stores/status";
+  import { dateFormat } from "../../stores/date";
   let rows: Referral[] = [];
 
   let fetchingReferrals = true;
@@ -36,7 +37,7 @@
     {
       key: "Date",
       value: "Data wyk.",
-      display: (date) => new Date(date).toLocaleDateString(),
+      display: (date) => new Date(date).toLocaleDateString("pl", $dateFormat),
       sort: (a, b) => (new Date(a) < new Date(b) ? -1 : 1),
     },
     {

@@ -11,9 +11,6 @@
   const onMouseOver = (term: Term) => {
     dispatch("termOver", term);
   };
-  onMount(() => {
-    console.log(propositionTermsByTermId);
-  });
 </script>
 
 <div class="day">
@@ -99,6 +96,7 @@
     content: "";
     background-color: var(--cds-ui-01);
     transition: opacity 0.2s;
+    will-change: opacity;
   }
   .day-term {
     position: relative;

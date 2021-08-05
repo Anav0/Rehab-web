@@ -1,55 +1,67 @@
 <script lang="ts">
   import Day from "../Day.svelte";
-  import { SelectItem, Select, DatePicker, DatePickerInput } from "carbon-components-svelte";
+  import { SelectItem, Select, DatePicker, DatePickerInput, DataTableSkeleton } from "carbon-components-svelte";
   import type { Treatment } from "../../models/treatment";
-  import { proposition, schedulingRequest } from "../../stores/scheduling";
+  import { proposition } from "../../stores/scheduling";
   import { dateFormat } from "../../stores/date";
-  import { onMount } from "svelte";
   import { api } from "../../api";
-  import { getWorkdaysFromMondayOf } from "../../services/dates";
   import type { Term } from "../../models/term";
   import { DayModel, PlaceModel } from "../../models/calendar";
   import type { SchedulingProposition } from "../../models/proposition";
+  import "flatpickr/dist/l10n/pl.js";
+  import { getMonday } from "../../services/dates";
+  import { onMount } from "svelte";
+  import type { Referral } from "../../models/referral";
+  import { get_all_dirty_from_scope } from "svelte/internal";
 
   let treatments: Treatment[] = [];
-  let startingPoint: Date = new Date(2021, 1, 1, 6, 0, 0);
+  let selectedDate: number;
+  let selectedTreatmentId: string;
   let isLoading = true;
+  let calendarLoading = true;
   let dayModelByDayStr: Map<string, DayModel>;
   let hoveredTerm: Term = null;
-  let propositionTermsByTermId: Map<number, number> = new Map();
+  let propositionTermsByTermId: Map<number, number>;
 
-  onMount(() => {
-    $proposition = {
-      ProposedTrms: [],
-      ReferralIds: [],
-    };
-  });
+  $: buildHelperForTerms(selectedTreatmentId, new Date(selectedDate));
 
-  const buildTermsById = (proposition: SchedulingProposition) => {
+  const buildTreatments = (proposition: SchedulingProposition) => {
+    let seenById: Set<string> = new Set();
+    for (let i = 0; i < proposition.Referrals.length; i++) {
+      const referral = proposition.Referrals[i];
+      if (seenById.has(referral.TreatmentId)) continue;
+      treatments.push({ Id: referral.TreatmentId, Name: referral.TreatmentName });
+      seenById.add(referral.TreatmentId);
+    }
+  };
+  const buildProposedTermsById = (proposition: SchedulingProposition) => {
+    let buildProposedTermsById = new Map();
     for (let i = 0; i < proposition.ProposedTrms.length; i++) {
       const terms = proposition.ProposedTrms[i];
       for (let j = 0; j < terms.length; j++) {
         const term = terms[j];
-        propositionTermsByTermId.set(term.Id, terms.length);
+        buildProposedTermsById.set(term.Id, terms.length);
       }
     }
+    propositionTermsByTermId = buildProposedTermsById;
   };
-
-  proposition.subscribe(async (value) => {
-    if (value == null) {
-      return;
-    }
+  const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
+    console.log(startDate);
+    if (!treatmentId || !startDate) return;
     try {
-      buildTermsById(value);
+      calendarLoading = true;
       let buildingMap = new Map();
-      //startingPoint = new Date(value.ProposedTrms[0][0].StartDate);
-      startingPoint = new Date(2018, 8, 1, 0, 0, 0);
+      let to = getMonday(startDate);
+      let from = new Date(startDate);
+      to.setDate(to.getDate() + 14);
 
       let { data: terms } = await api.terms.range({
-        From: startingPoint,
-        To: new Date(2018, 8, 14, 23, 59, 59, 0),
-        TreatmentId: "2159",
+        From: from,
+        To: to,
+        TreatmentId: treatmentId,
       });
+      if (terms.length == 0) throw "Nie znaleziono terminów";
+
       for (let i = 0; i < terms.length; i++) {
         const term = terms[i];
         term.StartDate = new Date(term.StartDate);
@@ -78,15 +90,12 @@
         }
       }
       dayModelByDayStr = buildingMap;
-      console.log(dayModelByDayStr);
     } catch (err) {
-      //TODO: show error
       console.error(err);
     } finally {
-      isLoading = false;
+      calendarLoading = false;
     }
-  });
-
+  };
   const printInfoAboutHovered = () => {
     var dateStr = hoveredTerm.StartDate.toLocaleDateString("pl");
     var startTime = hoveredTerm.StartDate.toLocaleTimeString("pl", {
@@ -99,6 +108,21 @@
     });
     return `${dateStr}, ${startTime} - ${endTime}, ${hoveredTerm.PlaceName}, ${hoveredTerm.Id}, ${hoveredTerm.Used}/${hoveredTerm.Capacity}`;
   };
+
+  proposition.subscribe(async (value) => {
+    if (value == null) return;
+    try {
+      buildProposedTermsById(value);
+      buildTreatments(value);
+      selectedTreatmentId = treatments[0].Id;
+      selectedDate = new Date(value.ProposedTrms[0][0].StartDate).getTime();
+    } catch (err) {
+      //TODO: show error
+      console.error(err);
+    } finally {
+      isLoading = false;
+    }
+  });
 </script>
 
 <div class="details-page page">
@@ -107,27 +131,33 @@
   {:else}
     <div class="details-panel">
       <div style="display:grid; grid-template-columns: auto 1fr;">
-        <Select labelText="Zabieg" on:change={({ detail }) => {}}>
+        <Select labelText="Zabieg" bind:selected={selectedTreatmentId}>
           {#each treatments as item}
             <SelectItem value={item.Id} text={item.Name} />
           {/each}
         </Select>
-        <DatePicker style="margin-left: 2rem" value={startingPoint.toLocaleString("pl", $dateFormat)}>
+        <DatePicker
+          dateFormat="d.m.Y"
+          locale="pl"
+          datePickerType="single"
+          style="margin-left: 2rem"
+          value={selectedDate}
+          on:change={({ detail }) => (selectedDate = detail.selectedDates[0].getTime())}
+        >
           <DatePickerInput labelText="Data" placeholder="dd.mm.yyy" />
         </DatePicker>
       </div>
-      <span>{hoveredTerm ? printInfoAboutHovered() : "Nic"}</span>
+      <span>{hoveredTerm ? printInfoAboutHovered() : ""}</span>
     </div>
-    <!-- <div class="details-hours" style="grid-template-columns: repeat({hours.length},1fr);">
-      {#each hours as hour}
-        <div>{hour}</div>
-      {/each}
-    </div> -->
-    <div class="details-days">
-      {#each [...dayModelByDayStr] as [dayStr, dayModel]}
-        <Day {propositionTermsByTermId} {dayModel} on:termOver={({ detail: term }) => (hoveredTerm = term)} />
-      {/each}
-    </div>
+    {#if calendarLoading}
+      <DataTableSkeleton style="grid-row: 3/4; grid-column: 1/4; width:100%; height:100%;" />
+    {:else}
+      <div class="details-days">
+        {#each [...dayModelByDayStr] as [dayStr, dayModel]}
+          <Day {propositionTermsByTermId} {dayModel} on:termOver={({ detail: term }) => (hoveredTerm = term)} />
+        {/each}
+      </div>
+    {/if}
   {/if}
 </div>
 
@@ -151,7 +181,6 @@
       "days days days";
   }
   .details-panel {
-    margin-bottom: 2rem;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
@@ -166,14 +195,6 @@
     background-color: var(--details-bg);
     overflow: auto;
   }
-  .details-hours {
-    grid-area: hours;
-    display: grid;
-    width: 100%;
-    height: 100%;
-    grid-template-rows: 1fr;
-  }
-
   .details-days {
     grid-gap: var(--details-gap);
     padding: var(--details-gap) 0 var(--details-gap) var(--details-gap);

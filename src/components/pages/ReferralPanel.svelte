@@ -3,6 +3,7 @@
   import { statuses } from "../../stores/status";
   import { referralFilter } from "../../stores/referralFilters";
   import { dateFormat } from "../../stores/date";
+import 'flatpickr/dist/l10n/pl.js'
 
   let items = [];
   statuses.subscribe((values) => {

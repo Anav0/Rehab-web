@@ -6,4 +6,6 @@ export class Referral {
   PatientId: string;
   Date: Date;
   Status: number;
+  TreatmentName: string;
+  TreatmentId: string;
 }

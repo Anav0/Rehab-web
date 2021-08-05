@@ -4,19 +4,20 @@
   import { dateFormat } from "../../stores/date";
   import { displayOnMain, prevPage } from "../../stores/mainPanel";
   import { schedulingRequest } from "../../stores/scheduling";
+  import "flatpickr/dist/l10n/pl.js";
 
   let shadowSettings = { ...$schedulingRequest };
 
-  const redirect = () => {
+  const goToPrevPage = () => {
     $displayOnMain = $prevPage;
   };
   const close = () => {
-    shadowSettings = { ...$schedulingRequest };
-    redirect();
+    //shadowSettings = { ...$schedulingRequest };
+    goToPrevPage();
   };
   const accept = () => {
     $schedulingRequest = { ...shadowSettings };
-    redirect();
+    goToPrevPage();
   };
 </script>
 
@@ -40,7 +41,6 @@
       dateFormat="d.m.Y"
       locale="pl"
       on:change={({ detail }) => {
-        console.log(detail);
         shadowSettings.Start = new Date(detail.selectedDates[0]);
         shadowSettings.End = new Date(detail.selectedDates[1]);
       }}
