@@ -26,7 +26,9 @@
   <div class="day-places">
     {#each [...dayModel.placeModelsByPlaceName] as [placeName, placeModel], i}
       <div class="day-place-wrapper">
-        <p class="day-place">{placeName}</p>
+        <div class="day-place">
+          <p>{placeName}</p>
+        </div>
         <div class="day-terms" style="grid-template-columns: repeat({placeModel.terms.length},1fr);">
           {#each placeModel.terms as term, k}
             <!-- svelte-ignore a11y-mouse-events-have-key-events -->
@@ -47,7 +49,7 @@
 <style>
   .day {
     display: grid;
-    grid-template-columns: 14ch auto;
+    grid-template-columns: minmax(3ch, 14ch) auto;
   }
   .day-date {
     background-color: var(--cds-ui-05);
@@ -63,11 +65,16 @@
     grid-template-columns: auto;
     grid-gap: var(--details-gap);
   }
-  .day-place {
-    background-color: var(--cds-ui-03);
+  .day-place p {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .day-place {
+    background-color: var(--cds-ui-03);
+    padding: 0.2rem;
+    display: flex;
+    place-items: center;
   }
   .day-terms {
     display: grid;
@@ -81,30 +88,39 @@
     grid-template-columns: 7rem 1fr;
   }
 
-  .day-term:hover::after {
+  .day-term:hover::before {
     opacity: 0.5;
     cursor: pointer;
   }
 
-  .day-term::after {
+  .day-term::before {
     width: 100%;
     height: 100%;
     position: absolute;
-    left: 0;
-    top: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     content: "";
-    background-color: var(--cds-ui-01);
     transition: opacity 0.2s;
     will-change: opacity;
+    background-color: var(--cds-ui-04);
+    opacity: 0;
   }
   .day-term {
     position: relative;
     transition: opacity 0.2s;
+    width: 100%;
+    height: 100%;
+    background-color: var(--cds-ui-01);
+    border: var(--details-gap) solid transparent;
   }
-  .full::after {
+  .full {
     background-color: var(--cds-support-01) !important;
   }
-  .some::after {
+  .some {
     background-color: var(--cds-support-03);
+  }
+  .proposed {
+    border-color: purple;
   }
 </style>

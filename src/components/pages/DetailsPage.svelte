@@ -166,7 +166,7 @@
     box-sizing: border-box;
   }
   .details-page {
-    --details-gap: 1.5px;
+    --details-gap: 2px;
     --details-bg: var(--cds-ui-03);
     width: 100%;
     height: 100%;
