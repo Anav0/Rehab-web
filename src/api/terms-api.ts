@@ -6,6 +6,6 @@ export class TermsApi extends BaseApi {
   range(data: TermRangePayload) {
     return this.instance.post<Term[]>(`/terms/range`, data);
   } used(data: TermsUsedPayload) {
-    return this.instance.post<Term[]>(`/terms/patients`, data);
+    return this.instance.post<Set<number>>(`/terms/patients`, data);
   }
 }

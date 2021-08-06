@@ -6,10 +6,10 @@
   import TrashCan16 from "carbon-icons-svelte/lib/TrashCan16";
   import Reset16 from "carbon-icons-svelte/lib/Reset16";
   import Calibrate16 from "carbon-icons-svelte/lib/Calibrate16";
-  import { displayOnMain } from "../../stores/mainPanel";
+  import { displayOnMain } from "../../stores/display";
   import { schedulingRequest } from "../../stores/scheduling";
   import { api } from "../../api";
-  import { dateFormat } from "../../stores/date";
+  import { dateFormat } from "../../stores/misc";
   import { errMsg, errTitle } from "../../stores/error";
 
   let headers: DataTableHeader[] = [
@@ -67,13 +67,10 @@
   };
 </script>
 
-<!-- svelte-ignore missing-declaration -->
-<!-- svelte-ignore missing-declaration -->
 <div class="result page">
   {#if isLoading}
     <Loading description="Trwa wyznaczanie terminów..." />
   {/if}
-  {#if $errTitle != ""}<div/>{/if}
   <DataTable
     title="Proponowane terminy dla zlecenia"
     description="Terminy proponowane przez program mogą zostać ręcznie dostosowane i autmatycznie sprawdzone"

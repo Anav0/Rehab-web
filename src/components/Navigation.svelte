@@ -7,7 +7,7 @@
   } from "carbon-components-svelte";
   import { getContext } from "svelte";
   import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
-  import { displayOnMain, prevPage } from "../stores/mainPanel";
+  import { displayOnMain, prevPage } from "../stores/display";
   const ctx: { dark: any; light: any; updateVar: any } = getContext("Theme");
 
   let currentPage = $displayOnMain;

@@ -4,13 +4,13 @@
   import { onMount } from "svelte";
   import { api } from "../../api";
   import type { Referral } from "../../models/referral";
-  import { displayOnMain } from "../../stores/mainPanel";
-  import { referralFilter } from "../../stores/referralFilters";
+  import { displayOnMain } from "../../stores/display";
+  import { referralBeingScheduled, referralsRangePayload } from "../../stores/referral";
   import ReferralPanel from "../pages/ReferralPanel.svelte";
 
   import { proposition, schedulingRequest } from "../../stores/scheduling";
   import { statuses } from "../../stores/status";
-  import { dateFormat } from "../../stores/date";
+  import { dateFormat } from "../../stores/misc";
   import { errMsg, errTitle } from "../../stores/error";
   let rows: Referral[] = [];
 
@@ -19,7 +19,7 @@
   const fetchReferrals = async () => {
     fetchingReferrals = true;
     try {
-      const { data: result } = await api.referral.referrals($referralFilter);
+      const { data: result } = await api.referral.referrals($referralsRangePayload);
 
       for (let i = 0; i < result.length; i++) {
         const element = result[i];
@@ -31,7 +31,7 @@
       $errTitle = "Błąd przy pobieraniu zleceń";
       $errMsg = "Możliwy brak połączenia z serwerem";
       if (err.response) {
-        $errMsg = err.Response.data.error;
+        $errMsg = err.response.data.error;
       }
     } finally {
       fetchingReferrals = false;
@@ -41,7 +41,7 @@
   let headers: DataTableHeader[] = [
     {
       key: "Date",
-      value: "Data wyk.",
+      value: "Data zlec.",
       display: (date) => new Date(date).toLocaleDateString("pl", $dateFormat),
       sort: (a, b) => (new Date(a) < new Date(b) ? -1 : 1),
     },
@@ -58,18 +58,19 @@
   let askForProposition = async (detail: any) => {
     isLoading = true;
     let referral = detail as Referral;
+    $referralBeingScheduled = referral;
     $schedulingRequest.ReferralId = referral.Id.toString();
     try {
       const { data: result } = await api.scheduling.proposition($schedulingRequest);
       $proposition = result;
       $displayOnMain = "result";
     } catch (err) {
+      console.error(err);
+      $errTitle = "Błąd przy wyznaczaniu terminów";
+      $errMsg = "";
       if (err.response) {
-        console.error(err.reponse);
-        $errTitle = "Błąd przy wyznaczaniu termminów";
-        $errMsg = "";
         if (err.response) {
-          $errMsg = err.Response.data.error;
+          $errMsg = err.response.data.error;
         }
       }
     } finally {
@@ -78,7 +79,7 @@
   };
   let isLoading = false;
 
-  referralFilter.subscribe((value) => {
+  referralsRangePayload.subscribe((value) => {
     if (value == null) return;
     fetchReferrals();
   });
@@ -88,16 +89,6 @@
   <ReferralPanel />
   {#if isLoading}
     <Loading description="Trwa wyznaczanie terminów..." />
-  {/if}
-  {#if $errMsg != ""}
-    <ToastNotification
-      lowContrast
-      style="position: absolute; top: 1rem; right: 4rem;"
-      on:close={() => ($errMsg = "")}
-      timeout={5000}
-      title="$errTitle"
-      subtitle={$errMsg}
-    />
   {/if}
   {#if !fetchingReferrals && $statuses.length > 0}
     <DataTable

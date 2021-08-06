@@ -10,7 +10,7 @@
   import { onMount } from "svelte";
   import { api } from "./api";
   import { statuses } from "./stores/status";
-  import { displayOnMain } from "./stores/mainPanel";
+  import { displayOnMain } from "./stores/display";
   import { errMsg, errTitle } from "./stores/error";
 
   let theme: "g10" = "g10";
@@ -24,7 +24,7 @@
       $errTitle = "Błąd przy pobieraniu statusów";
       $errMsg = "Możliwy brak połączenia z serwerem";
       if (err.response) {
-        $errMsg = err.Response.data.error;
+        $errMsg = err.response.data.error;
       }
     }
   });
@@ -32,17 +32,19 @@
 
 <Theme persist bind:theme>
   <Navigation />
-  <ToastNotification
-    lowContrast
-    style="position: absolute; top: 1rem; right: 4rem;"
-    on:close={() => {
-      $errTitle = "";
-      $errMsg = "";
-    }}
-    timeout={5000}
-    title="Błąd przy wyznaczaniu"
-    subtitle={$errMsg}
-  />
+  {#if $errTitle != ""}
+    <ToastNotification
+      lowContrast
+      style="position: absolute; top: 5rem; right: 3rem;z-index: 10;"
+      on:close={() => {
+        $errTitle = "";
+        $errMsg = "";
+      }}
+      timeout={5000}
+      title={$errTitle}
+      subtitle={$errMsg}
+    />
+  {/if}
   <Content>
     {#if $displayOnMain == "referral"}
       <ReferralPage />

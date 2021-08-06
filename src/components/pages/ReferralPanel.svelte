@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { ComboBox, Tile, DatePicker, DatePickerInput, SelectSkeleton } from "carbon-components-svelte";
+  import { ComboBox, DatePicker, DatePickerInput, SelectSkeleton } from "carbon-components-svelte";
   import { statuses } from "../../stores/status";
-  import { referralFilter } from "../../stores/referralFilters";
-  import { dateFormat } from "../../stores/date";
-import 'flatpickr/dist/l10n/pl.js'
+  import { dateFormat } from "../../stores/misc";
+  import "flatpickr/dist/l10n/pl.js";
+  import { referralsRangePayload } from "../../stores/referral";
+  import { get_all_dirty_from_scope } from "svelte/internal";
 
   let items = [];
+
   statuses.subscribe((values) => {
     for (let i = 0; i < values.length; i++) {
       const status = values[i];
@@ -25,22 +27,33 @@ import 'flatpickr/dist/l10n/pl.js'
       placeholder="Wszyskie"
       {items}
       on:clear={() => {
-        $referralFilter.status = null;
+        $referralsRangePayload.status = null;
       }}
       on:select={({ detail }) => {
         let index = detail.selectedIndex;
-        $referralFilter.status = $statuses[index].Code;
+        $referralsRangePayload.status = $statuses[index].Code;
       }}
     />
     <DatePicker
       datePickerType="range"
-      valueTo={$referralFilter.to.toLocaleDateString("pl", $dateFormat)}
-      valueFrom={$referralFilter.from.toLocaleDateString("pl", $dateFormat)}
+      valueTo={$referralsRangePayload.to.toLocaleDateString("pl", $dateFormat)}
+      valueFrom={$referralsRangePayload.from.toLocaleDateString("pl", $dateFormat)}
       dateFormat="d.m.Y"
       locale="pl"
       on:change={({ detail }) => {
-        $referralFilter.from = new Date(detail.selectedDates[0]);
-        $referralFilter.to = new Date(detail.selectedDates[1]);
+        //INFO: use copy not to trigger two request on referralsRange change
+        const newFrom = new Date(detail.selectedDates[0]);
+        const newTo = new Date(detail.selectedDates[1]);
+
+        if (
+          newFrom.getTime() != $referralsRangePayload.from.getTime() ||
+          newTo.getTime() != $referralsRangePayload.to.getTime()
+        ) {
+          let copy = { ...$referralsRangePayload };
+          copy.from = newFrom;
+          copy.to = newTo;
+          $referralsRangePayload = copy;
+        }
       }}
     >
       <DatePickerInput labelText="od" />

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { ButtonSet, Button } from "carbon-components-svelte";
   import { SelectItem, Select, DatePicker, DatePickerInput } from "carbon-components-svelte";
-  import { dateFormat } from "../../stores/date";
-  import { displayOnMain, prevPage } from "../../stores/mainPanel";
+  import { dateFormat } from "../../stores/misc";
+  import { displayOnMain, prevPage } from "../../stores/display";
   import { schedulingRequest } from "../../stores/scheduling";
   import "flatpickr/dist/l10n/pl.js";
 
