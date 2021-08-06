@@ -4,7 +4,6 @@
   import { dateFormat } from "../../stores/misc";
   import "flatpickr/dist/l10n/pl.js";
   import { referralsRangePayload } from "../../stores/referral";
-  import { get_all_dirty_from_scope } from "svelte/internal";
 
   let items = [];
 
@@ -44,7 +43,6 @@
         //INFO: use copy not to trigger two request on referralsRange change
         const newFrom = new Date(detail.selectedDates[0]);
         const newTo = new Date(detail.selectedDates[1]);
-
         if (
           newFrom.getTime() != $referralsRangePayload.from.getTime() ||
           newTo.getTime() != $referralsRangePayload.to.getTime()

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { config } from "dotenv";
 import { ReferralApi } from "./referral-api";
 import { SchedulingApi } from "./scheduling-api";
 import { TermsApi } from "./terms-api";

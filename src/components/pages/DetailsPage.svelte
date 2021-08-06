@@ -11,7 +11,7 @@
   import { displayOnMain } from "../../stores/display";
   import Reset16 from "carbon-icons-svelte/lib/Reset16";
   import { errMsg, errTitle } from "../../stores/error";
-  import type { PropositionPayload, SchedulingPayload, TermsUsedPayload } from "../../api/payload-models";
+  import type { Proposition, SchedulingPayload, TermsUsedPayload } from "../../api/payload-models";
   import { referralBeingScheduled } from "../../stores/referral";
 
   let treatments: Treatment[] = [];
@@ -46,7 +46,7 @@
     }
   };
 
-  const buildTreatments = (proposition: PropositionPayload) => {
+  const buildTreatments = (proposition: Proposition) => {
     let seenById: Set<string> = new Set();
     treatments = [];
     for (let i = 0; i < proposition.Referrals.length; i++) {
@@ -57,7 +57,7 @@
     }
   };
 
-  const buildProposedTermsById = (proposition: PropositionPayload) => {
+  const buildProposedTermsById = (proposition: Proposition) => {
     let buildProposedTermsById = new Map();
     for (let i = 0; i < proposition.ProposedTrms.length; i++) {
       const terms = proposition.ProposedTrms[i];
@@ -70,7 +70,6 @@
   };
 
   const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
-    console.log(startDate);
     if (!treatmentId || !startDate) return;
     let buildingMap = new Map();
     let to = getMonday(startDate);
@@ -125,7 +124,6 @@
     const { data: termIds } = await api.terms.used(payload);
 
     termsUsedByPatient = termIds;
-    console.log(termsUsedByPatient);
   };
 
   const printInfoAboutHovered = () => {

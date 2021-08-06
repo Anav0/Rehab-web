@@ -23,7 +23,7 @@ export class ReferralsRangePayload {
     from: Date;
     to: Date;
 }
-export class PropositionPayload {
+export class Proposition {
     Referrals: Referral[];
     ProposedTrms: Term[][];
 }
