@@ -8,4 +8,12 @@
     "__sapper__/*",
     "public/*"
   ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@*": [
+        "src/*"
+      ],
+    }
+  }
 }

@@ -1,19 +1,15 @@
 <script lang="ts">
   import { ButtonSet, Button } from "carbon-components-svelte";
   import { SelectItem, Select, DatePicker, DatePickerInput } from "carbon-components-svelte";
-  import { dateFormat } from "../../stores/misc";
-  import { displayOnMain, prevPage } from "../../stores/display";
-  import { schedulingRequest } from "../../stores/scheduling";
+  import { dateFormat } from "@/stores/misc";
+  import { displayOnMain, prevPage } from "@/stores/display";
+  import { schedulingRequest } from "@/stores/scheduling";
   import "flatpickr/dist/l10n/pl.js";
 
   let shadowSettings = { ...$schedulingRequest };
 
   const goToPrevPage = () => {
     $displayOnMain = $prevPage;
-  };
-  const close = () => {
-    //shadowSettings = { ...$schedulingRequest };
-    goToPrevPage();
   };
   const accept = () => {
     $schedulingRequest = { ...shadowSettings };
@@ -50,7 +46,7 @@
     </DatePicker>
   </div>
   <ButtonSet style="margin-top: 3rem">
-    <Button kind="danger" on:click={close}>Anuluj</Button>
+    <Button kind="danger" on:click={goToPrevPage}>Anuluj</Button>
     <Button on:click={accept}>Zatwierdź</Button>
   </ButtonSet>
 </div>

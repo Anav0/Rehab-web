@@ -1,13 +1,8 @@
 <script lang="ts">
-  import {
-    HeaderUtilities,
-    HeaderGlobalAction,
-    SkipToContent,
-    Header,
-  } from "carbon-components-svelte";
+  import { HeaderUtilities, HeaderGlobalAction, SkipToContent, Header } from "carbon-components-svelte";
   import { getContext } from "svelte";
   import SettingsAdjust20 from "carbon-icons-svelte/lib/SettingsAdjust20";
-  import { displayOnMain, prevPage } from "../stores/display";
+  import { displayOnMain, prevPage } from "@/stores/display";
   const ctx: { dark: any; light: any; updateVar: any } = getContext("Theme");
 
   let currentPage = $displayOnMain;

@@ -1,9 +1,8 @@
 import axios from "axios";
-import { config } from "dotenv";
-import { ReferralApi } from "./referral-api";
-import { SchedulingApi } from "./scheduling-api";
-import { TermsApi } from "./terms-api";
-import { TreatmentsApi } from "./treatment-api";
+import { ReferralApi } from "@/api/referral-api";
+import { SchedulingApi } from "@/api/scheduling-api";
+import { TermsApi } from "@/api/terms-api";
+import { TreatmentsApi } from "@/api/treatment-api";
 
 const instance = axios.create({
   baseURL: API_URL,

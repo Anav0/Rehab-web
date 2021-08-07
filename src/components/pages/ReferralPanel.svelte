@@ -1,9 +1,9 @@
 <script lang="ts">
   import { ComboBox, DatePicker, DatePickerInput, SelectSkeleton } from "carbon-components-svelte";
-  import { statuses } from "../../stores/status";
-  import { dateFormat } from "../../stores/misc";
+  import { statuses } from "@/stores/status";
+  import { dateFormat } from "@/stores/misc";
+  import { referralsRangePayload } from "@/stores/referral";
   import "flatpickr/dist/l10n/pl.js";
-  import { referralsRangePayload } from "../../stores/referral";
 
   let items = [];
 

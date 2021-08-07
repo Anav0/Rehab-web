@@ -1,8 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
 
-  import type { DayModel } from "../models/calendar";
-  import type { Term } from "../models/term";
+  import type { DayModel } from "@/models/calendar";
+  import type { Term } from "@/models/term";
+
   const dispatch = createEventDispatcher();
 
   export let dayModel: DayModel;

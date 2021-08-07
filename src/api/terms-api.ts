@@ -1,6 +1,6 @@
-import type { Term } from "../models/term";
-import { BaseApi } from "./baseApi";
-import type { TermRangePayload, TermsUsedPayload } from "./payload-models";
+import type { Term } from "@/models/term";
+import { BaseApi } from "@/api/baseApi";
+import type { TermRangePayload, TermsUsedPayload } from "@/api/payload-models";
 
 export class TermsApi extends BaseApi {
   range(data: TermRangePayload) {

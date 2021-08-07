@@ -1,5 +1,5 @@
-import type { Referral } from "../models/referral";
-import type { Term } from "../models/term";
+import type { Referral } from "@/models/referral";
+import type { Term } from "@/models/term";
 
 export class TermRangePayload {
     From: Date;

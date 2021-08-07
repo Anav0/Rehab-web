@@ -1,19 +1,19 @@
 <script lang="ts">
-  import Day from "../Day.svelte";
-  import { SelectItem, Select, Button, DatePicker, DatePickerInput, DataTableSkeleton } from "carbon-components-svelte";
-  import type { Treatment } from "../../models/treatment";
-  import { proposition, schedulingRequest } from "../../stores/scheduling";
-  import { api } from "../../api";
-  import type { Term } from "../../models/term";
-  import { DayModel, PlaceModel } from "../../models/calendar";
   import "flatpickr/dist/l10n/pl.js";
-  import { getMonday } from "../../services/dates";
-  import { displayOnMain } from "../../stores/display";
-  import Reset16 from "carbon-icons-svelte/lib/Reset16";
-  import { errMsg, errTitle } from "../../stores/error";
-  import type { Proposition, SchedulingPayload, TermsUsedPayload } from "../../api/payload-models";
-  import { referralBeingScheduled } from "../../stores/referral";
+  import ResultsOverview from "@/components/pages/results-page/ResultsOverview.svelte";
+  import ResultsPanel from "@/components/pages/results-page/ResultsPanel.svelte";
+  import type { Term } from "@/models/term";
+  import type { Treatment } from "@/models/treatment";
+  import { DayModel, PlaceModel } from "@/models/calendar";
+  import { proposition } from "@/stores/scheduling";
+  import { referralBeingScheduled } from "@/stores/referral";
+  import type { Proposition, TermsUsedPayload } from "@/api/payload-models";
+  import { Loading } from "carbon-components-svelte";
+  import { errMsg, errTitle } from "@/stores/error";
+  import { getMonday } from "@/services/dates";
+  import { api } from "@/api";
 
+  let rows: Term[] = [];
   let treatments: Treatment[] = [];
   let selectedDate: number;
   let selectedTreatmentId: string;
@@ -23,6 +23,22 @@
   let hoveredTerm: Term = null;
   let propositionTermsByTermId: Map<number, number>;
   let termsUsedByPatient: Set<number>;
+
+  proposition.subscribe((value) => {
+    if (!value) return;
+    rows = [];
+    for (let i = 0; i < value.ProposedTrms.length; i++) {
+      const terms: Term[] = value.ProposedTrms[i];
+      const term = terms[0];
+      term["id"] = term.Id;
+      term["hours"] = `${new Date(terms[0].StartDate).toLocaleTimeString("pl")} - ${new Date(
+        terms[terms.length - 1].EndDate
+      ).toLocaleTimeString("pl")}`;
+
+      rows.push(term);
+    }
+    rows = [...rows];
+  });
 
   $: {
     updateTermsInfo($referralBeingScheduled.PatientId, selectedTreatmentId, new Date(selectedDate));
@@ -125,19 +141,6 @@
     termsUsedByPatient = new Set(termIds);
   };
 
-  const printInfoAboutHovered = () => {
-    var dateStr = hoveredTerm.StartDate.toLocaleDateString("pl");
-    var startTime = hoveredTerm.StartDate.toLocaleTimeString("pl", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    var endTime = hoveredTerm.EndDate.toLocaleTimeString("pl", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    return `${dateStr}, ${startTime} - ${endTime}, ${hoveredTerm.PlaceName}, ${hoveredTerm.Id}, ${hoveredTerm.Used}/${hoveredTerm.Capacity}`;
-  };
-
   proposition.subscribe(async (value) => {
     if (value == null) return;
     try {
@@ -156,114 +159,15 @@
       isLoading = false;
     }
   });
-
-  const goBackToResults = () => {
-    $displayOnMain = "result";
-  };
-
-  let askForProposition = async () => {
-    isLoading = true;
-    try {
-      const { data: result } = await api.scheduling.proposition($schedulingRequest);
-      $proposition = result;
-    } catch (err) {
-      if (err.response) {
-        $errTitle = "Błąd przy wyznaczaniu terminów";
-        $errMsg = err.message;
-        if (!err.response) {
-          $errMsg = err.response.data.error;
-        }
-        console.error(err);
-      }
-    } finally {
-      isLoading = false;
-    }
-  };
 </script>
 
-<div class="details-page page">
+<div class="result page">
   {#if isLoading}
-    <span>Loading</span>
-  {:else}
-    <div class="details-panel">
-      <div style="display:grid; grid-template-columns: auto 1fr;">
-        <Select labelText="Zabieg" bind:selected={selectedTreatmentId}>
-          {#each treatments as item}
-            <SelectItem value={item.Id} text={item.Name} />
-          {/each}
-        </Select>
-        <DatePicker
-          dateFormat="d.m.Y"
-          locale="pl"
-          datePickerType="single"
-          style="margin-left: 2rem"
-          value={selectedDate}
-          on:change={({ detail }) => (selectedDate = detail.selectedDates[0].getTime())}
-        >
-          <DatePickerInput labelText="Data" placeholder="dd.mm.yyy" />
-        </DatePicker>
-      </div>
-      <span>{hoveredTerm ? printInfoAboutHovered() : ""}</span>
-    </div>
-    <div class="details-action">
-      <Button kind="ghost" on:click={askForProposition} iconDescription="Wyznacz ponownie" icon={Reset16} />
-      <Button kind="primary" on:click={goBackToResults}>Akceptuj</Button>
-    </div>
-    {#if calendarLoading}
-      <DataTableSkeleton style="grid-row: 3/4; grid-column: 1/4; width:100%; height:100%;" />
-    {:else}
-      <div class="details-days">
-        {#each [...dayModelByDayStr] as [dayStr, dayModel]}
-          <Day
-            {termsUsedByPatient}
-            {propositionTermsByTermId}
-            {dayModel}
-            on:termOver={({ detail: term }) => (hoveredTerm = term)}
-          />
-        {/each}
-      </div>
-    {/if}
+    <Loading description="Trwa wyznaczanie terminów..." />
   {/if}
+  <ResultsOverview {rows} />
+  <ResultsPanel {treatments} {isLoading} {selectedTreatmentId} {selectedDate} {hoveredTerm} />
 </div>
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
-  .details-page {
-    --details-gap: 2px;
-    --details-bg: var(--cds-ui-03);
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: auto 1fr 1fr;
-    grid-template-rows: auto auto 1fr 1fr;
-    grid-column: 1/4;
-    grid-template-areas:
-      "toolbar toolbar action"
-      ". hours hours"
-      "days days days"
-      "days days days";
-  }
-  .details-panel {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-gap: 2rem;
-    grid-area: toolbar;
-  }
-  .details-days {
-    display: grid;
-    grid-auto-rows: 1fr;
-    grid-template-columns: 1fr;
-    grid-area: days;
-    background-color: var(--details-bg);
-    overflow: auto;
-    grid-gap: var(--details-gap);
-    padding: var(--details-gap);
-  }
-  .details-action {
-    grid-area: action;
-    place-self: end;
-  }
 </style>

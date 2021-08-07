@@ -1,4 +1,4 @@
-import type { Term } from "./term"
+import type { Term } from "@/models/term"
 
 export class DayModel {
     date: Date;

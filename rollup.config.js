@@ -7,6 +7,7 @@ import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
 import replace from "@rollup/plugin-replace";
+import alias from "@rollup/plugin-alias";
 
 require("dotenv").config();
 
@@ -22,14 +23,10 @@ function serve() {
   return {
     writeBundle() {
       if (server) return;
-      server = require("child_process").spawn(
-        "npm",
-        ["run", "start", "--", "--dev"],
-        {
-          stdio: ["ignore", "inherit", "inherit"],
-          shell: true,
-        }
-      );
+      server = require("child_process").spawn("npm", ["run", "start", "--", "--dev"], {
+        stdio: ["ignore", "inherit", "inherit"],
+        shell: true,
+      });
 
       process.on("SIGTERM", toExit);
       process.on("exit", toExit);
@@ -75,7 +72,15 @@ export default {
       sourceMap: !production,
       inlineSources: !production,
     }),
-
+    alias({
+      resolve: [".js", ".ts", ".svelte"],
+      entries: [
+        {
+          find: "@",
+          replacement: "./src",
+        },
+      ],
+    }),
     // In dev mode, call `npm run start` once
     // the bundle has been generated
     !production && serve(),

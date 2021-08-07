@@ -1,17 +1,16 @@
 <script lang="ts">
-  import { DataTable, Button, Loading, DataTableSkeleton, ToastNotification } from "carbon-components-svelte";
+  import { DataTable, Button, Loading, DataTableSkeleton } from "carbon-components-svelte";
   import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
-  import { onMount } from "svelte";
-  import { api } from "../../api";
-  import type { Referral } from "../../models/referral";
-  import { displayOnMain } from "../../stores/display";
-  import { referralBeingScheduled, referralsRangePayload } from "../../stores/referral";
-  import ReferralPanel from "../pages/ReferralPanel.svelte";
+  import { api } from "@/api";
+  import type { Referral } from "@/models/referral";
+  import { displayOnMain } from "@/stores/display";
+  import { referralBeingScheduled, referralsRangePayload } from "@/stores/referral";
+  import ReferralPanel from "@/components/pages/ReferralPanel.svelte";
 
-  import { proposition, schedulingRequest } from "../../stores/scheduling";
-  import { statuses } from "../../stores/status";
-  import { dateFormat } from "../../stores/misc";
-  import { errMsg, errTitle } from "../../stores/error";
+  import { proposition, schedulingRequest } from "@/stores/scheduling";
+  import { statuses } from "@/stores/status";
+  import { dateFormat } from "@/stores/misc";
+  import { errMsg, errTitle } from "@/stores/error";
   let rows: Referral[] = [];
 
   let fetchingReferrals = true;

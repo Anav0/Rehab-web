@@ -1,5 +1,5 @@
-import type { Status } from "../models/status";
-import { BaseApi } from "./baseApi";
+import type { Status } from "@/models/status";
+import { BaseApi } from "@/api/baseApi";
 
 export class TreatmentsApi extends BaseApi {
   status(type: number) {

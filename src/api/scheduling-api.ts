@@ -1,5 +1,5 @@
-import { BaseApi } from "./baseApi";
-import type { Proposition, SchedulingPayload } from "./payload-models";
+import { BaseApi } from "@/api/baseApi";
+import type { Proposition, SchedulingPayload } from "@/api/payload-models";
 
 export class SchedulingApi extends BaseApi {
   proposition(request: SchedulingPayload) {
