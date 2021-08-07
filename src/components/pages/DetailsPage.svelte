@@ -122,8 +122,7 @@
       PatientId: patientId,
     };
     const { data: termIds } = await api.terms.used(payload);
-
-    termsUsedByPatient = termIds;
+    termsUsedByPatient = new Set(termIds);
   };
 
   const printInfoAboutHovered = () => {
@@ -215,7 +214,12 @@
     {:else}
       <div class="details-days">
         {#each [...dayModelByDayStr] as [dayStr, dayModel]}
-          <Day {propositionTermsByTermId} {dayModel} on:termOver={({ detail: term }) => (hoveredTerm = term)} />
+          <Day
+            {termsUsedByPatient}
+            {propositionTermsByTermId}
+            {dayModel}
+            on:termOver={({ detail: term }) => (hoveredTerm = term)}
+          />
         {/each}
       </div>
     {/if}

@@ -7,6 +7,7 @@
 
   export let dayModel: DayModel;
   export let propositionTermsByTermId: Map<number, number>;
+  export let termsUsedByPatient: Set<number>;
 
   const onMouseOver = (term: Term) => {
     dispatch("termOver", term);
@@ -34,6 +35,7 @@
             <!-- svelte-ignore a11y-mouse-events-have-key-events -->
             <div
               class:proposed={propositionTermsByTermId.has(term.Id)}
+              class:used={termsUsedByPatient.has(term.Id)}
               class:some={term.Capacity / 2 <= term.Used}
               class:full={term.Capacity < term.Used}
               class="day-term"
@@ -122,5 +124,10 @@
   }
   .proposed {
     border-color: var(--cds-active-primary);
+    border-style: dashed;
+  }
+  .used {
+    border-color: var(--cds-support-01) !important;
+    border-style: dashed;
   }
 </style>
