@@ -1,0 +1,81 @@
+<script lang="ts">
+  import type { DayModel, PlaceModel } from "@models/calendar";
+  import { Tile } from "carbon-components-svelte";
+  import { dateFormat } from "@stores/misc";
+
+  export let dayModel: DayModel;
+  let timeFormat: any = {
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+</script>
+
+<div class="day-column">
+  <span class="day-column-date">{dayModel.date.toLocaleString("pl", $dateFormat)}</span>
+  <div class="day-column-terms">
+    {#each [...dayModel.placeModelsByPlaceName] as [placeName, placeModel]}
+      {#each placeModel.terms as term, i}
+        <div class="day-column-entry">
+          <p class="day-column-entry-date">
+            {term.StartDate.toLocaleTimeString("pl", timeFormat)} - {term.EndDate.toLocaleTimeString("pl", timeFormat)}
+          </p>
+          <p class="day-column-entry-treatment">{term.TreatmentName}</p>
+          <p class="day-column-entry-place">{term.PlaceName}</p>
+        </div>
+      {/each}
+    {/each}
+  </div>
+</div>
+
+<style>
+  .day-column {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+  .day-column-date {
+    background-color: var(--cds-ui-05);
+    color: var(--cds-text-04);
+    padding: 1rem;
+    position: sticky;
+    min-width: 10rem;
+    top: 0;
+    z-index: 20;
+  }
+  .day-column-terms {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .day-column-entry {
+    background-color: var(--cds-ui-01);
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0.5rem 0.6rem;
+    overflow: hidden;
+    cursor: pointer;
+    margin-top: 2px;
+    transform: opacity 0.2s;
+  }
+  .day-column-entry:hover {
+    opacity: 0.8;
+  }
+  .day-column-entry > p {
+    font-size: 0.7rem;
+  }
+  .day-column-entry-treatment {
+    font-style: italic;
+  }
+  .day-column-entry-place {
+    margin-top: 0.25rem;
+  }
+  .day-column-entry-date {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+</style>

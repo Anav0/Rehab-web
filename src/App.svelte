@@ -11,6 +11,8 @@
   import { displayOnMain } from "@/stores/display";
   import { errMsg, errTitle } from "@/stores/error";
 
+  import "@/css/main.css";
+
   let theme: "g10" = "g10";
 
   onMount(async () => {

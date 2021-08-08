@@ -1,36 +1,41 @@
 <script lang="ts">
   import type { Term } from "@/models/term";
   import { dateFormat } from "@/stores/misc";
-  import { DataTable } from "carbon-components-svelte";
+  import type { DayModel } from "@models/calendar";
+  import { DataTable, DataTableSkeleton } from "carbon-components-svelte";
   import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
+  import DayColumn from "@/components/DayColumn.svelte";
 
-  export let rows: Term[];
-  let headers: DataTableHeader[] = [
-    {
-      key: "StartDate",
-      value: "Data",
-      display: (date) => new Date(date).toLocaleDateString("pl", $dateFormat),
-      sort: (a, b) => (new Date(a) < new Date(b) ? -1 : 1),
-    },
-    {
-      key: "hours",
-      value: "Godziny",
-    },
-    {
-      key: "PlaceName",
-      value: "Miejsce wykonania",
-    },
-    { key: "TreatmentName", value: "Procedura" },
-  ];
+  export let dayModelByDayStr: Map<string, DayModel>;
+  export let isLoading: boolean;
 </script>
 
-<DataTable
-  title="Proponowane terminy dla zlecenia"
-  description="Terminy proponowane przez program mogą zostać ręcznie dostosowane i autmatycznie sprawdzone"
-  zebra
-  sortable
-  {headers}
-  {rows}
-/>
+<div style="grid-area: overview" class="results-overview-plan-wrapper">
+  {#if isLoading || !dayModelByDayStr}
+    <DataTableSkeleton />
+  {:else}
+    <div class="results-overview-plan">
+      {#each [...dayModelByDayStr] as [dayStr, dayModel]}
+        <DayColumn {dayModel} />
+      {/each}
+    </div>
+  {/if}
+</div>
 
-<style></style>
+<style>
+  .results-overview-plan-wrapper {
+    background-color: var(--details-bg);
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+  }
+
+  .results-overview-plan {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-gap: 0.3rem;
+  }
+</style>

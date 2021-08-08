@@ -14,6 +14,7 @@
   let rows: Referral[] = [];
 
   let fetchingReferrals = true;
+  let isLoading = false;
 
   const fetchReferrals = async () => {
     fetchingReferrals = true;
@@ -76,7 +77,6 @@
       isLoading = false;
     }
   };
-  let isLoading = false;
 
   referralsRangePayload.subscribe((value) => {
     if (value == null) return;

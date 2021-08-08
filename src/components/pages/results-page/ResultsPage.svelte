@@ -2,31 +2,65 @@
   import "flatpickr/dist/l10n/pl.js";
   import ResultsOverview from "@/components/pages/results-page/ResultsOverview.svelte";
   import ResultsPanel from "@/components/pages/results-page/ResultsPanel.svelte";
+  import ResultsCalendar from "@/components/pages/results-page/ResultsCalendar.svelte";
   import type { Term } from "@/models/term";
   import type { Treatment } from "@/models/treatment";
   import { DayModel, PlaceModel } from "@/models/calendar";
-  import { proposition } from "@/stores/scheduling";
+  import { proposition, schedulingRequest } from "@/stores/scheduling";
   import { referralBeingScheduled } from "@/stores/referral";
   import type { Proposition, TermsUsedPayload } from "@/api/payload-models";
-  import { Loading } from "carbon-components-svelte";
   import { errMsg, errTitle } from "@/stores/error";
   import { getMonday } from "@/services/dates";
   import { api } from "@/api";
+  import { onMount } from "svelte";
 
-  let rows: Term[] = [];
+  let proposedTerms: Term[] = [];
   let treatments: Treatment[] = [];
   let selectedDate: number;
   let selectedTreatmentId: string;
   let isLoading = true;
-  let calendarLoading = true;
+  let isCalendarLoading = true;
   let dayModelByDayStr: Map<string, DayModel>;
+  let proposedDayModelByDayStr: Map<string, DayModel>;
   let hoveredTerm: Term = null;
   let propositionTermsByTermId: Map<number, number>;
   let termsUsedByPatient: Set<number>;
 
+  onMount(async () => {
+    isLoading = true;
+    let tmp = {
+      Id: "101715",
+      PatientId: "14934",
+      FirstName: "NN",
+      Status: 0,
+      Date: new Date(),
+      Surname: "NN",
+      TreatmentId: "2162",
+      TreatmentName: "NN",
+      id: "101715",
+    };
+    $schedulingRequest.ReferralId = tmp.Id.toString();
+    try {
+      const { data: result } = await api.scheduling.proposition($schedulingRequest);
+      $proposition = result;
+      $referralBeingScheduled = tmp;
+    } catch (err) {
+      console.error(err);
+      $errTitle = "Błąd przy wyznaczaniu terminów";
+      $errMsg = "";
+      if (err.response) {
+        if (err.response) {
+          $errMsg = err.response.data.error;
+        }
+      }
+    } finally {
+      isLoading = false;
+    }
+  });
+
   proposition.subscribe((value) => {
     if (!value) return;
-    rows = [];
+    proposedTerms = [];
     for (let i = 0; i < value.ProposedTrms.length; i++) {
       const terms: Term[] = value.ProposedTrms[i];
       const term = terms[0];
@@ -35,18 +69,20 @@
         terms[terms.length - 1].EndDate
       ).toLocaleTimeString("pl")}`;
 
-      rows.push(term);
+      proposedTerms.push(term);
     }
-    rows = [...rows];
+    proposedTerms = [...proposedTerms];
   });
 
   $: {
-    updateTermsInfo($referralBeingScheduled.PatientId, selectedTreatmentId, new Date(selectedDate));
+    if ($referralBeingScheduled) {
+      updateTermsInfo($referralBeingScheduled.PatientId, selectedTreatmentId, new Date(selectedDate));
+    }
   }
 
   const updateTermsInfo = async (patientId: string, treatmentId: string, date: Date) => {
     try {
-      calendarLoading = true;
+      isCalendarLoading = true;
       const selectedDateAsDate = new Date(date);
       await buildHelperForTerms(treatmentId, selectedDateAsDate);
       await buildTermsUsedByPatient(patientId, selectedDateAsDate);
@@ -58,7 +94,7 @@
         $errMsg = err.response.data.error;
       }
     } finally {
-      calendarLoading = false;
+      isCalendarLoading = false;
     }
   };
 
@@ -73,16 +109,44 @@
     }
   };
 
-  const buildProposedTermsById = (proposition: Proposition) => {
+  const buildProposedTermsHelpers = (proposition: Proposition) => {
     let buildProposedTermsById = new Map();
+    let buildingMap = new Map<string, DayModel>();
     for (let i = 0; i < proposition.ProposedTrms.length; i++) {
       const terms = proposition.ProposedTrms[i];
       for (let j = 0; j < terms.length; j++) {
         const term = terms[j];
         buildProposedTermsById.set(term.Id, terms.length);
+
+        term.StartDate = new Date(term.StartDate);
+        term.EndDate = new Date(term.EndDate);
+
+        if (buildingMap.has(term.StartDate.toDateString())) {
+          let dayModel = buildingMap.get(term.StartDate.toDateString());
+          if (dayModel.placeModelsByPlaceName.has(term.PlaceName)) {
+            let placeModel = dayModel.placeModelsByPlaceName.get(term.PlaceName);
+            placeModel.terms.push(term);
+          } else {
+            let placeModel = new PlaceModel();
+            placeModel.name = term.PlaceName;
+            placeModel.terms.push(term);
+            dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
+          }
+        } else {
+          let dayModel = new DayModel();
+          dayModel.date = term.StartDate;
+
+          let placeModel = new PlaceModel();
+          placeModel.name = term.PlaceName;
+          placeModel.terms.push(term);
+
+          dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
+          buildingMap.set(term.StartDate.toDateString(), dayModel);
+        }
       }
     }
     propositionTermsByTermId = buildProposedTermsById;
+    proposedDayModelByDayStr = buildingMap;
   };
 
   const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
@@ -145,7 +209,7 @@
     if (value == null) return;
     try {
       selectedDate = new Date(value.ProposedTrms[0][0].StartDate).getTime();
-      buildProposedTermsById(value);
+      buildProposedTermsHelpers(value);
       buildTreatments(value);
       selectedTreatmentId = treatments[0].Id;
     } catch (err) {
@@ -162,12 +226,24 @@
 </script>
 
 <div class="result page">
-  {#if isLoading}
-    <Loading description="Trwa wyznaczanie terminów..." />
-  {/if}
-  <ResultsOverview {rows} />
-  <ResultsPanel {treatments} {isLoading} {selectedTreatmentId} {selectedDate} {hoveredTerm} />
+  <ResultsPanel bind:isLoading {treatments} {selectedTreatmentId} {selectedDate} {hoveredTerm} />
+  <ResultsCalendar {isLoading} bind:hoveredTerm {dayModelByDayStr} {termsUsedByPatient} {propositionTermsByTermId} />
+  <ResultsOverview {isLoading} dayModelByDayStr={proposedDayModelByDayStr} />
 </div>
 
 <style>
+  .result {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: grid;
+    --results-gap: 2px;
+    --results-bg: var(--cds-ui-03);
+    grid-template-rows: auto 1fr minmax(auto, 1fr);
+    grid-template-areas:
+      "panel panel panel"
+      "calendar calendar calendar"
+      "overview overview overview";
+    grid-gap: 1rem;
+  }
 </style>

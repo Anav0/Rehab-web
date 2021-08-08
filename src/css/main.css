@@ -2,8 +2,9 @@
   box-sizing: border-box;
 }
 html {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  font-size: 12px;
 }
 body {
   height: calc(100% - 3rem);
@@ -11,11 +12,37 @@ body {
 main {
   height: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 200px) 1fr minmax(0, 200px);
+  grid-template-columns: 10px 1fr 10px;
   grid-template-rows: 1fr;
   overflow: auto;
 }
 .page {
   grid-column: 2/3;
   overflow: auto;
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1400px) {
+  html {
+    font-size: 14px;
+  }
+  main {
+    grid-template-columns: 7rem 1fr 7rem;
+  }
+}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 2560px) {
+  html {
+    font-size: 16px;
+  }
+  main {
+    grid-template-columns: minmax(0, 200px) 1fr minmax(0, 200px);
+  }
 }

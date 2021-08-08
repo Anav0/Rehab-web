@@ -3,6 +3,7 @@ export class Term {
   id: number;
   TreatmentId: string;
   TreatmentDuration: number;
+  TreatmentName: number;
   PlaceId: number;
   PlaceName: string;
   StartDate: Date;

@@ -66,9 +66,9 @@
     display: grid;
     grid-auto-columns: 1fr;
     grid-template-columns: auto;
-    grid-gap: var(--details-gap);
+    grid-gap: var(--results-gap);
   }
-  .day-place p {
+  .day-place > p {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -77,14 +77,14 @@
     background-color: var(--cds-ui-03);
     padding: 0.2rem;
     display: flex;
-    place-items: center;
+    place-items: center
   }
   .day-terms {
     display: grid;
     grid-template-rows: 1fr;
     width: 100%;
     height: 100%;
-    grid-gap: var(--details-gap);
+    grid-gap: var(--results-gap);
   }
   .day-place-wrapper {
     display: grid;
@@ -115,7 +115,7 @@
     width: 100%;
     height: 100%;
     background-color: var(--cds-ui-01);
-    border: var(--details-gap) solid transparent;
+    border: var(--results-gap) solid transparent;
   }
   .full {
     background-color: var(--cds-support-01) !important;

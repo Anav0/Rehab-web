@@ -1,6 +1,6 @@
 <script lang="ts">
   import "flatpickr/dist/l10n/pl.js";
-  import { DatePicker, DatePickerInput, Select, SelectItem, Button } from "carbon-components-svelte";
+  import { DatePicker, DatePickerInput, Select, SelectItem, Button, SelectSkeleton } from "carbon-components-svelte";
   import Reset16 from "carbon-icons-svelte/lib/Reset16";
 
   import type { Treatment } from "@/models/treatment";
@@ -48,27 +48,52 @@
   };
 </script>
 
-<div class="details-panel">
-  <div style="display:grid; grid-template-columns: auto 1fr;">
-    <Select labelText="Zabieg" bind:selected={selectedTreatmentId}>
-      {#each treatments as item}
-        <SelectItem value={item.Id} text={item.Name} />
-      {/each}
-    </Select>
-    <DatePicker
-      dateFormat="d.m.Y"
-      locale="pl"
-      datePickerType="single"
-      style="margin-left: 2rem"
-      value={selectedDate}
-      on:change={({ detail }) => (selectedDate = detail.selectedDates[0].getTime())}
-    >
-      <DatePickerInput labelText="Data" placeholder="dd.mm.yyy" />
-    </DatePicker>
+{#if isLoading}
+  <SelectSkeleton style="grid-area: panel" />
+{:else}
+  <div class="results-panel">
+    <div class="results-panel-dates" style="display:grid; grid-template-columns: auto 1fr;">
+      <Select labelText="Zabieg" bind:selected={selectedTreatmentId}>
+        {#each treatments as item}
+          <SelectItem value={item.Id} text={item.Name} />
+        {/each}
+      </Select>
+      <DatePicker
+        dateFormat="d.m.Y"
+        locale="pl"
+        datePickerType="single"
+        style="margin-left: 2rem"
+        value={selectedDate}
+        on:change={({ detail }) => (selectedDate = detail.selectedDates[0].getTime())}
+      >
+        <DatePickerInput labelText="Data" placeholder="dd.mm.yyy" />
+      </DatePicker>
+    </div>
+    <span class="results-panel-hovered">{hoveredTerm ? printInfoAboutHovered() : ""}</span>
+    <div class="results-panel-action">
+      <Button kind="ghost" on:click={askForProposition} iconDescription="Wyznacz ponownie" icon={Reset16} />
+      <Button kind="primary">Akceptuj</Button>
+    </div>
   </div>
-  <span>{hoveredTerm ? printInfoAboutHovered() : ""}</span>
-</div>
-<div class="details-action">
-  <Button kind="ghost" on:click={askForProposition} iconDescription="Wyznacz ponownie" icon={Reset16} />
-  <Button kind="primary">Akceptuj</Button>
-</div>
+{/if}
+
+<style>
+  .results-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-gap: 1rem;
+    grid-area: panel;
+    place-items: center;
+  }
+  .results-panel-action {
+    place-self: end;
+  }
+  .results-panel-dates {
+    place-self: end start;
+  }
+  .results-panel-hovered {
+    place-self: end center;
+    padding: 0.7rem;
+  }
+</style>
