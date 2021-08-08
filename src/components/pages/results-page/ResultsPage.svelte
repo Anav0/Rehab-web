@@ -27,38 +27,6 @@
   let termsUsedByPatient: Set<number>;
   let hoveredInOverview: Term;
 
-  onMount(async () => {
-    isLoading = true;
-    let tmp = {
-      Id: "101715",
-      PatientId: "14934",
-      FirstName: "NN",
-      Status: 0,
-      Date: new Date(),
-      Surname: "NN",
-      TreatmentId: "2162",
-      TreatmentName: "NN",
-      id: "101715",
-    };
-    $schedulingRequest.ReferralId = tmp.Id.toString();
-    try {
-      const { data: result } = await api.scheduling.proposition($schedulingRequest);
-      $proposition = result;
-      $referralBeingScheduled = tmp;
-    } catch (err) {
-      console.error(err);
-      $errTitle = "Błąd przy wyznaczaniu terminów";
-      $errMsg = "";
-      if (err.response) {
-        if (err.response) {
-          $errMsg = err.response.data.error;
-        }
-      }
-    } finally {
-      isLoading = false;
-    }
-  });
-
   proposition.subscribe((value) => {
     if (!value) return;
     proposedTerms = [];
@@ -241,7 +209,7 @@
     display: grid;
     --results-gap: 2px;
     --results-bg: var(--cds-ui-03);
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto minmax(0, 2fr) auto;
     grid-template-areas:
       "panel panel panel"
       "calendar calendar calendar"
