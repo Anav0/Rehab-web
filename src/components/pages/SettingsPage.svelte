@@ -19,17 +19,6 @@
 
 <div class="settings-page page">
   <div class="settings">
-    <Select
-      selected={shadowSettings.Algorithm}
-      labelText="Algorytm użyty do wyznaczania"
-      on:change={({ detail }) => {
-        shadowSettings.Algorithm = detail;
-      }}
-    >
-      <SelectItem value="SA" text="Wyżarzanie" />
-      <SelectItem value="D" text="Deterministyczny" />
-    </Select>
-
     <DatePicker
       datePickerType="range"
       valueTo={shadowSettings.End.toLocaleDateString("pl", $dateFormat)}
