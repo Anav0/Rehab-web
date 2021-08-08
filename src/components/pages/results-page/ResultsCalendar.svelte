@@ -11,6 +11,7 @@
   export let termsUsedByPatient: Set<number> = new Set();
   export let propositionTermsByTermId: Map<Number, number> = new Map();
   export let hoveredTerm: Term;
+  export let hoveredInOverview: Term;
 </script>
 
 <div class="results-days">
@@ -21,6 +22,7 @@
       <ResultsDay
         {termsUsedByPatient}
         {propositionTermsByTermId}
+        {hoveredInOverview}
         {dayModel}
         on:termOver={({ detail: term }) => (hoveredTerm = term)}
       />

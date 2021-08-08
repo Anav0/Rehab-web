@@ -25,6 +25,7 @@
   let hoveredTerm: Term = null;
   let propositionTermsByTermId: Map<number, number>;
   let termsUsedByPatient: Set<number>;
+  let hoveredInOverview: Term;
 
   onMount(async () => {
     isLoading = true;
@@ -211,8 +212,18 @@
 
 <div class="result page">
   <ResultsPanel bind:isLoading {treatments} {selectedTreatmentId} {selectedDate} {hoveredTerm} />
-  <ResultsCalendar {isLoading} bind:hoveredTerm {dayModelByDayStr} {termsUsedByPatient} {propositionTermsByTermId} />
+  <ResultsCalendar
+    {hoveredInOverview}
+    {isLoading}
+    bind:hoveredTerm
+    {dayModelByDayStr}
+    {termsUsedByPatient}
+    {propositionTermsByTermId}
+  />
   <ResultsOverview
+    on:termHovered={({ detail: term }) => {
+      hoveredInOverview = term;
+    }}
     on:termSelected={({ detail: term }) => {
       selectedTreatmentId = term.TreatmentId;
       selectedDate = new Date(term.StartDate).getTime();

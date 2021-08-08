@@ -1,6 +1,4 @@
 <script lang="ts">
-  import type { DayModel, PlaceModel } from "@models/calendar";
-  import { Tile } from "carbon-components-svelte";
   import { dateFormat } from "@stores/misc";
   import { createEventDispatcher, onMount } from "svelte";
   import type { Term } from "@models/term";
@@ -31,7 +29,12 @@
   </div>
   <div class="day-column-terms">
     {#each terms as term, i}
-      <div class="day-column-entry" on:click={() => dispatch("termSelected", term)}>
+      <div
+        class="day-column-entry"
+        on:click={() => dispatch("termSelected", term)}
+        on:mouseleave={(_) => dispatch("termHovered", null)}
+        on:mouseenter={(_) => dispatch("termHovered", term)}
+      >
         <p class="day-column-entry-date">
           {term.StartDate.toLocaleTimeString("pl", timeFormat)} - {term.EndDate.toLocaleTimeString("pl", timeFormat)}
         </p>

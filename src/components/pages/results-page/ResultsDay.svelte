@@ -3,12 +3,14 @@
 
   import type { DayModel } from "@/models/calendar";
   import type { Term } from "@/models/term";
+  import { areOverlapping } from "@services/term";
 
   const dispatch = createEventDispatcher();
 
   export let dayModel: DayModel;
   export let propositionTermsByTermId: Map<number, number>;
   export let termsUsedByPatient: Set<number>;
+  export let hoveredInOverview: Term = undefined;
 
   const onMouseOver = (term: Term) => {
     dispatch("termOver", term);
@@ -33,14 +35,14 @@
         </div>
         <div class="day-terms" style="grid-template-columns: repeat({placeModel.terms.length},1fr);">
           {#each placeModel.terms as term, k}
-            <!-- svelte-ignore a11y-mouse-events-have-key-events -->
             <div
               class:proposed={propositionTermsByTermId.has(term.Id)}
               class:used={termsUsedByPatient.has(term.Id)}
               class:some={term.Capacity / 2 <= term.Used}
               class:full={term.Capacity < term.Used}
+              class:overview={term.Id == hoveredInOverview?.Id}
               class="day-term"
-              on:mouseover={() => onMouseOver(term)}
+              on:mouseenter={() => onMouseOver(term)}
             />
           {/each}
         </div>
@@ -77,7 +79,7 @@
     background-color: var(--cds-ui-03);
     padding: 0.2rem;
     display: flex;
-    place-items: center
+    place-items: center;
   }
   .day-terms {
     display: grid;
@@ -130,5 +132,8 @@
   .used {
     border-color: var(--cds-support-01) !important;
     border-style: dashed;
+  }
+  .overview:before {
+    opacity: 0.5;
   }
 </style>

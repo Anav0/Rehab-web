@@ -22,6 +22,7 @@
           date={new Date(dayStr)}
           {terms}
           on:termSelected={({ detail: term }) => dispatch("termSelected", term)}
+          on:termHovered={({ detail: term }) => dispatch("termHovered", term)}
         />
       {/each}
     </div>
