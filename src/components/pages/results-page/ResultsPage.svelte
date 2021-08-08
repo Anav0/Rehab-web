@@ -186,7 +186,7 @@
   {:else}
     <ResultsCalendar
       {hoveredInOverview}
-      {isLoading}
+      {isCalendarLoading}
       bind:hoveredTerm
       {dayModelByDayStr}
       {termsUsedByPatient}
