@@ -20,7 +20,15 @@
 </script>
 
 <div class="day-column">
-  <span class="day-column-date">{date.toLocaleString("pl", $dateFormat)}</span>
+  <div class="day-column-header">
+    <span class="day-column-header-date">{date.toLocaleString("pl", $dateFormat)}</span>
+    <span>
+      {terms[0].StartDate.toLocaleTimeString("pl", timeFormat)} - {terms[terms.length - 1].EndDate.toLocaleTimeString(
+        "pl",
+        timeFormat
+      )}
+    </span>
+  </div>
   <div class="day-column-terms">
     {#each terms as term, i}
       <div class="day-column-entry" on:click={() => dispatch("termSelected", term)}>
@@ -40,7 +48,9 @@
     flex-direction: column;
     overflow-x: hidden;
   }
-  .day-column-date {
+  .day-column-header {
+    display: flex;
+    flex-direction: column;
     background-color: var(--cds-ui-05);
     color: var(--cds-text-04);
     padding: 1rem;
@@ -48,6 +58,9 @@
     min-width: 10rem;
     top: 0;
     z-index: 20;
+  }
+  .day-column-header-date {
+    margin-bottom: 0.3rem;
   }
   .day-column-terms {
     display: flex;
