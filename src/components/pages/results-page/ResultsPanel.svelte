@@ -1,7 +1,7 @@
 <script lang="ts">
   import "flatpickr/dist/l10n/pl.js";
   import { DatePicker, DatePickerInput, Select, SelectItem, Button } from "carbon-components-svelte";
-  import { Reset16 } from "carbon-icons-svelte";
+  import Reset16 from "carbon-icons-svelte/lib/Reset16";
 
   import type { Treatment } from "@/models/treatment";
   import type { Term } from "@/models/term";

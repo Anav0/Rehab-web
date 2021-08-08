@@ -8,6 +8,7 @@ import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
 import replace from "@rollup/plugin-replace";
 import alias from "@rollup/plugin-alias";
+import path from "path";
 
 require("dotenv").config();
 
@@ -33,6 +34,7 @@ function serve() {
     },
   };
 }
+const projectRootDir = path.resolve(__dirname);
 
 export default {
   input: "src/index.ts",
@@ -63,6 +65,14 @@ export default {
     // some cases you'll need additional configuration -
     // consult the documentation for details:
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
+    alias({
+      entries: [
+        {
+          find: "@",
+          replacement: path.resolve(projectRootDir, "src"),
+        },
+      ],
+    }),
     resolve({
       browser: true,
       dedupe: ["svelte"],
@@ -72,15 +82,7 @@ export default {
       sourceMap: !production,
       inlineSources: !production,
     }),
-    alias({
-      resolve: [".js", ".ts", ".svelte"],
-      entries: [
-        {
-          find: "@",
-          replacement: "./src",
-        },
-      ],
-    }),
+
     // In dev mode, call `npm run start` once
     // the bundle has been generated
     !production && serve(),
