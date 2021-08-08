@@ -95,5 +95,6 @@
   .results-panel-hovered {
     place-self: end center;
     padding: 0.7rem;
+    font-weight: bold;
   }
 </style>
