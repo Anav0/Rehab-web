@@ -211,7 +211,7 @@
 </script>
 
 <div class="result page">
-  <ResultsPanel bind:isLoading {treatments} {selectedTreatmentId} {selectedDate} {hoveredTerm} />
+  <ResultsPanel bind:isLoading {treatments} bind:selectedTreatmentId bind:selectedDate {hoveredTerm} />
   <ResultsCalendar
     {hoveredInOverview}
     {isLoading}
