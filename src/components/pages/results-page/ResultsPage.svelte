@@ -8,6 +8,7 @@
   import { DayModel, PlaceModel } from "@/models/calendar";
   import { proposition, schedulingRequest } from "@/stores/scheduling";
   import { referralBeingScheduled } from "@/stores/referral";
+  import { DataTableSkeleton } from "carbon-components-svelte";
   import type { Proposition, TermsUsedPayload } from "@/api/payload-models";
   import { errMsg, errTitle } from "@/stores/error";
   import { getMonday } from "@/services/dates";
@@ -180,25 +181,29 @@
 
 <div class="result page">
   <ResultsPanel bind:isLoading {treatments} bind:selectedTreatmentId bind:selectedDate {hoveredTerm} />
-  <ResultsCalendar
-    {hoveredInOverview}
-    {isLoading}
-    bind:hoveredTerm
-    {dayModelByDayStr}
-    {termsUsedByPatient}
-    {propositionTermsByTermId}
-  />
-  <ResultsOverview
-    on:termHovered={({ detail: term }) => {
-      hoveredInOverview = term;
-    }}
-    on:termSelected={({ detail: term }) => {
-      selectedTreatmentId = term.TreatmentId;
-      selectedDate = new Date(term.StartDate).getTime();
-    }}
-    {isLoading}
-    {proposedTermsByDay}
-  />
+  {#if isLoading}
+    <DataTableSkeleton style="width:100%;height:100%; grid-column: 1/4; grid-row: 2/4" />
+  {:else}
+    <ResultsCalendar
+      {hoveredInOverview}
+      {isLoading}
+      bind:hoveredTerm
+      {dayModelByDayStr}
+      {termsUsedByPatient}
+      {propositionTermsByTermId}
+    />
+    <ResultsOverview
+      on:termHovered={({ detail: term }) => {
+        hoveredInOverview = term;
+      }}
+      on:termSelected={({ detail: term }) => {
+        selectedTreatmentId = term.TreatmentId;
+        selectedDate = new Date(term.StartDate).getTime();
+      }}
+      {isLoading}
+      {proposedTermsByDay}
+    />
+  {/if}
 </div>
 
 <style>
