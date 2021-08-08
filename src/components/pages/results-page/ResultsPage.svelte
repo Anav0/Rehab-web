@@ -21,7 +21,7 @@
   let isLoading = true;
   let isCalendarLoading = true;
   let dayModelByDayStr: Map<string, DayModel>;
-  let proposedDayModelByDayStr: Map<string, DayModel>;
+  let proposedTermsByDay: Map<string, Term[]>;
   let hoveredTerm: Term = null;
   let propositionTermsByTermId: Map<number, number>;
   let termsUsedByPatient: Set<number>;
@@ -111,7 +111,7 @@
 
   const buildProposedTermsHelpers = (proposition: Proposition) => {
     let buildProposedTermsById = new Map();
-    let buildingMap = new Map<string, DayModel>();
+    let buildingMap = new Map<string, Term[]>();
     for (let i = 0; i < proposition.ProposedTrms.length; i++) {
       const terms = proposition.ProposedTrms[i];
       for (let j = 0; j < terms.length; j++) {
@@ -121,32 +121,16 @@
         term.StartDate = new Date(term.StartDate);
         term.EndDate = new Date(term.EndDate);
 
-        if (buildingMap.has(term.StartDate.toDateString())) {
-          let dayModel = buildingMap.get(term.StartDate.toDateString());
-          if (dayModel.placeModelsByPlaceName.has(term.PlaceName)) {
-            let placeModel = dayModel.placeModelsByPlaceName.get(term.PlaceName);
-            placeModel.terms.push(term);
-          } else {
-            let placeModel = new PlaceModel();
-            placeModel.name = term.PlaceName;
-            placeModel.terms.push(term);
-            dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
-          }
+        let key = term.StartDate.toDateString();
+        if (buildingMap.has(key)) {
+          buildingMap.get(key).push(term);
         } else {
-          let dayModel = new DayModel();
-          dayModel.date = term.StartDate;
-
-          let placeModel = new PlaceModel();
-          placeModel.name = term.PlaceName;
-          placeModel.terms.push(term);
-
-          dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
-          buildingMap.set(term.StartDate.toDateString(), dayModel);
+          buildingMap.set(key, [term]);
         }
       }
     }
     propositionTermsByTermId = buildProposedTermsById;
-    proposedDayModelByDayStr = buildingMap;
+    proposedTermsByDay = buildingMap;
   };
 
   const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
@@ -228,7 +212,14 @@
 <div class="result page">
   <ResultsPanel bind:isLoading {treatments} {selectedTreatmentId} {selectedDate} {hoveredTerm} />
   <ResultsCalendar {isLoading} bind:hoveredTerm {dayModelByDayStr} {termsUsedByPatient} {propositionTermsByTermId} />
-  <ResultsOverview {isLoading} dayModelByDayStr={proposedDayModelByDayStr} />
+  <ResultsOverview
+    on:termSelected={({ detail: term }) => {
+      selectedTreatmentId = term.TreatmentId;
+      selectedDate = new Date(term.StartDate).getTime();
+    }}
+    {isLoading}
+    {proposedTermsByDay}
+  />
 </div>
 
 <style>

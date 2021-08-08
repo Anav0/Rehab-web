@@ -5,18 +5,24 @@
   import { DataTable, DataTableSkeleton } from "carbon-components-svelte";
   import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
   import DayColumn from "@/components/DayColumn.svelte";
+  import { createEventDispatcher } from "svelte";
 
-  export let dayModelByDayStr: Map<string, DayModel>;
+  const dispatch = createEventDispatcher();
+  export let proposedTermsByDay: Map<string, Term[]>;
   export let isLoading: boolean;
 </script>
 
 <div style="grid-area: overview" class="results-overview-plan-wrapper">
-  {#if isLoading || !dayModelByDayStr}
+  {#if isLoading || !proposedTermsByDay}
     <DataTableSkeleton />
   {:else}
     <div class="results-overview-plan">
-      {#each [...dayModelByDayStr] as [dayStr, dayModel]}
-        <DayColumn {dayModel} />
+      {#each [...proposedTermsByDay] as [dayStr, terms]}
+        <DayColumn
+          date={new Date(dayStr)}
+          {terms}
+          on:termSelected={({ detail: term }) => dispatch("termSelected", term)}
+        />
       {/each}
     </div>
   {/if}

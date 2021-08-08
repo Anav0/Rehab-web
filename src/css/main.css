@@ -21,14 +21,12 @@ main {
   overflow: auto;
 }
 
-/* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {
   html {
     font-size: 12px;
   }
 }
 
-/* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1400px) {
   html {
     font-size: 14px;
@@ -37,8 +35,7 @@ main {
     grid-template-columns: 7rem 1fr 7rem;
   }
 }
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 2560px) {
+@media only screen and (min-width: 1920px) {
   html {
     font-size: 16px;
   }
