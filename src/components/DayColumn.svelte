@@ -84,6 +84,7 @@
     margin-top: 2px;
     border: 2px solid var(--cds-ui-01);
     transition: border-color 0.2s;
+    max-height: 125px;
   }
   .day-column-entry:hover {
     border-color: var(--cds-active-primary);
