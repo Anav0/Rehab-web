@@ -209,7 +209,7 @@
     display: grid;
     --results-gap: 2px;
     --results-bg: var(--cds-ui-03);
-    grid-template-rows: auto minmax(0, 2fr) auto;
+    grid-template-rows: auto 1.5fr 1fr;
     grid-template-areas:
       "panel panel panel"
       "calendar calendar calendar"
