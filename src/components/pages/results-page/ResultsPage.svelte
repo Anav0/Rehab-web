@@ -100,7 +100,7 @@
       }
     }
     propositionTermsByTermId = buildProposedTermsById;
-    proposedTermsByDay = buildingMap;
+    proposedTermsByDay = new Map([...buildingMap.entries()].sort((a,b)=>new Date(a[0]) < new Date(b[0]) ? -1 : 1));
   };
 
   const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
