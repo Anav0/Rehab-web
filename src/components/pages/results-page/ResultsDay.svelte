@@ -39,7 +39,8 @@
               class:proposed={propositionTermsByTermId.has(term.Id)}
               class:used={termsUsedByPatient.has(term.Id)}
               class:some={term.Capacity / 2 <= term.Used}
-              class:full={term.Capacity < term.Used}
+              class:full={term.Capacity == term.Used}
+              class:overflow={term.Capacity < term.Used}
               class:overview={term.Id == hoveredInOverview?.Id}
               class="day-term"
               on:mouseenter={() => onMouseOver(term)}
@@ -119,11 +120,14 @@
     background-color: var(--cds-ui-01);
     border: var(--results-gap) solid transparent;
   }
-  .full {
-    background-color: var(--cds-support-01) !important;
-  }
   .some {
     background-color: var(--cds-support-03);
+  }
+  .full {
+    background-color: #ff8833;
+  }
+  .overflow {
+    background-color: var(--cds-support-01) !important;
   }
   .proposed {
     border-color: var(--cds-active-primary);

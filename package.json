@@ -12,27 +12,27 @@
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
     "qs": "^6.10.1",
-    "sirv-cli": "^1.0.12"
+    "sirv-cli": "^1.0.14"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^19.0.2",
+    "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@rollup/plugin-replace": "^3.0.0",
-    "@rollup/plugin-typescript": "^8.2.3",
+    "@rollup/plugin-typescript": "^8.2.5",
     "@tsconfig/svelte": "^2.0.1",
-    "carbon-components-svelte": "^0.42.1",
+    "carbon-components-svelte": "^0.42.2",
     "carbon-icons-svelte": "^10.36.0",
     "carbon-preprocess-svelte": "^0.6.0",
-    "rollup": "^2.54.0",
+    "rollup": "^2.56.2",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-terser": "^7.0.2",
-    "svelte": "^3.41.0",
-    "svelte-check": "^2.2.3",
+    "svelte": "^3.42.1",
+    "svelte-check": "^2.2.4",
     "svelte-preprocess": "^4.7.4",
     "svelte-previous": "^2.0.0",
-    "tslib": "^2.3.0",
+    "tslib": "^2.3.1",
     "typescript": "^4.3.5"
   }
 }

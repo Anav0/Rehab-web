@@ -9,3 +9,10 @@ export class Referral {
   TreatmentName: string;
   TreatmentId: string;
 }
+export class SubReferral {
+  Id: number;
+  ParentId: number;
+  TreatmentName: string;
+  Level: number;
+  Type: number;
+}

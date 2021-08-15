@@ -5,6 +5,7 @@
   import { displayOnMain, prevPage } from "@/stores/display";
   import { schedulingRequest } from "@/stores/scheduling";
   import "flatpickr/dist/l10n/pl.js";
+  import { SchedulingApi } from "@api/scheduling-api";
 
   let shadowSettings = { ...$schedulingRequest };
 
@@ -27,7 +28,9 @@
       locale="pl"
       on:change={({ detail }) => {
         shadowSettings.Start = new Date(detail.selectedDates[0]);
+        shadowSettings.Start.setHours(8, 0, 0);
         shadowSettings.End = new Date(detail.selectedDates[1]);
+        shadowSettings.End.setHours(18, 0, 0); //TODO: take from DB
       }}
     >
       <DatePickerInput labelText="Od" />

@@ -6,7 +6,7 @@
   import { displayOnMain } from "@/stores/display";
   import { referralBeingScheduled, referralsRangePayload } from "@/stores/referral";
   import ReferralPanel from "@/components/pages/ReferralPanel.svelte";
-
+  import ReferralDetails from "@/components/ReferralDetails.svelte";
   import { proposition, schedulingRequest } from "@/stores/scheduling";
   import { statuses } from "@/stores/status";
   import { dateFormat } from "@/stores/misc";
@@ -91,6 +91,7 @@
   {/if}
   {#if !fetchingReferrals && $statuses.length > 0}
     <DataTable
+      expandable
       title="Lista zleceń"
       description="Z poziomu tableki, można rozpocząć proces wyznaczania terminów"
       zebra
@@ -98,6 +99,7 @@
       {headers}
       {rows}
     >
+      <ReferralDetails model={row} let:row slot="expanded-row" />
       <span slot="cell" let:cell let:row>
         {#if cell.key === "action"}
           <Button on:click={() => askForProposition(row)} kind="tertiary">Wyznacz</Button>
