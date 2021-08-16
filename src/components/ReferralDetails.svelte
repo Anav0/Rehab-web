@@ -36,6 +36,7 @@
       }
     }
     for (let i = 0; i < list.length; i++) {
+      if (list[i].children.length > 0) list[i].text += ` (${list[i].children.length})`;
       delete list[i].Id;
       delete list[i].ParentId;
     }
