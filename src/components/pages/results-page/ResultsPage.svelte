@@ -28,22 +28,6 @@
   let termsUsedByPatient: Set<number>;
   let hoveredInOverview: Term;
 
-  proposition.subscribe((value) => {
-    if (!value) return;
-    proposedTerms = [];
-    for (let i = 0; i < value.ProposedTrms.length; i++) {
-      const terms: Term[] = value.ProposedTrms[i];
-      const term = terms[0];
-      term["id"] = term.Id;
-      term["hours"] = `${new Date(terms[0].StartDate).toLocaleTimeString("pl")} - ${new Date(
-        terms[terms.length - 1].EndDate
-      ).toLocaleTimeString("pl")}`;
-
-      proposedTerms.push(term);
-    }
-    proposedTerms = [...proposedTerms];
-  });
-
   $: {
     if ($referralBeingScheduled) {
       updateTermsInfo($referralBeingScheduled.PatientId, selectedTreatmentId, new Date(selectedDate));
@@ -100,7 +84,7 @@
       }
     }
     propositionTermsByTermId = buildProposedTermsById;
-    proposedTermsByDay = new Map([...buildingMap.entries()].sort((a,b)=>new Date(a[0]) < new Date(b[0]) ? -1 : 1));
+    proposedTermsByDay = new Map([...buildingMap.entries()].sort((a, b) => (new Date(a[0]) < new Date(b[0]) ? -1 : 1)));
   };
 
   const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
@@ -160,12 +144,25 @@
   };
 
   proposition.subscribe(async (value) => {
-    if (value == null) return;
+    if (!value) return;
     try {
-      selectedDate = new Date(value.ProposedTrms[0][0].StartDate).getTime();
+      if (proposedTerms.length == 0) {
+        for (let i = 0; i < value.ProposedTrms.length; i++) {
+          const terms: Term[] = value.ProposedTrms[i];
+          const term = terms[0];
+          term["id"] = term.Id;
+          term["hours"] = `${new Date(terms[0].StartDate).toLocaleTimeString("pl")} - ${new Date(
+            terms[terms.length - 1].EndDate
+          ).toLocaleTimeString("pl")}`;
+
+          proposedTerms.push(term);
+        }
+        proposedTerms = [...proposedTerms];
+        selectedDate = new Date(value.ProposedTrms[0][0].StartDate).getTime();
+        buildTreatments(value);
+      }
       buildProposedTermsHelpers(value);
-      buildTreatments(value);
-      selectedTreatmentId = treatments[0].Id;
+      if (!selectedTreatmentId) selectedTreatmentId = treatments[0].Id;
     } catch (err) {
       $errTitle = "Błąd przy wyświetlaniu terminów";
       $errMsg = err.message;
@@ -191,6 +188,7 @@
       {dayModelByDayStr}
       {termsUsedByPatient}
       {propositionTermsByTermId}
+      {proposedTermsByDay}
     />
     <ResultsOverview
       on:termHovered={({ detail: term }) => {

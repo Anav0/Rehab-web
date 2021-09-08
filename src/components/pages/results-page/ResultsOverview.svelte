@@ -1,9 +1,6 @@
 <script lang="ts">
   import type { Term } from "@/models/term";
-  import { dateFormat } from "@/stores/misc";
-  import type { DayModel } from "@models/calendar";
-  import { DataTable, DataTableSkeleton } from "carbon-components-svelte";
-  import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
+  import { DataTableSkeleton } from "carbon-components-svelte";
   import DayColumn from "@/components/DayColumn.svelte";
   import { createEventDispatcher } from "svelte";
 

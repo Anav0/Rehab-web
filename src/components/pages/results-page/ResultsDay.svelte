@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
 
   import type { DayModel } from "@/models/calendar";
   import type { Term } from "@/models/term";
-  import { areOverlapping } from "@services/term";
+  import { areOverlapping, areOverlappingTwo } from "@services/term";
+  import { proposition } from "@stores/scheduling";
 
   const dispatch = createEventDispatcher();
+
+  export let draggedTerm: Term = null;
+  export let idOfTermBelow: number = null;
 
   export let dayModel: DayModel;
   export let propositionTermsByTermId: Map<number, number>;
@@ -14,6 +18,42 @@
 
   const onMouseOver = (term: Term) => {
     dispatch("termOver", term);
+  };
+
+  const handleDrop = (e, term: Term) => {
+    //TODO: multi block treatments will not work
+    let index = $proposition.ProposedTrms.findIndex((x) => x[0].Id == draggedTerm.Id);
+    term.TreatmentDuration = draggedTerm.TreatmentDuration;
+    term.TreatmentName = draggedTerm.TreatmentName;
+
+    $proposition.ProposedTrms[index] = [term];
+  };
+
+  const handleDragEnter = (e, term: Term) => {
+    dispatch("dragEntered", term);
+  };
+
+  const handleDragOver = (e, term: Term) => {
+    if (!isAvailable(term)) return true;
+
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+    return false;
+  };
+
+  const isAvailable = (termToCheck: Term) => {
+    if (draggedTerm.Id == termToCheck.Id) return false;
+
+    if (areOverlapping(termToCheck, draggedTerm)) return false;
+    if (propositionTermsByTermId.has(termToCheck.Id)) return false;
+
+    for (let i = 0; i < $proposition.ProposedTrms.length; i++) {
+      const proposedTrm = $proposition.ProposedTrms[i];
+      if (areOverlappingTwo(termToCheck, proposedTrm)) return false;
+    }
+
+    return true;
   };
 </script>
 
@@ -36,12 +76,22 @@
         <div class="day-terms" style="grid-template-columns: repeat({placeModel.terms.length},1fr);">
           {#each placeModel.terms as term, k}
             <div
+              on:dragstart={(e) => dispatch("startedDragging", term)}
+              on:dragend={(e) => dispatch("stopedDragging", term)}
+              on:dragover={(e) => handleDragOver(e, term)}
+              on:dragenter={(e) => handleDragEnter(e, term)}
+              on:dragleave={(e) => dispatch("dragLeave")}
+              on:drop={(e) => handleDrop(e, term)}
+              class:dropZone={draggedTerm && idOfTermBelow && idOfTermBelow == term.Id && isAvailable(term)}
+              class:overview={term.Id == hoveredInOverview?.Id}
+              class:unavailable={draggedTerm && !isAvailable(term)}
+              class:available={draggedTerm && isAvailable(term)}
+              draggable={propositionTermsByTermId.has(term.Id)}
               class:proposed={propositionTermsByTermId.has(term.Id)}
               class:used={termsUsedByPatient.has(term.Id)}
-              class:some={term.Capacity / 2 <= term.Used}
-              class:full={term.Capacity == term.Used}
               class:overflow={term.Capacity < term.Used}
-              class:overview={term.Id == hoveredInOverview?.Id}
+              class:full={term.Capacity == term.Used}
+              class:some={term.Capacity / 2 <= term.Used}
               class="day-term"
               on:mouseenter={() => onMouseOver(term)}
             />
@@ -96,7 +146,6 @@
 
   .day-term:hover::before {
     opacity: 0.5;
-    cursor: pointer;
   }
 
   .day-term::before {
@@ -120,6 +169,17 @@
     background-color: var(--cds-ui-01);
     border: var(--results-gap) solid transparent;
   }
+  .dropZone {
+    border-color: orange;
+    border-style: dotted;
+  }
+  .unavailable {
+    background-color: var(--cds-inverse-support-04) !important;
+    border-color: var(--cds-inverse-support-04) !important;
+  }
+  .available {
+    border-color: var(--cds-inverse-support-02) !important;
+  }
   .some {
     background-color: var(--cds-support-03);
   }
@@ -127,14 +187,21 @@
     background-color: #ff8833;
   }
   .overflow {
-    background-color: var(--cds-support-01) !important;
+    background-color: var(--cds-support-01);
   }
   .proposed {
     border-color: var(--cds-active-primary);
     border-style: dashed;
   }
+  .proposed:hover:before {
+    opacity: 0.5;
+    /* background-color: var(--cds-inverse-support-02); */
+  }
+  .proposed:hover {
+    cursor: move;
+  }
   .used {
-    border-color: var(--cds-support-01) !important;
+    border-color: var(--cds-support-01);
     border-style: dashed;
   }
   .overview:before {
