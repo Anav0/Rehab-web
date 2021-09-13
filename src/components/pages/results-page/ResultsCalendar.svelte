@@ -4,11 +4,12 @@
   import { Loading } from "carbon-components-svelte";
   import type { DayModel } from "@/models/calendar";
   import type { Term } from "@/models/term";
+  import type { PropositionHelpers } from "@services/proposition";
 
   export let isCalendarLoading: boolean;
   export let dayModelByDayStr: Map<string, DayModel> = new Map();
-  export let termsUsedByPatient: Set<number> = new Set();
-  export let propositionTermsByTermId: Map<Number, number> = new Map();
+  export let propositionHelpers: PropositionHelpers;
+  export let termsUsedByPatient: Set<number>;
   export let hoveredTerm: Term;
   export let hoveredInOverview: Term;
 
@@ -25,7 +26,7 @@
     <ResultsDay
       {draggedTerm}
       {termsUsedByPatient}
-      {propositionTermsByTermId}
+      {propositionHelpers}
       {hoveredInOverview}
       {idOfTermBelow}
       {dayModel}

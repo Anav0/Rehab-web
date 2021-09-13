@@ -14,19 +14,18 @@
   import { getMonday } from "@/services/dates";
   import { api } from "@/api";
   import { onMount } from "svelte";
+  import { PropositionHelpers } from "@services/proposition";
 
-  let proposedTerms: Term[] = [];
   let treatments: Treatment[] = [];
   let selectedDate: number;
   let selectedTreatmentId: string;
   let isLoading = true;
   let isCalendarLoading = true;
   let dayModelByDayStr: Map<string, DayModel>;
-  let proposedTermsByDay: Map<string, Term[]>;
   let hoveredTerm: Term = null;
-  let propositionTermsByTermId: Map<number, number>;
-  let termsUsedByPatient: Set<number>;
+  let termsUsedByPatient: Set<number> = new Set();
   let hoveredInOverview: Term;
+  let propositionHelpers: PropositionHelpers = new PropositionHelpers();
 
   $: {
     if ($referralBeingScheduled) {
@@ -63,28 +62,30 @@
     }
   };
 
-  const buildProposedTermsHelpers = (proposition: Proposition) => {
-    let buildProposedTermsById = new Map();
-    let buildingMap = new Map<string, Term[]>();
+  const buildPropositionHelpers = (proposition: Proposition) => {
+    let idsOfFirstTerms = new Set<number>();
+    let termsByDayStr = new Map<string, Term[]>();
     for (let i = 0; i < proposition.ProposedTrms.length; i++) {
       const terms = proposition.ProposedTrms[i];
       for (let j = 0; j < terms.length; j++) {
         const term = terms[j];
-        buildProposedTermsById.set(term.Id, terms.length);
+        idsOfFirstTerms.add(term.Id);
 
         term.StartDate = new Date(term.StartDate);
         term.EndDate = new Date(term.EndDate);
 
         let key = term.StartDate.toDateString();
-        if (buildingMap.has(key)) {
-          buildingMap.get(key).push(term);
+        if (termsByDayStr.has(key)) {
+          termsByDayStr.get(key).push(term);
         } else {
-          buildingMap.set(key, [term]);
+          termsByDayStr.set(key, [term]);
         }
       }
     }
-    propositionTermsByTermId = buildProposedTermsById;
-    proposedTermsByDay = new Map([...buildingMap.entries()].sort((a, b) => (new Date(a[0]) < new Date(b[0]) ? -1 : 1)));
+    propositionHelpers.IdsOfFirstTerms = idsOfFirstTerms;
+    propositionHelpers.TermsByDayStr = new Map(
+      [...termsByDayStr.entries()].sort((a, b) => (new Date(a[0]) < new Date(b[0]) ? -1 : 1))
+    );
   };
 
   const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
@@ -146,22 +147,22 @@
   proposition.subscribe(async (value) => {
     if (!value) return;
     try {
-      if (proposedTerms.length == 0) {
-        for (let i = 0; i < value.ProposedTrms.length; i++) {
-          const terms: Term[] = value.ProposedTrms[i];
-          const term = terms[0];
-          term["id"] = term.Id;
-          term["hours"] = `${new Date(terms[0].StartDate).toLocaleTimeString("pl")} - ${new Date(
-            terms[terms.length - 1].EndDate
-          ).toLocaleTimeString("pl")}`;
-
-          proposedTerms.push(term);
-        }
-        proposedTerms = [...proposedTerms];
+      if (propositionHelpers.Terms.length == 0) {
         selectedDate = new Date(value.ProposedTrms[0][0].StartDate).getTime();
         buildTreatments(value);
       }
-      buildProposedTermsHelpers(value);
+      propositionHelpers.Terms = [];
+      for (let i = 0; i < value.ProposedTrms.length; i++) {
+        const terms: Term[] = value.ProposedTrms[i];
+        const firstTerm = terms[0];
+        firstTerm["id"] = firstTerm.Id;
+        firstTerm["hours"] = `${new Date(terms[0].StartDate).toLocaleTimeString("pl")} - ${new Date(
+          terms[terms.length - 1].EndDate
+        ).toLocaleTimeString("pl")}`;
+
+        propositionHelpers.Terms.push(firstTerm);
+      }
+      buildPropositionHelpers(value);
       if (!selectedTreatmentId) selectedTreatmentId = treatments[0].Id;
     } catch (err) {
       $errTitle = "Błąd przy wyświetlaniu terminów";
@@ -187,8 +188,7 @@
       bind:hoveredTerm
       {dayModelByDayStr}
       {termsUsedByPatient}
-      {propositionTermsByTermId}
-      {proposedTermsByDay}
+      {propositionHelpers}
     />
     <ResultsOverview
       on:termHovered={({ detail: term }) => {
@@ -199,7 +199,7 @@
         selectedDate = new Date(term.StartDate).getTime();
       }}
       {isLoading}
-      {proposedTermsByDay}
+      proposedTermsByDay={propositionHelpers.TermsByDayStr}
     />
   {/if}
 </div>

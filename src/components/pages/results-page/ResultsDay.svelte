@@ -5,15 +5,17 @@
   import type { Term } from "@/models/term";
   import { areOverlapping, areOverlappingTwo } from "@services/term";
   import { proposition } from "@stores/scheduling";
+  import type { Proposition } from "@api/payload-models";
+  import type { PropositionHelpers } from "@services/proposition";
 
   const dispatch = createEventDispatcher();
 
   export let draggedTerm: Term = null;
   export let idOfTermBelow: number = null;
+  export let termsUsedByPatient: Set<number>;
 
   export let dayModel: DayModel;
-  export let propositionTermsByTermId: Map<number, number>;
-  export let termsUsedByPatient: Set<number>;
+  export let propositionHelpers: PropositionHelpers;
   export let hoveredInOverview: Term = undefined;
 
   const onMouseOver = (term: Term) => {
@@ -46,7 +48,7 @@
     if (draggedTerm.Id == termToCheck.Id) return false;
 
     if (areOverlapping(termToCheck, draggedTerm)) return false;
-    if (propositionTermsByTermId.has(termToCheck.Id)) return false;
+    if (propositionHelpers.IdsOfFirstTerms.has(termToCheck.Id)) return false;
 
     for (let i = 0; i < $proposition.ProposedTrms.length; i++) {
       const proposedTrm = $proposition.ProposedTrms[i];
@@ -86,8 +88,8 @@
               class:overview={term.Id == hoveredInOverview?.Id}
               class:unavailable={draggedTerm && !isAvailable(term)}
               class:available={draggedTerm && isAvailable(term)}
-              draggable={propositionTermsByTermId.has(term.Id)}
-              class:proposed={propositionTermsByTermId.has(term.Id)}
+              draggable={propositionHelpers.IdsOfFirstTerms.has(term.Id)}
+              class:proposed={propositionHelpers.IdsOfFirstTerms.has(term.Id)}
               class:used={termsUsedByPatient.has(term.Id)}
               class:overflow={term.Capacity < term.Used}
               class:full={term.Capacity == term.Used}
