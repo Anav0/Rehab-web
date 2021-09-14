@@ -90,7 +90,7 @@
 
   const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
     if (!treatmentId || !startDate) return;
-    let buildingMap = new Map();
+    let buildDayModelByDayStr = new Map();
     let to = getMonday(startDate);
     let from = new Date(startDate);
     to.setDate(to.getDate() + 14);
@@ -106,8 +106,8 @@
       const term = terms[i];
       term.StartDate = new Date(term.StartDate);
       term.EndDate = new Date(term.EndDate);
-      if (buildingMap.has(term.StartDate.toDateString())) {
-        let dayModel = buildingMap.get(term.StartDate.toDateString());
+      if (buildDayModelByDayStr.has(term.StartDate.toDateString())) {
+        let dayModel = buildDayModelByDayStr.get(term.StartDate.toDateString());
         if (dayModel.placeModelsByPlaceName.has(term.PlaceName)) {
           let placeModel = dayModel.placeModelsByPlaceName.get(term.PlaceName);
           placeModel.terms.push(term);
@@ -126,10 +126,10 @@
         placeModel.terms.push(term);
 
         dayModel.placeModelsByPlaceName.set(term.PlaceName, placeModel);
-        buildingMap.set(term.StartDate.toDateString(), dayModel);
+        buildDayModelByDayStr.set(term.StartDate.toDateString(), dayModel);
       }
     }
-    dayModelByDayStr = buildingMap;
+    dayModelByDayStr = buildDayModelByDayStr;
   };
 
   const buildTermsUsedByPatient = async (patientId: string, startDate: Date) => {

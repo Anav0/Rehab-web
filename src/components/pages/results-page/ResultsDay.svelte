@@ -25,8 +25,11 @@
   const handleDrop = (e, term: Term) => {
     //TODO: multi block treatments will not work
     let index = $proposition.ProposedTrms.findIndex((x) => x[0].Id == draggedTerm.Id);
-    term.TreatmentDuration = draggedTerm.TreatmentDuration;
-    term.TreatmentName = draggedTerm.TreatmentName;
+
+    let changedTerm = $proposition.ProposedTrms[index];
+    term.TreatmentDuration = changedTerm[0].TreatmentDuration;
+    term.TreatmentName = changedTerm[0].TreatmentName;
+    term.TreatmentId = changedTerm[0].TreatmentId;
 
     $proposition.ProposedTrms[index] = [term];
   };
