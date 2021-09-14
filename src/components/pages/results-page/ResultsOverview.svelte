@@ -5,7 +5,7 @@
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
-  export let proposedTermsByDay: Map<string, Term[]>;
+  export let proposedTermsByDay: Map<string, Term[][]>;
   export let isLoading: boolean;
 </script>
 
@@ -18,8 +18,8 @@
         <DayColumn
           date={new Date(dayStr)}
           {terms}
-          on:termSelected={({ detail: term }) => dispatch("termSelected", term)}
-          on:termHovered={({ detail: term }) => dispatch("termHovered", term)}
+          on:termSetSelected={({ detail: term }) => dispatch("termSetSelected", term)}
+          on:termSetHovered={({ detail: term }) => dispatch("termSetHovered", term)}
         />
       {/each}
     </div>

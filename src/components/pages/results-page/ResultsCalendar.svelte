@@ -11,7 +11,7 @@
   export let propositionHelpers: PropositionHelpers;
   export let termsUsedByPatient: Set<number>;
   export let hoveredTerm: Term;
-  export let hoveredInOverview: Term;
+  export let hoveredInOverview: Term[];
 
   let isDragging = false;
   let draggedTerm: Term = null;

@@ -13,7 +13,6 @@
   import { errMsg, errTitle } from "@/stores/error";
   import { getMonday } from "@/services/dates";
   import { api } from "@/api";
-  import { onMount } from "svelte";
   import { PropositionHelpers } from "@services/proposition";
 
   let treatments: Treatment[] = [];
@@ -24,7 +23,7 @@
   let dayModelByDayStr: Map<string, DayModel>;
   let hoveredTerm: Term = null;
   let termsUsedByPatient: Set<number> = new Set();
-  let hoveredInOverview: Term;
+  let hoveredInOverview: Term[];
   let propositionHelpers: PropositionHelpers = new PropositionHelpers();
 
   $: {
@@ -64,22 +63,20 @@
 
   const buildPropositionHelpers = (proposition: Proposition) => {
     let idsOfFirstTerms = new Set<number>();
-    let termsByDayStr = new Map<string, Term[]>();
+    let termsByDayStr = new Map<string, Term[][]>();
     for (let i = 0; i < proposition.ProposedTrms.length; i++) {
       const terms = proposition.ProposedTrms[i];
+      let key = new Date(terms[0].StartDate).toDateString();
       for (let j = 0; j < terms.length; j++) {
         const term = terms[j];
         idsOfFirstTerms.add(term.Id);
-
         term.StartDate = new Date(term.StartDate);
         term.EndDate = new Date(term.EndDate);
-
-        let key = term.StartDate.toDateString();
-        if (termsByDayStr.has(key)) {
-          termsByDayStr.get(key).push(term);
-        } else {
-          termsByDayStr.set(key, [term]);
-        }
+      }
+      if (termsByDayStr.has(key)) {
+        termsByDayStr.get(key).push(terms);
+      } else {
+        termsByDayStr.set(key, [terms]);
       }
     }
     propositionHelpers.IdsOfFirstTerms = idsOfFirstTerms;
@@ -191,12 +188,12 @@
       {propositionHelpers}
     />
     <ResultsOverview
-      on:termHovered={({ detail: term }) => {
-        hoveredInOverview = term;
+      on:termSetHovered={({ detail: termSet }) => {
+        hoveredInOverview = termSet;
       }}
-      on:termSelected={({ detail: term }) => {
-        selectedTreatmentId = term.TreatmentId;
-        selectedDate = new Date(term.StartDate).getTime();
+      on:termSetSelected={({ detail: termSet }) => {
+        selectedTreatmentId = termSet[0].TreatmentId;
+        selectedDate = new Date(termSet[0].StartDate).getTime();
       }}
       {isLoading}
       proposedTermsByDay={propositionHelpers.TermsByDayStr}

@@ -16,7 +16,7 @@
 
   export let dayModel: DayModel;
   export let propositionHelpers: PropositionHelpers;
-  export let hoveredInOverview: Term = undefined;
+  export let hoveredInOverview: Term[] = undefined;
 
   const onMouseOver = (term: Term) => {
     dispatch("termOver", term);
@@ -88,7 +88,7 @@
               on:dragleave={(e) => dispatch("dragLeave")}
               on:drop={(e) => handleDrop(e, term)}
               class:dropZone={draggedTerm && idOfTermBelow && idOfTermBelow == term.Id && isAvailable(term)}
-              class:overview={term.Id == hoveredInOverview?.Id}
+              class:overview={hoveredInOverview && hoveredInOverview.find((x) => x.Id == term.Id)}
               class:unavailable={draggedTerm && !isAvailable(term)}
               class:available={draggedTerm && isAvailable(term)}
               draggable={propositionHelpers.IdsOfFirstTerms.has(term.Id)}
