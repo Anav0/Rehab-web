@@ -3,14 +3,13 @@
 
   import type { DayModel } from "@/models/calendar";
   import type { Term } from "@/models/term";
-  import { areOverlapping, areOverlappingTwo } from "@services/term";
+  import { areOverlapping, areOverlappingTwo, Ceiling } from "@services/term";
   import { proposition } from "@stores/scheduling";
-  import type { Proposition } from "@api/payload-models";
   import type { PropositionHelpers } from "@services/proposition";
 
   const dispatch = createEventDispatcher();
 
-  export let draggedTerm: Term = null;
+  export let draggedTerms: Term[] = null;
   export let idOfTermBelow: number = null;
   export let termsUsedByPatient: Set<number>;
 
@@ -18,28 +17,33 @@
   export let propositionHelpers: PropositionHelpers;
   export let hoveredInOverview: Term[] = undefined;
 
-  const onMouseOver = (term: Term) => {
-    dispatch("termOver", term);
-  };
+  let availability: Map<number, boolean> = new Map();
 
-  const handleDrop = (e, term: Term) => {
-    //TODO: multi block treatments will not work
-    let index = $proposition.ProposedTrms.findIndex((x) => x[0].Id == draggedTerm.Id);
+  function fillAvailability(draggedTerms: Term[]) {
+    dayModel.placeModelsByPlaceName.forEach((placeModel) => {
+      let k = 0;
+      for (let term of placeModel.terms) {
+        availability.set(term.Id, isAvailable(term, k, placeModel.terms));
+        k++;
+      }
+    });
+  }
 
-    let changedTerm = $proposition.ProposedTrms[index];
-    term.TreatmentDuration = changedTerm[0].TreatmentDuration;
-    term.TreatmentName = changedTerm[0].TreatmentName;
-    term.TreatmentId = changedTerm[0].TreatmentId;
+  const handleDrop = (e, i: number, allTermsInPlace: Term[]) => {
+    let index = propositionHelpers.PosByTermId.get(draggedTerms[0].Id);
+    let termsToChange = $proposition.ProposedTrms[index];
 
-    $proposition.ProposedTrms[index] = [term];
-  };
+    let k = 0;
+    for (let j = i; j < i + termsToChange.length; j++) {
+      termsToChange[k] = allTermsInPlace[j];
+      k++;
+    }
 
-  const handleDragEnter = (e, term: Term) => {
-    dispatch("dragEntered", term);
+    $proposition.ProposedTrms = [...$proposition.ProposedTrms];
   };
 
   const handleDragOver = (e, term: Term) => {
-    if (!isAvailable(term)) return true;
+    if (!availability.get(term.Id)) return true;
 
     if (e.preventDefault) {
       e.preventDefault();
@@ -47,19 +51,30 @@
     return false;
   };
 
-  const isAvailable = (termToCheck: Term) => {
-    if (draggedTerm.Id == termToCheck.Id) return false;
+  const isAvailable = (termToCheck: Term, pos: number, allTermsInPlace: Term[]) => {
+    if (!draggedTerms) return false;
 
-    if (areOverlapping(termToCheck, draggedTerm)) return false;
-    if (propositionHelpers.IdsOfFirstTerms.has(termToCheck.Id)) return false;
+    for (let i = 0; i < draggedTerms.length; i++) {
+      const draggedTerm = draggedTerms[i];
+      if (draggedTerm.Id == termToCheck.Id) return false;
 
-    for (let i = 0; i < $proposition.ProposedTrms.length; i++) {
-      const proposedTrm = $proposition.ProposedTrms[i];
-      if (areOverlappingTwo(termToCheck, proposedTrm)) return false;
+      if (areOverlapping(termToCheck, draggedTerm)) return false;
+      if (propositionHelpers.PosByTermId.has(termToCheck.Id)) return false;
     }
+
+    // let numOfReqiredBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
+    // for (let k = pos; k < pos + numOfReqiredBlocks; k++) {
+    //   if (k > allTermsInPlace.length) return false;
+    //   const term = allTermsInPlace[k];
+    //   if (termsUsedByPatient.has(term.Id)) return false;
+    // }
 
     return true;
   };
+
+  $: {
+    fillAvailability(draggedTerms);
+  }
 </script>
 
 <div class="day">
@@ -84,21 +99,21 @@
               on:dragstart={(e) => dispatch("startedDragging", term)}
               on:dragend={(e) => dispatch("stopedDragging", term)}
               on:dragover={(e) => handleDragOver(e, term)}
-              on:dragenter={(e) => handleDragEnter(e, term)}
+              on:dragenter={(e) => dispatch("dragEntered", term)}
               on:dragleave={(e) => dispatch("dragLeave")}
-              on:drop={(e) => handleDrop(e, term)}
-              class:dropZone={draggedTerm && idOfTermBelow && idOfTermBelow == term.Id && isAvailable(term)}
+              on:drop={(e) => handleDrop(e, k, placeModel.terms)}
+              class:dropZone={draggedTerms && idOfTermBelow && idOfTermBelow == term.Id && availability.get(term.Id)}
               class:overview={hoveredInOverview && hoveredInOverview.find((x) => x.Id == term.Id)}
-              class:unavailable={draggedTerm && !isAvailable(term)}
-              class:available={draggedTerm && isAvailable(term)}
-              draggable={propositionHelpers.IdsOfFirstTerms.has(term.Id)}
-              class:proposed={propositionHelpers.IdsOfFirstTerms.has(term.Id)}
+              class:unavailable={draggedTerms && !availability.get(term.Id)}
+              class:available={draggedTerms && availability.get(term.Id)}
+              draggable={propositionHelpers.PosByTermId.has(term.Id)}
+              class:proposed={propositionHelpers.PosByTermId.has(term.Id)}
               class:used={termsUsedByPatient.has(term.Id)}
               class:overflow={term.Capacity < term.Used}
               class:full={term.Capacity == term.Used}
               class:some={term.Capacity / 2 <= term.Used}
               class="day-term"
-              on:mouseenter={() => onMouseOver(term)}
+              on:mouseenter={() => dispatch("termOver", term)}
             />
           {/each}
         </div>

@@ -62,14 +62,14 @@
   };
 
   const buildPropositionHelpers = (proposition: Proposition) => {
-    let idsOfFirstTerms = new Set<number>();
+    let posByTermId = new Map<number, number>();
     let termsByDayStr = new Map<string, Term[][]>();
     for (let i = 0; i < proposition.ProposedTrms.length; i++) {
       const terms = proposition.ProposedTrms[i];
       let key = new Date(terms[0].StartDate).toDateString();
       for (let j = 0; j < terms.length; j++) {
         const term = terms[j];
-        idsOfFirstTerms.add(term.Id);
+        posByTermId.set(term.Id, i);
         term.StartDate = new Date(term.StartDate);
         term.EndDate = new Date(term.EndDate);
       }
@@ -79,7 +79,7 @@
         termsByDayStr.set(key, [terms]);
       }
     }
-    propositionHelpers.IdsOfFirstTerms = idsOfFirstTerms;
+    propositionHelpers.PosByTermId = posByTermId;
     propositionHelpers.TermsByDayStr = new Map(
       [...termsByDayStr.entries()].sort((a, b) => (new Date(a[0]) < new Date(b[0]) ? -1 : 1))
     );
@@ -144,11 +144,10 @@
   proposition.subscribe(async (value) => {
     if (!value) return;
     try {
-      if (propositionHelpers.Terms.length == 0) {
+      if (propositionHelpers.TermsByDayStr.size == 0) {
         selectedDate = new Date(value.ProposedTrms[0][0].StartDate).getTime();
         buildTreatments(value);
       }
-      propositionHelpers.Terms = [];
       for (let i = 0; i < value.ProposedTrms.length; i++) {
         const terms: Term[] = value.ProposedTrms[i];
         const firstTerm = terms[0];
@@ -156,8 +155,6 @@
         firstTerm["hours"] = `${new Date(terms[0].StartDate).toLocaleTimeString("pl")} - ${new Date(
           terms[terms.length - 1].EndDate
         ).toLocaleTimeString("pl")}`;
-
-        propositionHelpers.Terms.push(firstTerm);
       }
       buildPropositionHelpers(value);
       if (!selectedTreatmentId) selectedTreatmentId = treatments[0].Id;
@@ -170,6 +167,7 @@
       console.error(err);
     } finally {
       isLoading = false;
+      console.log(propositionHelpers);
     }
   });
 </script>

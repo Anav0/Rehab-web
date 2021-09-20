@@ -5,6 +5,7 @@
   import type { DayModel } from "@/models/calendar";
   import type { Term } from "@/models/term";
   import type { PropositionHelpers } from "@services/proposition";
+  import { proposition } from "@stores/scheduling";
 
   export let isCalendarLoading: boolean;
   export let dayModelByDayStr: Map<string, DayModel> = new Map();
@@ -14,7 +15,7 @@
   export let hoveredInOverview: Term[];
 
   let isDragging = false;
-  let draggedTerm: Term = null;
+  let draggedTerms: Term[] = null;
   let idOfTermBelow: number = null;
 </script>
 
@@ -24,15 +25,19 @@
   {/if}
   {#each [...dayModelByDayStr] as [_, dayModel]}
     <ResultsDay
-      {draggedTerm}
+      {draggedTerms}
       {termsUsedByPatient}
       {propositionHelpers}
       {hoveredInOverview}
       {idOfTermBelow}
       {dayModel}
       on:termOver={({ detail: term }) => (hoveredTerm = term)}
-      on:startedDragging={({ detail: term }) => (draggedTerm = term)}
-      on:stopedDragging={(_) => (draggedTerm = null)}
+      on:startedDragging={({ detail: term }) => {
+        let pos = propositionHelpers.PosByTermId.get(term.Id);
+        draggedTerms = $proposition.ProposedTrms[pos];
+        console.log(draggedTerms);
+      }}
+      on:stopedDragging={(_) => (draggedTerms = null)}
       on:dragEntered={({ detail: term }) => {
         idOfTermBelow = term.Id;
         hoveredTerm = term;
