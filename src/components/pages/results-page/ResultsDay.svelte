@@ -3,7 +3,7 @@
 
   import type { DayModel } from "@/models/calendar";
   import type { Term } from "@/models/term";
-  import { areOverlappingTwo, Ceiling } from "@services/term";
+  import { areOverlapping, areOverlappingTwo, Ceiling } from "@services/term";
   import { proposition } from "@stores/scheduling";
   import type { PropositionHelpers } from "@services/proposition";
 
@@ -63,21 +63,22 @@
   const isAvailable = (termToCheck: Term, pos: number, allTermsInPlace: Term[]) => {
     if (!draggedTerms) return false;
 
-    for (let terms of $proposition.ProposedTrms) {
-      if (draggedTerms[0].Id != terms[0].Id && areOverlappingTwo(termToCheck, terms)) return false;
-    }
+    let proposedOnThatDay = propositionHelpers.TermsByDayStr.get(termToCheck.StartDate.toDateString());
 
     let numOfBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
 
     for (let k = pos; k < pos + numOfBlocks; k++) {
       if (k > allTermsInPlace.length) return false;
       const nextTerm = allTermsInPlace[k];
-      if (
-        !nextTerm ||
-        propositionHelpers.ProposedTerms.has(nextTerm.Id) ||
-        propositionHelpers.TermsTakenByPatient.has(nextTerm.Id)
-      )
-        return false;
+      if (!nextTerm) return false;
+
+      if (propositionHelpers.TermsTakenByPatient.has(nextTerm.Id)) return false;
+
+      if (!proposedOnThatDay) return true;
+
+      for (let terms of proposedOnThatDay) {
+        if (draggedTerms[0].Id != terms[0].Id && areOverlappingTwo(nextTerm, terms)) return false;
+      }
     }
 
     return true;
