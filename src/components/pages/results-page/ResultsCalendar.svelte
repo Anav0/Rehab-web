@@ -10,7 +10,6 @@
   export let isCalendarLoading: boolean;
   export let dayModelByDayStr: Map<string, DayModel> = new Map();
   export let propositionHelpers: PropositionHelpers;
-  export let termsUsedByPatient: Set<number>;
   export let hoveredTerm: Term;
   export let hoveredInOverview: Term[];
 
@@ -26,7 +25,6 @@
   {#each [...dayModelByDayStr] as [_, dayModel]}
     <ResultsDay
       {draggedTerms}
-      {termsUsedByPatient}
       {propositionHelpers}
       {hoveredInOverview}
       {idOfTermBelow}
@@ -35,7 +33,6 @@
       on:startedDragging={({ detail: term }) => {
         let pos = propositionHelpers.PosByTermId.get(term.Id);
         draggedTerms = $proposition.ProposedTrms[pos];
-        console.log(draggedTerms);
       }}
       on:stopedDragging={(_) => (draggedTerms = null)}
       on:dragEntered={({ detail: term }) => {

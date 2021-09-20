@@ -22,7 +22,6 @@
   let isCalendarLoading = true;
   let dayModelByDayStr: Map<string, DayModel>;
   let hoveredTerm: Term = null;
-  let termsUsedByPatient: Set<number> = new Set();
   let hoveredInOverview: Term[];
   let propositionHelpers: PropositionHelpers = new PropositionHelpers();
 
@@ -36,8 +35,8 @@
     try {
       isCalendarLoading = true;
       const selectedDateAsDate = new Date(date);
-      await buildHelperForTerms(treatmentId, selectedDateAsDate);
-      await buildTermsUsedByPatient(patientId, selectedDateAsDate);
+      await buildDayModel(treatmentId, selectedDateAsDate);
+      await buildTermsUsedByPatient(patientId);
     } catch (err) {
       console.error(err);
       $errTitle = "Błąd przy pobieraniu terminów";
@@ -64,11 +63,13 @@
   const buildPropositionHelpers = (proposition: Proposition) => {
     let posByTermId = new Map<number, number>();
     let termsByDayStr = new Map<string, Term[][]>();
+    let termsIds = new Set<number>();
     for (let i = 0; i < proposition.ProposedTrms.length; i++) {
       const terms = proposition.ProposedTrms[i];
       let key = new Date(terms[0].StartDate).toDateString();
       for (let j = 0; j < terms.length; j++) {
         const term = terms[j];
+        termsIds.add(term.Id);
         posByTermId.set(term.Id, i);
         term.StartDate = new Date(term.StartDate);
         term.EndDate = new Date(term.EndDate);
@@ -80,12 +81,13 @@
       }
     }
     propositionHelpers.PosByTermId = posByTermId;
+    propositionHelpers.ProposedTerms = termsIds;
     propositionHelpers.TermsByDayStr = new Map(
       [...termsByDayStr.entries()].sort((a, b) => (new Date(a[0]) < new Date(b[0]) ? -1 : 1))
     );
   };
 
-  const buildHelperForTerms = async (treatmentId: string, startDate: Date) => {
+  const buildDayModel = async (treatmentId: string, startDate: Date) => {
     if (!treatmentId || !startDate) return;
     let buildDayModelByDayStr = new Map();
     let to = getMonday(startDate);
@@ -129,7 +131,7 @@
     dayModelByDayStr = buildDayModelByDayStr;
   };
 
-  const buildTermsUsedByPatient = async (patientId: string, startDate: Date) => {
+  const buildTermsUsedByPatient = async (patientId: string) => {
     let from;
     let to;
     let payload: TermsUsedPayload = {
@@ -138,7 +140,7 @@
       PatientId: patientId,
     };
     const { data: termIds } = await api.terms.used(payload);
-    termsUsedByPatient = new Set(termIds);
+    propositionHelpers.TermsTakenByPatient = new Set(termIds);
   };
 
   proposition.subscribe(async (value) => {
@@ -177,14 +179,7 @@
   {#if isLoading}
     <DataTableSkeleton style="width:100%;height:100%; grid-column: 1/4; grid-row: 2/4" />
   {:else}
-    <ResultsCalendar
-      {hoveredInOverview}
-      {isCalendarLoading}
-      bind:hoveredTerm
-      {dayModelByDayStr}
-      {termsUsedByPatient}
-      {propositionHelpers}
-    />
+    <ResultsCalendar {hoveredInOverview} {isCalendarLoading} bind:hoveredTerm {dayModelByDayStr} {propositionHelpers} />
     <ResultsOverview
       on:termSetHovered={({ detail: termSet }) => {
         hoveredInOverview = termSet;

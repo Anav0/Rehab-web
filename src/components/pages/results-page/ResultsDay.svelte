@@ -11,7 +11,6 @@
 
   export let draggedTerms: Term[] = null;
   export let idOfTermBelow: number = null;
-  export let termsUsedByPatient: Set<number>;
 
   export let dayModel: DayModel;
   export let propositionHelpers: PropositionHelpers;
@@ -35,6 +34,9 @@
 
     let k = 0;
     for (let j = i; j < i + termsToChange.length; j++) {
+      allTermsInPlace[j].TreatmentDuration = termsToChange[k].TreatmentDuration;
+      allTermsInPlace[j].TreatmentId = termsToChange[k].TreatmentId;
+      allTermsInPlace[j].TreatmentName = termsToChange[k].TreatmentName;
       termsToChange[k] = allTermsInPlace[j];
       k++;
     }
@@ -62,12 +64,15 @@
       if (propositionHelpers.PosByTermId.has(termToCheck.Id)) return false;
     }
 
-    // let numOfReqiredBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
-    // for (let k = pos; k < pos + numOfReqiredBlocks; k++) {
-    //   if (k > allTermsInPlace.length) return false;
-    //   const term = allTermsInPlace[k];
-    //   if (termsUsedByPatient.has(term.Id)) return false;
-    // }
+    let numOfBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
+    console.log(numOfBlocks, termToCheck.Duration, draggedTerms[0].TreatmentDuration);
+
+    for (let k = pos; k < pos + numOfBlocks - 1; k++) {
+      if (k > allTermsInPlace.length) return false;
+      const term = allTermsInPlace[k];
+      if (!term || propositionHelpers.ProposedTerms.has(term.Id) || propositionHelpers.TermsTakenByPatient.has(term.Id))
+        return false;
+    }
 
     return true;
   };
@@ -108,7 +113,7 @@
               class:available={draggedTerms && availability.get(term.Id)}
               draggable={propositionHelpers.PosByTermId.has(term.Id)}
               class:proposed={propositionHelpers.PosByTermId.has(term.Id)}
-              class:used={termsUsedByPatient.has(term.Id)}
+              class:used={propositionHelpers.TermsTakenByPatient.has(term.Id)}
               class:overflow={term.Capacity < term.Used}
               class:full={term.Capacity == term.Used}
               class:some={term.Capacity / 2 <= term.Used}
