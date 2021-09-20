@@ -1,14 +1,11 @@
 <script lang="ts">
   import type { Term } from "@/models/term";
-  import { dateFormat } from "@/stores/misc";
-  import type { DayModel } from "@models/calendar";
-  import { DataTable, DataTableSkeleton } from "carbon-components-svelte";
-  import type { DataTableHeader } from "carbon-components-svelte/types/DataTable/DataTable";
+  import { DataTableSkeleton } from "carbon-components-svelte";
   import DayColumn from "@/components/DayColumn.svelte";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
-  export let proposedTermsByDay: Map<string, Term[]>;
+  export let proposedTermsByDay: Map<string, Term[][]>;
   export let isLoading: boolean;
 </script>
 
@@ -21,8 +18,8 @@
         <DayColumn
           date={new Date(dayStr)}
           {terms}
-          on:termSelected={({ detail: term }) => dispatch("termSelected", term)}
-          on:termHovered={({ detail: term }) => dispatch("termHovered", term)}
+          on:termSetSelected={({ detail: term }) => dispatch("termSetSelected", term)}
+          on:termSetHovered={({ detail: term }) => dispatch("termSetHovered", term)}
         />
       {/each}
     </div>

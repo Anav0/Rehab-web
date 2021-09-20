@@ -1,20 +1,91 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
 
   import type { DayModel } from "@/models/calendar";
   import type { Term } from "@/models/term";
-  import { areOverlapping } from "@services/term";
+  import { areOverlappingTwo, Ceiling } from "@services/term";
+  import { proposition } from "@stores/scheduling";
+  import type { PropositionHelpers } from "@services/proposition";
 
   const dispatch = createEventDispatcher();
 
-  export let dayModel: DayModel;
-  export let propositionTermsByTermId: Map<number, number>;
-  export let termsUsedByPatient: Set<number>;
-  export let hoveredInOverview: Term = undefined;
+  export let draggedTerms: Term[] = null;
+  export let idOfTermBelow: number = null;
 
-  const onMouseOver = (term: Term) => {
-    dispatch("termOver", term);
+  export let dayModel: DayModel;
+  export let propositionHelpers: PropositionHelpers;
+  export let hoveredInOverview: Term[] = undefined;
+
+  let availability: Map<number, boolean> = new Map();
+
+  function fillAvailability(draggedTerms: Term[]) {
+    dayModel.placeModelsByPlaceName.forEach((placeModel) => {
+      let k = 0;
+      for (let term of placeModel.terms) {
+        availability.set(term.Id, isAvailable(term, k, placeModel.terms));
+        k++;
+      }
+    });
+  }
+
+  const handleDrop = (e, i: number, allTermsInPlace: Term[]) => {
+    let index = propositionHelpers.PosByTermId.get(draggedTerms[0].Id);
+    let termsToChange = $proposition.ProposedTrms[index];
+
+    let targetBlockDuration = allTermsInPlace[i].Duration;
+    let treatmentDuration = draggedTerms[0].TreatmentDuration;
+    let treatmentName = draggedTerms[0].TreatmentName;
+    let treatmentId = draggedTerms[0].TreatmentId;
+
+    let numOfBlocks = Ceiling(targetBlockDuration, treatmentDuration);
+    let k = 0;
+    termsToChange = Array(numOfBlocks);
+
+    for (let j = i; j < i + numOfBlocks; j++) {
+      allTermsInPlace[j].TreatmentDuration = treatmentDuration;
+      allTermsInPlace[j].TreatmentId = treatmentId;
+      allTermsInPlace[j].TreatmentName = treatmentName;
+      termsToChange[k] = allTermsInPlace[j];
+      k++;
+    }
+    $proposition.ProposedTrms[index] = termsToChange;
   };
+
+  const handleDragOver = (e, term: Term) => {
+    if (!availability.get(term.Id)) return true;
+
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+    return false;
+  };
+
+  const isAvailable = (termToCheck: Term, pos: number, allTermsInPlace: Term[]) => {
+    if (!draggedTerms) return false;
+
+    for (let terms of $proposition.ProposedTrms) {
+      if (draggedTerms[0].Id != terms[0].Id && areOverlappingTwo(termToCheck, terms)) return false;
+    }
+
+    let numOfBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
+
+    for (let k = pos; k < pos + numOfBlocks; k++) {
+      if (k > allTermsInPlace.length) return false;
+      const nextTerm = allTermsInPlace[k];
+      if (
+        !nextTerm ||
+        propositionHelpers.ProposedTerms.has(nextTerm.Id) ||
+        propositionHelpers.TermsTakenByPatient.has(nextTerm.Id)
+      )
+        return false;
+    }
+
+    return true;
+  };
+
+  $: {
+    fillAvailability(draggedTerms);
+  }
 </script>
 
 <div class="day">
@@ -36,14 +107,24 @@
         <div class="day-terms" style="grid-template-columns: repeat({placeModel.terms.length},1fr);">
           {#each placeModel.terms as term, k}
             <div
-              class:proposed={propositionTermsByTermId.has(term.Id)}
-              class:used={termsUsedByPatient.has(term.Id)}
-              class:some={term.Capacity / 2 <= term.Used}
-              class:full={term.Capacity == term.Used}
+              on:dragstart={(e) => dispatch("startedDragging", term)}
+              on:dragend={(e) => dispatch("stopedDragging", term)}
+              on:dragover={(e) => handleDragOver(e, term)}
+              on:dragenter={(e) => dispatch("dragEntered", term)}
+              on:dragleave={(e) => dispatch("dragLeave")}
+              on:drop={(e) => handleDrop(e, k, placeModel.terms)}
+              class:dropZone={draggedTerms && idOfTermBelow && idOfTermBelow == term.Id && availability.get(term.Id)}
+              class:overview={hoveredInOverview && hoveredInOverview.find((x) => x.Id == term.Id)}
+              class:unavailable={draggedTerms && !availability.get(term.Id)}
+              class:available={draggedTerms && availability.get(term.Id)}
+              draggable={propositionHelpers.PosByTermId.has(term.Id)}
+              class:proposed={propositionHelpers.PosByTermId.has(term.Id)}
+              class:used={propositionHelpers.TermsTakenByPatient.has(term.Id)}
               class:overflow={term.Capacity < term.Used}
-              class:overview={term.Id == hoveredInOverview?.Id}
+              class:full={term.Capacity == term.Used}
+              class:some={term.Capacity / 2 <= term.Used}
               class="day-term"
-              on:mouseenter={() => onMouseOver(term)}
+              on:mouseenter={() => dispatch("termOver", term)}
             />
           {/each}
         </div>
@@ -96,7 +177,6 @@
 
   .day-term:hover::before {
     opacity: 0.5;
-    cursor: pointer;
   }
 
   .day-term::before {
@@ -120,6 +200,17 @@
     background-color: var(--cds-ui-01);
     border: var(--results-gap) solid transparent;
   }
+  .dropZone {
+    border-color: orange;
+    border-style: dotted;
+  }
+  .unavailable {
+    background-color: var(--cds-inverse-support-04) !important;
+    border-color: var(--cds-inverse-support-04) !important;
+  }
+  .available {
+    border-color: var(--cds-inverse-support-02) !important;
+  }
   .some {
     background-color: var(--cds-support-03);
   }
@@ -127,14 +218,21 @@
     background-color: #ff8833;
   }
   .overflow {
-    background-color: var(--cds-support-01) !important;
+    background-color: var(--cds-support-01);
   }
   .proposed {
     border-color: var(--cds-active-primary);
     border-style: dashed;
   }
+  .proposed:hover:before {
+    opacity: 0.5;
+    /* background-color: var(--cds-inverse-support-02); */
+  }
+  .proposed:hover {
+    cursor: move;
+  }
   .used {
-    border-color: var(--cds-support-01) !important;
+    border-color: var(--cds-support-01);
     border-style: dashed;
   }
   .overview:before {
