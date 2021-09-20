@@ -3,7 +3,7 @@
 
   import type { DayModel } from "@/models/calendar";
   import type { Term } from "@/models/term";
-  import { areOverlapping, areOverlappingTwo, Ceiling } from "@services/term";
+  import { areOverlappingTwo, Ceiling } from "@services/term";
   import { proposition } from "@stores/scheduling";
   import type { PropositionHelpers } from "@services/proposition";
 
@@ -64,7 +64,7 @@
     if (!draggedTerms) return false;
 
     for (let terms of $proposition.ProposedTrms) {
-      if (areOverlappingTwo(termToCheck, terms)) return false;
+      if (draggedTerms[0].Id != terms[0].Id && areOverlappingTwo(termToCheck, terms)) return false;
     }
 
     let numOfBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
