@@ -56,20 +56,20 @@
   const isAvailable = (termToCheck: Term, pos: number, allTermsInPlace: Term[]) => {
     if (!draggedTerms) return false;
 
-    for (let i = 0; i < draggedTerms.length; i++) {
-      const draggedTerm = draggedTerms[i];
-      if (draggedTerm.Id == termToCheck.Id) return false;
-
-      if (areOverlapping(termToCheck, draggedTerm)) return false;
-      if (propositionHelpers.PosByTermId.has(termToCheck.Id)) return false;
+    for (let terms of $proposition.ProposedTrms) {
+      if (areOverlappingTwo(termToCheck, terms)) return false;
     }
 
     let numOfBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
 
     for (let k = pos; k < pos + numOfBlocks - 1; k++) {
       if (k > allTermsInPlace.length) return false;
-      const term = allTermsInPlace[k];
-      if (!term || propositionHelpers.ProposedTerms.has(term.Id) || propositionHelpers.TermsTakenByPatient.has(term.Id))
+      const nextTerm = allTermsInPlace[k];
+      if (
+        !nextTerm ||
+        propositionHelpers.ProposedTerms.has(nextTerm.Id) ||
+        propositionHelpers.TermsTakenByPatient.has(nextTerm.Id)
+      )
         return false;
     }
 
