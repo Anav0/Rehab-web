@@ -47,7 +47,6 @@
       const { data: result } = await api.referral.getSubReferrals(model.Id);
 
       tree = list_to_tree(result);
-      console.log(tree);
     } catch (err) {
       console.error(err.reponse);
       $errTitle = "Błąd przy pobieraniu podlegych zleceń";

@@ -169,7 +169,6 @@
       console.error(err);
     } finally {
       isLoading = false;
-      console.log(propositionHelpers);
     }
   });
 </script>

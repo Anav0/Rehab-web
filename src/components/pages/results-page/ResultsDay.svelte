@@ -65,7 +65,6 @@
     }
 
     let numOfBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
-    console.log(numOfBlocks, termToCheck.Duration, draggedTerms[0].TreatmentDuration);
 
     for (let k = pos; k < pos + numOfBlocks - 1; k++) {
       if (k > allTermsInPlace.length) return false;
