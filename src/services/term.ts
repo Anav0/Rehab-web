@@ -14,5 +14,5 @@ export const areOverlappingTwo = (a: Term, b: Term[]) => {
 }
 
 export function Ceiling(x: number, y: number) {
-    return (x + y - 1) / x;
+    return Math.floor((x + y - 1) / x);
 }

@@ -32,16 +32,23 @@
     let index = propositionHelpers.PosByTermId.get(draggedTerms[0].Id);
     let termsToChange = $proposition.ProposedTrms[index];
 
+    let targetBlockDuration = allTermsInPlace[i].Duration;
+    let treatmentDuration = draggedTerms[0].TreatmentDuration;
+    let treatmentName = draggedTerms[0].TreatmentName;
+    let treatmentId = draggedTerms[0].TreatmentId;
+
+    let numOfBlocks = Ceiling(targetBlockDuration, treatmentDuration);
     let k = 0;
-    for (let j = i; j < i + termsToChange.length; j++) {
-      allTermsInPlace[j].TreatmentDuration = termsToChange[k].TreatmentDuration;
-      allTermsInPlace[j].TreatmentId = termsToChange[k].TreatmentId;
-      allTermsInPlace[j].TreatmentName = termsToChange[k].TreatmentName;
+    termsToChange = Array(numOfBlocks);
+
+    for (let j = i; j < i + numOfBlocks; j++) {
+      allTermsInPlace[j].TreatmentDuration = treatmentDuration;
+      allTermsInPlace[j].TreatmentId = treatmentId;
+      allTermsInPlace[j].TreatmentName = treatmentName;
       termsToChange[k] = allTermsInPlace[j];
       k++;
     }
-
-    $proposition.ProposedTrms = [...$proposition.ProposedTrms];
+    $proposition.ProposedTrms[index] = termsToChange;
   };
 
   const handleDragOver = (e, term: Term) => {
@@ -62,7 +69,7 @@
 
     let numOfBlocks = Ceiling(termToCheck.Duration, draggedTerms[0].TreatmentDuration);
 
-    for (let k = pos; k < pos + numOfBlocks - 1; k++) {
+    for (let k = pos; k < pos + numOfBlocks; k++) {
       if (k > allTermsInPlace.length) return false;
       const nextTerm = allTermsInPlace[k];
       if (
